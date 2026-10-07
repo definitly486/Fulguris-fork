@@ -26,8 +26,8 @@
     <bool name="pref_default_tab_list_item_show_close_button">false</bool>
     <bool name="pref_default_menu_show_exit">false</bool>
     <bool name="pref_default_menu_show_new_tab">false</bool>
-    <bool name="pref_default_crash_report">true</bool>
-    <bool name="pref_default_analytics">true</bool>
+    <bool name="pref_default_crash_report">false</bool>
+    <bool name="pref_default_analytics">false</bool>
     <bool name="pref_default_crash_logs">true</bool>
     <bool name="pref_default_logs">false</bool>
     <bool name="pref_default_portrait_pull_to_refresh">true</bool>

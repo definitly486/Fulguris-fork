@@ -20,7 +20,7 @@ Should only be shown on first application start-up.
         android:summaryOn="@string/pref_summary_on_enable_ad_blocker"
         android:summaryOff="@string/pref_summary_off_enable_ad_blocker"
         app:icon="@drawable/ic_block"
-        android:defaultValue="false"
+        android:defaultValue="true"
         app:iconSpaceReserved="true"
         app:singleLineTitle="false" />
 

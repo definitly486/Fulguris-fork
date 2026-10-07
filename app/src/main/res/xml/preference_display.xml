@@ -6,7 +6,7 @@
     <!-- Empty default: we use an empty string to indicate "system default" language being selected -->
     <!--suppress AndroidDomInspection -->
     <fulguris.settings.preferences.LocaleListPreference
-        a:defaultValue=""
+        a:defaultValue="ru-RU"
         a:key="@string/pref_key_locale"
         a:title="@string/pref_title_language"
         x:icon="@drawable/ic_translate"

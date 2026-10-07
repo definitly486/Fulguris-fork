@@ -86,7 +86,7 @@ class IntroActivity : AppIntro2() {
         addSlide(createWelcomeSlide())
         addSlide(AcceptTermsSlideFragment.newInstance())
         // Don't add telemetry slide for F-Droid variant
-        if (!fulguris.Variant.isFdroid()) {
+        if (false) { // Telemetry disabled in this build
             addSlide(TelemetrySlideFragment.newInstance())
         }
         // Add ad blocker slide

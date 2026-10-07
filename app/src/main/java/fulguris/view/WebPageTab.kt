@@ -348,6 +348,16 @@ class WebPageTab(
         internal set
 
     /**
+     * True while a plain page reload is in progress (reload button, pull-to-refresh, menu).
+     * While set we skip all purely cosmetic work (theme color extraction, favicon reset,
+     * tab list rebinding, progress bar animation) so that reload is as fast as possible.
+     * Cleared when the page finishes loading, when loading is stopped or on any other navigation.
+     */
+    @Volatile
+    var isReloading = false
+        internal set
+
+    /**
      * Get the current user agent used by the WebView.
      *
      * @return retuns the current user agent of the WebView instance, or an empty string if the
@@ -911,6 +921,7 @@ class WebPageTab(
     fun stopLoading() {
         webView?.stopLoading()
         isLoading = false
+        isReloading = false
 
         // SL: I don't think we need this here as onPageFinished is called when we stop loading
         // Execute callback since load was explicitly stopped
@@ -1070,9 +1081,11 @@ class WebPageTab(
      */
     fun reload(aForce: Boolean = false) {
         webView?.let { wv ->
+            // Flag is set after loadUrl below as loadUrl clears it for regular navigation
 
             if (!aForce) {
                 loadUrl(url)
+                isReloading = true
             } else {
                 // Store original cache mode
                 val originalCacheMode = wv.settings.cacheMode
@@ -1085,6 +1098,7 @@ class WebPageTab(
                 loadUrl(url) {
                     wv.settings.cacheMode = originalCacheMode
                 }
+                isReloading = true
             }
         }
     }
@@ -1214,6 +1228,7 @@ class WebPageTab(
         // History navigation may not fire onPageStarted (notably YouTube.com), so mark
         // loading here to show the stop button right away.
         isLoading = true
+        isReloading = false
         webView?.goBack()
     }
 
@@ -1225,6 +1240,7 @@ class WebPageTab(
         // History navigation may not fire onPageStarted (notably YouTube.com), so mark
         // loading here to show the stop button right away.
         isLoading = true
+        isReloading = false
         webView?.goForward()
     }
 
@@ -1238,6 +1254,7 @@ class WebPageTab(
         // History navigation may not fire onPageStarted (notably YouTube.com), so mark
         // loading here to show the stop button right away.
         isLoading = true
+        isReloading = false
         webView?.goBackOrForward(steps)
     }
 
@@ -1349,6 +1366,8 @@ class WebPageTab(
 
         // Mark loading for the new page load so the stop button shows right away
         isLoading = true
+        // Regular navigation: not a reload, reload() will set that flag again if needed
+        isReloading = false
 
         iTargetUrl = Uri.parse(aUrl)
 

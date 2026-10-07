@@ -66,7 +66,8 @@ class WebPageChromeClient(
         webBrowser.onProgressChanged(webPageTab, newProgress)
 
         // We don't need to run that when color mode is disabled
-        if (userPreferences.colorModeEnabled) {
+        // Nor when reloading: we keep the theme color we already have, no extra JS, no toolbar color change
+        if (userPreferences.colorModeEnabled && !webPageTab.isReloading) {
             if (newProgress > 10 && webPageTab.shouldFetchMetaTags)
             {
                 webPageTab.shouldFetchMetaTags = false

@@ -67,7 +67,9 @@ public class LocaleUtils {
 
         // We should use setLocale, but it's unexpectedly missing
         // on real devices.
-        config.locale = locale;
+        // setLocale also updates the LocaleList used for resource lookup on API 24+,
+        // assigning the deprecated field alone may leave the old system locale list in place
+        config.setLocale(locale);
 
         config.setLayoutDirection(locale);
 

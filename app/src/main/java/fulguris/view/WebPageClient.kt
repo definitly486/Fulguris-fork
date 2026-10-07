@@ -383,6 +383,9 @@ class WebPageClient(
         onPageFinishedDone = true
         // The page is done loading: hide the stop button / progress bar
         webPageTab.isLoading = false
+        // Reload is over, remember it so we can skip cosmetic UI updates at the end of this method
+        val wasReloading = webPageTab.isReloading
+        webPageTab.isReloading = false
 
         // Inject nested scroll detection so that pull-to-refresh is suppressed when
         // the user scrolls inside a CSS overflow:auto/scroll element (e.g. a sidebar).
@@ -390,6 +393,11 @@ class WebPageClient(
         // Though if the config changes we could be missing it...
         if (view.context.configPrefs.pullToRefresh && view.settings.javaScriptEnabled) {
             view.evaluateJavascript(nestedScrollDetectJs.provideJs(), null)
+        }
+
+        // Fill login forms for sites listed in assets/site_credentials.json
+        if (view.settings.javaScriptEnabled) {
+            fulguris.autofill.SiteCredentials.fill(view, url)
         }
 
         // Hook URL.createObjectURL so we can download blob: URLs even after the
@@ -451,7 +459,10 @@ class WebPageClient(
             }
         }
 
-        webBrowser.onTabChanged(webPageTab)
+        // No need to rebind tab views after a reload, title and favicon did not change
+        if (!wasReloading) {
+            webBrowser.onTabChanged(webPageTab)
+        }
 
         // To prevent potential overhead when logs are not needed
         if (userPreferences.isLog(LogLevel.VERBOSE)) {
@@ -546,6 +557,12 @@ class WebPageClient(
                 SslState.Insecure
             }
         }
+        if (webPageTab.isReloading) {
+            // Reload: keep favicon, toolbar visibility, task description and tab list as they are.
+            // Nothing cosmetic to update, just load the page.
+            return
+        }
+
         webPageTab.titleInfo.resetFavicon()
         if (webPageTab.isShown) {
             webBrowser.showActionBar()

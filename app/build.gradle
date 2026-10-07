@@ -61,6 +61,11 @@ android {
         minSdk = libs.versions.minSdk.get().toInteger()
         targetSdk = libs.versions.compileSdk.get().toInteger()
         vectorDrawables.useSupportLibrary = true
+
+     ndk {
+            abiFilters "arm64-v8a"
+        }
+
     }
 
     sourceSets {
@@ -97,7 +102,7 @@ android {
                     'proguard-android-optimize.txt'),
                     'proguard-project.txt'
             // Use debug signing for now
-            //signingConfig debug.signingConfig
+            signingConfig = debug.signingConfig
 
             ndk {
                 //abiFilters "arm64-v8a", "armeabi-v7a", "armeabi", "mips"

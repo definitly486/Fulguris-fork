@@ -528,16 +528,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         tabsManager.doOnceAfterInitialization {
             // If our version code was changed
             if (userPreferences.versionCode != BuildConfig.VERSION_CODE) {
-                if (userPreferences.versionCode==0
-                        // Added this check to avoid show welcome message to existing installation
-                        // TODO: Remove that a few versions down the road
-                        && sessionsManager.sessions().count()==1 && tabsManager.allTabs.count()==1) {
-                    // First run
-                    welcomeToFulguris()
-                } else {
-                    // Version was updated
-                    notifyVersionUpdate()
-                }
+                // Welcome and update dialogs disabled in this build
                 // Persist our current version so that we don't kick in next time
                 userPreferences.versionCode = BuildConfig.VERSION_CODE
             }
@@ -3597,6 +3588,8 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      * Used when going forward in tab history
      */
     private fun animateTabFlipLeft(aTab: View?) {
+        // Flip animation disabled: speed over looks
+        return
         assertNull(iTabAnimator)
         aTab?.let{
             // Adjust camera distance to avoid clipping
@@ -3619,6 +3612,8 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      * Used when going back in tab history
      */
     private fun animateTabFlipRight(aTab: View?) {
+        // Flip animation disabled: speed over looks
+        return
         assertNull(iTabAnimator)
 
         aTab?.let{
@@ -4577,7 +4572,8 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         // Advance the progress bar while the page is loading; always let a 100% report
         // through so the bar can finish and auto-hide. Stale out-of-order sub-100 events
         // that arrive after completion are ignored (aTab.isLoading is already false).
-        if (aTab.isLoading || aProgress >= 100) {
+        // While reloading we skip the intermediate progress animation: speed over looks
+        if ((aTab.isLoading && !aTab.isReloading) || aProgress >= 100) {
             iBinding.toolbarInclude.progressView.progress = aProgress
         }
         // The first time we reach 100% the page is considered loaded. A progress event

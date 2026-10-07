@@ -82,7 +82,7 @@ class UserPreferences @Inject constructor(
     /**
      * True if the browser should block ads, false otherwise.
      */
-    var adBlockEnabled by preferences.booleanPreference(BLOCK_ADS, false)
+    var adBlockEnabled by preferences.booleanPreference(BLOCK_ADS, true)
 
     /**
      * True if user scripts should be enabled and injected into web pages, false otherwise.
@@ -374,7 +374,7 @@ class UserPreferences @Inject constructor(
     /**
      * Tells if user has accepted our terms and conditions.
      */
-    var acceptTerms by preferences.booleanPreference(R.string.pref_key_accept_terms, false)
+    var acceptTerms by preferences.booleanPreference(R.string.pref_key_accept_terms, true)
 
     /**
      * User can disable Firebase Google Analytics.
@@ -429,7 +429,7 @@ class UserPreferences @Inject constructor(
      * Define the locale language the user want us to use.
      * Empty string means use system default locale.
      */
-    var locale by preferences.stringPreference(R.string.pref_key_locale, "")
+    var locale by preferences.stringPreference(R.string.pref_key_locale, "ru-RU")
 
     /**
      * Define behavior for blocklist updates (on, off, only on non-metered connections).
@@ -450,11 +450,12 @@ class UserPreferences @Inject constructor(
 
     var onTabCloseShowSnackbar by preferences.booleanPreference(R.string.pref_key_on_tab_close_show_snackbar, R.bool.pref_default_on_tab_close_show_snackbar)
     var onTabCloseVibrate by preferences.booleanPreference(R.string.pref_key_on_tab_close_vibrate, R.bool.pref_default_on_tab_close_vibrate)
-    var onTabChangeShowAnimation by preferences.booleanPreference(R.string.pref_key_on_tab_change_show_animation, R.bool.pref_default_on_tab_change_show_animation)
+    // Speed over looks: tab, page flip and page-started animations are hard-disabled regardless of stored settings
+    val onTabChangeShowAnimation: Boolean get() = false
     var onTabChangeAnimationDuration by preferences.floatResPreference(R.string.pref_key_on_tab_change_animation_duration, R.integer.pref_default_animation_duration_tab_change)
-    var onTabBackShowAnimation by preferences.booleanPreference(R.string.pref_key_on_tab_back_show_animation, R.bool.pref_default_on_tab_back_show_animation)
+    val onTabBackShowAnimation: Boolean get() = false
     var onTabBackAnimationDuration by preferences.floatResPreference(R.string.pref_key_on_tab_flip_animation_duration, R.integer.pref_default_animation_duration_flip)
-    var onPageStartedShowAnimation by preferences.booleanPreference(R.string.pref_key_on_page_started_show_animation, R.bool.pref_default_on_tab_back_show_animation)
+    val onPageStartedShowAnimation: Boolean get() = false
 
     /**
      * Force Zoom for Websites
