@@ -66,6 +66,9 @@ android {
             abiFilters "arm64-v8a"
         }
 
+        // NOTE: do not add androidResources.localeFilters = ["ru"] here.
+        // Our Russian resources live in values-ru-rRU (language + region) and a bare "ru" filter
+        // does not match them, so they get stripped from the APK and the UI falls back to English.
     }
 
     sourceSets {

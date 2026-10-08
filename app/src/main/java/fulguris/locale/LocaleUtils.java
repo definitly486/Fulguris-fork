@@ -26,9 +26,10 @@ public class LocaleUtils {
      * Provide the locale we should currently apply.
      */
     public static Locale requestedLocale(String aUserLocale) {
-        if (aUserLocale.isEmpty()) {
-            // Provide the current system locale then
-            return Resources.getSystem().getConfiguration().locale;
+        if (aUserLocale == null || aUserLocale.isEmpty()) {
+            // This build ships English and Russian only: "system default" means Russian,
+            // otherwise a device set to English would always show English.
+            return new Locale("ru", "RU");
         }
 
         return parseLocaleCode(aUserLocale);
@@ -58,22 +59,17 @@ public class LocaleUtils {
      */
     private static void updateConfiguration(Context context, Locale locale) {
         Resources res = context.getResources();
-        Configuration config = res.getConfiguration();
+        // Work on a copy: the object returned by getConfiguration() is the live one,
+        // changing it in place means updateConfiguration sees no difference and the new locale is not applied
+        Configuration config = new Configuration(res.getConfiguration());
 
-        if (config.locale == locale) {
-            // Already in the correct locale
-            return;
-        }
-
-        // We should use setLocale, but it's unexpectedly missing
-        // on real devices.
-        // setLocale also updates the LocaleList used for resource lookup on API 24+,
-        // assigning the deprecated field alone may leave the old system locale list in place
         config.setLocale(locale);
-
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            config.setLocales(new android.os.LocaleList(locale));
+        }
         config.setLayoutDirection(locale);
 
-        res.updateConfiguration(config, null);
+        res.updateConfiguration(config, res.getDisplayMetrics());
     }
 
     /**

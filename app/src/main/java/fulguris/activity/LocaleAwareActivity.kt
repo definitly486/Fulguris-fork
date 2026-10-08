@@ -13,6 +13,8 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.core.text.TextUtilsCompat
 import androidx.core.view.ViewCompat
 import dagger.hilt.android.EntryPointAccessors
@@ -49,6 +51,23 @@ abstract class LocaleAwareActivity :
         mLastLocale = fulguris.locale.LocaleUtils.requestedLocale(userPreferences.locale)
         fulguris.locale.LocaleUtils.updateLocale(this, mLastLocale)
         setLayoutDirection(window.decorView, mLastLocale)
+        applySystemAppLocale(mLastLocale)
+    }
+
+    /**
+     * On Android 13+ the supported way to set the language of an app is the system per-app locale,
+     * which AppCompat exposes here. Manually swapping the resources configuration is unreliable there.
+     * Only touches the system when the requested locale differs from the current one, so no recreate loop.
+     */
+    private fun applySystemAppLocale(aLocale: Locale?) {
+        if (aLocale == null || android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU) {
+            return
+        }
+        val wanted = aLocale.toLanguageTag()
+        if (AppCompatDelegate.getApplicationLocales().toLanguageTags() != wanted) {
+            Timber.i("Setting system app locale: $wanted")
+            AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(wanted))
+        }
     }
 
     /**
