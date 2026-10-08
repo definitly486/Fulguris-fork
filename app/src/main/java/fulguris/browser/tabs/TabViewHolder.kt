@@ -1,9 +1,7 @@
 package fulguris.browser.tabs
 
 import fulguris.R
-import fulguris.activity.WebBrowserActivity
 import fulguris.browser.WebBrowser
-import fulguris.di.configPrefs
 import fulguris.utils.ItemDragDropSwipeViewHolder
 import android.view.View
 import android.widget.ImageView
@@ -34,11 +32,8 @@ class TabViewHolder(
         exitButton.setOnClickListener(this)
         iCardView.setOnClickListener(this)
         iCardView.setOnLongClickListener(this)
-        // Is that the best way to access our preferences?
-        // If not showing horizontal desktop tab bar, this one always shows close button.
-        // Apply settings preference for showing close button on tabs.
-        exitButton.visibility = if (!view.context.configPrefs.verticalTabBar
-                || (view.context as WebBrowserActivity).userPreferences.showCloseTabButton) View.VISIBLE else View.GONE
+        // Always show the close button on every tab, in addition to swipe-to-close.
+        exitButton.visibility = View.VISIBLE
     }
 
     override fun onClick(v: View) {
