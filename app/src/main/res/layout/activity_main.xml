@@ -40,13 +40,13 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true">
 
+            <!-- No animateLayoutChanges on ui_layout, layoutHorizontal and layoutPageContainer: it made toolbar hide/show take about a second -->
             <LinearLayout
                 android:id="@+id/ui_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:background="?android:attr/colorBackground"
-                android:animateLayoutChanges="true">
+                android:background="?android:attr/colorBackground">
 
                 <include android:id="@+id/toolbar_include"
                     layout="@layout/toolbar"/>
@@ -57,8 +57,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:background="?android:attr/colorBackground"
-                    android:animateLayoutChanges="true">
+                    android:background="?android:attr/colorBackground">
 
                     <LinearLayout
                         android:id="@+id/layoutTabsLeft"
@@ -79,8 +78,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:background="?android:attr/colorBackground"
-                        android:animateLayoutChanges="true">
+                        android:background="?android:attr/colorBackground">
 
                         <include android:id="@+id/findInPageInclude" layout="@layout/search_interface"/>
 
