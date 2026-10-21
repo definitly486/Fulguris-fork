@@ -1446,8 +1446,8 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         // TODO: define custom transitions to make flying in and out of the tool bar nicer
         //ui_layout.layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, ui_layout.layoutTransition.getAnimator(LayoutTransition.CHANGE_DISAPPEARING))
         // Disabling animations which are not so nice
-        iBinding.uiLayout.layoutTransition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING)
-        iBinding.uiLayout.layoutTransition.disableTransitionType(LayoutTransition.CHANGE_APPEARING)
+        iBinding.uiLayout.layoutTransition?.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING)
+        iBinding.uiLayout.layoutTransition?.disableTransitionType(LayoutTransition.CHANGE_APPEARING)
 
 
         setupButtonMore()
