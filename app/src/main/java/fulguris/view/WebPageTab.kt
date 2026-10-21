@@ -1392,7 +1392,9 @@ class WebPageTab(
      * Check relevant user preferences and configuration before showing the tool bar if needed
      */
     fun showToolBarOnScrollUpIfNeeded() {
-        if (webView?.context?.configPrefs?.showToolBarOnScrollUp == true) {
+        // Always show when scrolling up with the bottom bar, that's how it is meant to behave
+        if (webView?.context?.configPrefs?.showToolBarOnScrollUp == true
+                || webView?.context?.configPrefs?.buttonsInBottomBar == true) {
             webBrowser.showActionBar()
         }
     }
@@ -1401,7 +1403,8 @@ class WebPageTab(
      * Check relevant user preferences and configuration before showing the tool bar if needed
      */
     fun showToolBarOnPageTopIfNeeded() {
-        if (webView?.context?.configPrefs?.showToolBarOnPageTop == true) {
+        if (webView?.context?.configPrefs?.showToolBarOnPageTop == true
+                || webView?.context?.configPrefs?.buttonsInBottomBar == true) {
             webBrowser.showActionBar()
         }
     }
@@ -1497,6 +1500,11 @@ class WebPageTab(
                 } else if (distance < -SCROLL_UP_THRESHOLD) {
                     // Aggressive hiding of tool bar
                     webBrowser.hideActionBar()
+                } else if (distance > SCROLL_UP_THRESHOLD
+                        && view.canScrollVertically()
+                        && view.context.configPrefs.buttonsInBottomBar) {
+                    // Slow scroll in the opposite direction shows both bars again
+                    webBrowser.showActionBar()
                 }
                 location = 0f
             }

@@ -5320,7 +5320,8 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      * Hide the ActionBar if we are in full-screen
      */
     override fun hideActionBar() {
-        if (isFullScreen) {
+        // With the bottom bar both bars always hide on scroll, no need for full screen mode
+        if (isFullScreen || buttonsInBottomBar) {
             doHideToolBar()
         }
     }
