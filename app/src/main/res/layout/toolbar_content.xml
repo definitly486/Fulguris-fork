@@ -98,6 +98,18 @@
         android:nextFocusDown="@id/web_view"
         />
 
+    <!-- New tab button, only shown in the bottom bar -->
+    <ImageButton
+        android:id="@+id/button_new_tab"
+        style="?android:attr/actionButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:contentDescription="@string/action_new_tab"
+        app:tooltipText="@{@string/action_new_tab}"
+        app:srcCompat="@drawable/ic_add"
+        android:visibility="gone" />
+
     <fulguris.icon.TabCountView
         android:id="@+id/tabs_button"
         style="?android:attr/actionButtonStyle"

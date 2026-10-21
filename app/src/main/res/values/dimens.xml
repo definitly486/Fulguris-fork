@@ -45,8 +45,8 @@
     <dimen name="address_bar_margin_bottom">12dp</dimen>
     <dimen name="address_bar_margin_compact">4dp</dimen>
     <!-- Bottom bar holding the action buttons -->
-    <dimen name="bottom_bar_height_portrait">56dp</dimen>
-    <dimen name="bottom_bar_height_landscape">48dp</dimen>
+    <dimen name="bottom_bar_height_portrait">44dp</dimen>
+    <dimen name="bottom_bar_height_landscape">40dp</dimen>
 
     <dimen name="vertical_tab_width">350dp</dimen>
     <dimen name="desktop_tab_width">175dp</dimen>

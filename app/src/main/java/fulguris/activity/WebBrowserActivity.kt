@@ -1348,6 +1348,8 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
 
 
         iBindingToolbarContent.homeButton.setOnClickListener(this)
+        iBindingToolbarContent.buttonNewTab.setOnClickListener { newTabButtonClicked() }
+        iBindingToolbarContent.buttonNewTab.setOnLongClickListener { newTabButtonLongClicked(); true }
         iBindingToolbarContent.buttonActionBack.setOnClickListener{executeAction(R.id.action_back)}
         iBindingToolbarContent.buttonActionForward.setOnClickListener{executeAction(R.id.action_forward)}
 
@@ -2164,7 +2166,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      */
     private fun setupToolBar() {
         // Check if our tool bar is long enough to display extra buttons
-        // When buttons are in the bottom bar their width is stretched so use a fixed button size instead
+        // The top toolbar now only holds the address bar so use a fixed button size
         val threshold = if (buttonsInBottomBar) {
             (48 * resources.displayMetrics.density * 10).toInt()
         } else {
@@ -2172,9 +2174,9 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         }
         // If our tool bar is longer than 10 action buttons then we show extra buttons
         (iBinding.toolbarInclude.toolbar.width>threshold).let{
-            // Back and forward are always available in the bottom bar
-            iBindingToolbarContent.buttonActionBack.isVisible = it || buttonsInBottomBar
-            iBindingToolbarContent.buttonActionForward.isVisible = it || buttonsInBottomBar
+            // Back and forward are not shown when buttons are in the bottom bar
+            iBindingToolbarContent.buttonActionBack.isVisible = it && !buttonsInBottomBar
+            iBindingToolbarContent.buttonActionForward.isVisible = it && !buttonsInBottomBar
             // Hide tab bar action buttons if no room for them
             if (tabsView is TabsDesktopView) {
                 (tabsView as TabsDesktopView).iBinding.actionButtons.isVisible = it
@@ -3796,7 +3798,13 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      * Action buttons in display order.
      */
     private fun toolbarButtons(): List<View> = iBindingToolbarContent.let {
-        listOf(it.buttonReload, it.buttonActionBack, it.buttonActionForward, it.homeButton, it.tabsButton, it.buttonMore)
+        // Back and forward stay in the top toolbar (hidden) when using the bottom bar
+        val list = mutableListOf<View>(it.buttonReload)
+        if (!buttonsInBottomBar) {
+            list += listOf(it.buttonActionBack, it.buttonActionForward)
+        }
+        list += listOf(it.homeButton, it.buttonNewTab, it.tabsButton, it.buttonMore)
+        list
     }
 
     /**
@@ -3822,6 +3830,8 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
                 content.addView(button, toolbarButtonsOriginalParams[button])
             }
         }
+        // New tab button only makes sense in the bottom bar, bottom toolbars have it in the menu
+        iBindingToolbarContent.buttonNewTab.isVisible = toBottom
         updateBottomBarVisibility(isToolBarVisible())
     }
 
@@ -4416,6 +4426,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         iBindingToolbarContent.addressBarInclude.searchSslStatus.setColorFilter(currentToolBarTextColor)
         // Toolbar buttons filter
         iBindingToolbarContent.buttonMore.setColorFilter(currentToolBarTextColor)
+        iBindingToolbarContent.buttonNewTab.setColorFilter(currentToolBarTextColor)
         iBindingToolbarContent.buttonReload.setColorFilter(currentToolBarTextColor)
 
         // Pull to refresh spinner color also follow current theme
