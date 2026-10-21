@@ -25,7 +25,7 @@
 
 <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="@dimen/toolbar_height_portrait"
+    android:layout_height="match_parent"
     android:orientation="horizontal"
     android:layout_marginRight="5dp"
     android:animateLayoutChanges="true">

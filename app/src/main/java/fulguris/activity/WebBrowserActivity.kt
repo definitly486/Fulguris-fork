@@ -58,6 +58,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.customview.widget.ViewDragHelper
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
@@ -2022,6 +2023,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      */
     private fun setupToolBar(configuration: Configuration) {
         initFullScreen()
+        updateToolbarButtonsPlacement()
         initializeToolbarHeight(configuration)
         showActionBar()
         setToolbarColor()
@@ -2126,17 +2128,18 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
                 }
 
                 // Deal with session menu
+                // Buttons live in the bottom bar so the menu opens upwards, same as with bottom toolbars
                 if (configPrefs.verticalTabBar && !configPrefs.tabBarInDrawer) {
-                    iMenuSessions.animationStyle = R.style.AnimationMenuDesktopTop
+                    iMenuSessions.animationStyle = R.style.AnimationMenuDesktopBottom
                 } else {
-                    iMenuSessions.animationStyle = R.style.AnimationMenu
+                    iMenuSessions.animationStyle = R.style.AnimationMenuBottom
                 }
                 (iMenuSessions.iBinding.recyclerViewSessions.layoutManager as? LinearLayoutManager)?.apply {
-                    reverseLayout = false
-                    stackFromEnd = false
+                    reverseLayout = true
+                    stackFromEnd = true
                 }
-                // Move sessions menu toolbar to the top
-                iMenuSessions.iBinding.toolbar.apply{removeFromParent()?.addView(this, 0)}
+                // Move sessions menu toolbar to the bottom
+                iMenuSessions.iBinding.toolbar.apply{removeFromParent()?.addView(this)}
 
                 // Setup custom menu for top toolbars
                 iMenuCustom.setupToolbarLayout()
@@ -2161,11 +2164,17 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      */
     private fun setupToolBar() {
         // Check if our tool bar is long enough to display extra buttons
-        val threshold = (iBindingToolbarContent.buttonActionBack.width?:3840)*10
+        // When buttons are in the bottom bar their width is stretched so use a fixed button size instead
+        val threshold = if (buttonsInBottomBar) {
+            (48 * resources.displayMetrics.density * 10).toInt()
+        } else {
+            (iBindingToolbarContent.buttonActionBack.width?:3840)*10
+        }
         // If our tool bar is longer than 10 action buttons then we show extra buttons
         (iBinding.toolbarInclude.toolbar.width>threshold).let{
-            iBindingToolbarContent.buttonActionBack.isVisible = it
-            iBindingToolbarContent.buttonActionForward.isVisible = it
+            // Back and forward are always available in the bottom bar
+            iBindingToolbarContent.buttonActionBack.isVisible = it || buttonsInBottomBar
+            iBindingToolbarContent.buttonActionForward.isVisible = it || buttonsInBottomBar
             // Hide tab bar action buttons if no room for them
             if (tabsView is TabsDesktopView) {
                 (tabsView as TabsDesktopView).iBinding.actionButtons.isVisible = it
@@ -3777,21 +3786,82 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
 
     }
 
+    /** True when action buttons are hosted by the bottom bar rather than the top toolbar */
+    private var buttonsInBottomBar = false
+
+    /** Original layout params of the buttons so we can put them back in the top toolbar */
+    private val toolbarButtonsOriginalParams = HashMap<View, ViewGroup.LayoutParams>()
+
+    /**
+     * Action buttons in display order.
+     */
+    private fun toolbarButtons(): List<View> = iBindingToolbarContent.let {
+        listOf(it.buttonReload, it.buttonActionBack, it.buttonActionForward, it.homeButton, it.tabsButton, it.buttonMore)
+    }
+
+    /**
+     * Move action buttons between the top toolbar and the bottom bar according to preferences.
+     * With bottom bar the top toolbar only keeps the address bar and gets smaller.
+     * Views are moved, not recreated, so bindings and listeners stay valid.
+     */
+    private fun updateToolbarButtonsPlacement() {
+        val toBottom = configPrefs.buttonsInBottomBar
+        buttonsInBottomBar = toBottom
+        val content = iBindingToolbarContent.root as ViewGroup
+        val buttons = toolbarButtons()
+
+        buttons.forEach { button ->
+            val inBottom = button.parent === iBinding.bottomBar
+            if (toBottom == inBottom) return@forEach
+            toolbarButtonsOriginalParams.getOrPut(button) { button.layoutParams }
+            (button.parent as? ViewGroup)?.removeView(button)
+            if (toBottom) {
+                // Spread buttons evenly across the bottom bar
+                iBinding.bottomBar.addView(button, android.widget.LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f))
+            } else {
+                content.addView(button, toolbarButtonsOriginalParams[button])
+            }
+        }
+        updateBottomBarVisibility(isToolBarVisible())
+    }
+
+    /**
+     * Bottom bar follows the top toolbar visibility, it only exists when buttons are in it.
+     */
+    private fun updateBottomBarVisibility(aToolbarVisible: Boolean) {
+        iBinding.bottomBar.isVisible = buttonsInBottomBar && aToolbarVisible
+    }
+
     /**
      *
      */
     private fun initializeToolbarHeight(configuration: Configuration) =
             iBinding.uiLayout.doOnLayout {
                 // TODO externalize the dimensions
-                val toolbarSize = if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    R.dimen.toolbar_height_portrait
-                } else {
-                    R.dimen.toolbar_height_landscape
+                val portrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+                // Compact top toolbar when action buttons live in the bottom bar
+                val toolbarSize = when {
+                    buttonsInBottomBar && portrait -> R.dimen.toolbar_top_height_portrait
+                    buttonsInBottomBar -> R.dimen.toolbar_top_height_landscape
+                    portrait -> R.dimen.toolbar_height_portrait
+                    else -> R.dimen.toolbar_height_landscape
                 }
 
                 iBinding.toolbarInclude.toolbar.layoutParams.height = dimen(toolbarSize)
                 iBinding.toolbarInclude.toolbar.minimumHeight = toolbarSize
                 iBinding.toolbarInclude.toolbar.requestLayout()
+
+                // Bottom bar height
+                iBinding.bottomBar.layoutParams.height = dimen(
+                    if (portrait) R.dimen.bottom_bar_height_portrait else R.dimen.bottom_bar_height_landscape
+                )
+                iBinding.bottomBar.requestLayout()
+
+                // Tighter address bar margins in compact mode
+                iBindingToolbarContent.addressBarInclude.root.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    topMargin = dimen(if (buttonsInBottomBar) R.dimen.address_bar_margin_compact else R.dimen.address_bar_margin_top)
+                    bottomMargin = dimen(if (buttonsInBottomBar) R.dimen.address_bar_margin_compact else R.dimen.address_bar_margin_bottom)
+                }
             }
 
     /**
@@ -3952,10 +4022,12 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         if (isInPictureInPictureMode) {
             // Hide toolbars and other UI for PiP
             iBinding.toolbarInclude.toolbar.isVisible = false
+            updateBottomBarVisibility(false)
             //iBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         } else {
             // Restore UI when exiting PiP
             iBinding.toolbarInclude.toolbar.isVisible = true
+            updateBottomBarVisibility(isToolBarVisible())
             //iBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             // Clear auto-enter so pressing Home doesn't re-enter PiP
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -4360,6 +4432,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         // No animation for now
         // Toolbar background color
         iBinding.toolbarInclude.toolbarLayout.setBackgroundColor(color)
+        iBinding.bottomBar.setBackgroundColor(color)
         iBinding.toolbarInclude.progressView.mProgressColor = color
         // Search text field color
         setSearchBarColors(color)
@@ -5254,11 +5327,15 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
     override fun showActionBar() {
         Timber.d("showActionBar")
         iBinding.toolbarInclude.toolbarLayout.visibility = View.VISIBLE
+        updateBottomBarVisibility(true)
         if (tabsManager.currentTab?.isLoading != true && currentTabView?.hasFocus() == true)
             scheduleHideToolBarTimeout()
     }
 
-    private fun doHideToolBar() { iBinding.toolbarInclude.toolbarLayout.visibility = View.GONE }
+    private fun doHideToolBar() {
+        iBinding.toolbarInclude.toolbarLayout.visibility = View.GONE
+        updateBottomBarVisibility(false)
+    }
     private fun isToolBarVisible() = iBinding.toolbarInclude.toolbarLayout.visibility == View.VISIBLE
 
     /**

@@ -94,6 +94,18 @@ abstract class ConfigurationPreferences constructor(
      var toolbarsBottom by preferences.booleanPreference(R.string.pref_key_toolbars_bottom, getDefaultBoolean(PrefKeys.ToolbarsBottom))
 
     /**
+     * True when the action buttons (reload, back, forward, home, tabs, menu) live in a dedicated
+     * bottom bar while the top toolbar only holds the address bar.
+     * Not used when the user moved all toolbars to the bottom.
+     */
+    val buttonsInBottomBar: Boolean get() = !toolbarsBottom
+
+    /**
+     * True when popup menus are anchored to the bottom of the screen and open upwards.
+     */
+    val menusFromBottom: Boolean get() = toolbarsBottom || buttonsInBottomBar
+
+    /**
      * Define viewport width for desktop mode. Expressed in percentage of the actual viewport width.
      * When set to 100% we use actual viewport width, the HTML page is not tempered with.
      * When set to something other than 100% we will enable wide viewport mode and inject JS code to set HTML meta viewport element accordingly.

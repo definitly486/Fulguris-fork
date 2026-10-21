@@ -225,7 +225,7 @@ class SessionsPopupWindow : PopupWindow {
         aBinding.recyclerViewSessions.apply {
             //setLayerType(View.LAYER_TYPE_NONE, null)
             //(itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
-            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, context.configPrefs.toolbarsBottom)
+            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, context.configPrefs.menusFromBottom)
             adapter = iAdapter
             setHasFixedSize(false)
         }
@@ -263,10 +263,10 @@ class SessionsPopupWindow : PopupWindow {
             //showAsDropDown(iAnchor)
 
             //
-            //val gravity = if (configPrefs.toolbarsBottom) Gravity.BOTTOM or Gravity.LEFT else Gravity.TOP or Gravity.LEFT
-            val gravity = if (configPrefs.toolbarsBottom) Gravity.BOTTOM or Gravity.LEFT else Gravity.TOP or Gravity.LEFT
+            //val gravity = if (configPrefs.menusFromBottom) Gravity.BOTTOM or Gravity.LEFT else Gravity.TOP or Gravity.LEFT
+            val gravity = if (configPrefs.menusFromBottom) Gravity.BOTTOM or Gravity.LEFT else Gravity.TOP or Gravity.LEFT
             val xOffset = anchorLoc[0]
-            val yOffset = if (configPrefs.toolbarsBottom) (contentView.context as WebBrowserActivity).iBinding.root.height - anchorLoc[1] - (aAnchor.height * 0.15).toInt() else anchorLoc[1] + (aAnchor.height * 0.85).toInt()
+            val yOffset = if (configPrefs.menusFromBottom) (contentView.context as WebBrowserActivity).iBinding.root.height - anchorLoc[1] - (aAnchor.height * 0.15).toInt() else anchorLoc[1] + (aAnchor.height * 0.85).toInt()
             // Show our popup menu from the right side of the screen below our anchor
             showAtLocation(aAnchor, gravity,
                     // Offset from the left screen edge
@@ -276,8 +276,8 @@ class SessionsPopupWindow : PopupWindow {
 
         } else {
             //
-            val gravity = if (configPrefs.toolbarsBottom) Gravity.BOTTOM or Gravity.RIGHT else Gravity.TOP or Gravity.RIGHT
-            val yOffset = if (configPrefs.toolbarsBottom) (contentView.context as WebBrowserActivity).iBinding.root.height - anchorLoc[1] else anchorLoc[1] + aAnchor.height
+            val gravity = if (configPrefs.menusFromBottom) Gravity.BOTTOM or Gravity.RIGHT else Gravity.TOP or Gravity.RIGHT
+            val yOffset = if (configPrefs.menusFromBottom) (contentView.context as WebBrowserActivity).iBinding.root.height - anchorLoc[1] else anchorLoc[1] + aAnchor.height
             // Show our popup menu from the right side of the screen below our anchor
             showAtLocation(aAnchor, gravity,
                     // Offset from the right screen edge

@@ -99,7 +99,7 @@ class MenuPopupWindow : PopupWindow {
     private fun scrollToStart(aDelay: Long = 300) {
         iBinding.scrollViewItems.postDelayed(
             {
-                if (contentView.context.configPrefs.toolbarsBottom) {
+                if (contentView.context.configPrefs.menusFromBottom) {
                     iBinding.scrollViewItems.smoothScrollTo(0, iBinding.scrollViewItems.height)
                 } else {
                     iBinding.scrollViewItems.smoothScrollTo(0, 0)
@@ -122,7 +122,7 @@ class MenuPopupWindow : PopupWindow {
      * This should be called after menu creation and when toolbar position changes
      */
     fun setupToolbarLayout() {
-        val toolbarsBottom = contentView.context.configPrefs.toolbarsBottom
+        val toolbarsBottom = contentView.context.configPrefs.menusFromBottom
 
         // Set animation style
         animationStyle = if (toolbarsBottom) {
@@ -221,7 +221,7 @@ class MenuPopupWindow : PopupWindow {
 
         // Re-add views in the correct order and make them visible
         // Reverse order if toolbars are at bottom
-        val orderedViews = if (contentView.context.configPrefs.toolbarsBottom) {
+        val orderedViews = if (contentView.context.configPrefs.menusFromBottom) {
             allViews.reversed()
         } else {
             allViews
@@ -624,13 +624,13 @@ class MenuPopupWindow : PopupWindow {
         aAnchor.getLocationInWindow(anchorLoc)
 
         // Show our popup menu from the right side of the screen below our anchor
-        val gravity = if (contentView.context.configPrefs.toolbarsBottom) {
+        val gravity = if (contentView.context.configPrefs.menusFromBottom) {
             Gravity.BOTTOM or Gravity.RIGHT
         } else {
             Gravity.TOP or Gravity.RIGHT
         }
 
-        val yOffset = if (contentView.context.configPrefs.toolbarsBottom) {
+        val yOffset = if (contentView.context.configPrefs.menusFromBottom) {
             (contentView.context as WebBrowserActivity).iBinding.root.height - anchorLoc[1] - aAnchor.height
         } else {
             anchorLoc[1]

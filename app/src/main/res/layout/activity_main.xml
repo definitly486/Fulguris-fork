@@ -154,6 +154,23 @@
 
                 </LinearLayout>
 
+                <!--
+                Bottom bar: action buttons (reload, back, forward, home, tabs, menu) are moved here
+                from the top toolbar at runtime, see WebBrowserActivity.updateToolbarButtonsPlacement.
+                Hidden when the user puts all toolbars at the bottom.
+                -->
+                <LinearLayout
+                    android:id="@+id/bottom_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/bottom_bar_height_portrait"
+                    android:layout_weight="0"
+                    android:background="?attr/colorSurface"
+                    android:elevation="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
             </LinearLayout>
 
             <!--
