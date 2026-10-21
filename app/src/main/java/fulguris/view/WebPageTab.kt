@@ -1490,22 +1490,21 @@ class WebPageTab(
                 if (distance < -SCROLL_UP_THRESHOLD) {
                     // Hide as soon as an upward swipe crosses the threshold.
                     webBrowser.hideActionBar()
+                } else if (distance > SCROLL_UP_THRESHOLD
+                        && view.canScrollVertically()
+                        && view.context.configPrefs.buttonsInBottomBar) {
+                    // Show bars immediately while swiping down.
+                    webBrowser.showActionBar()
                 }
             } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-                val distance = y - location
-                touchingScreen = false
                 if (view.scrollY < SCROLL_DOWN_THRESHOLD
                         // Touch input won't show tool bar again if no vertical scroll
                         // It can still be accessed using the back button
                         && view.canScrollVertically()) {
                     showToolBarOnPageTopIfNeeded()
-                } else if (distance > SCROLL_UP_THRESHOLD
-                        && view.canScrollVertically()
-                        && view.context.configPrefs.buttonsInBottomBar) {
-                    // Slow scroll in the opposite direction shows both bars again.
-                    webBrowser.showActionBar()
                 }
                 location = 0f
+                touchingScreen = false
             }
 
             // Handle tool bar visibility upon fling gesture
