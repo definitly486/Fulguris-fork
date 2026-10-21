@@ -1481,29 +1481,28 @@ class WebPageTab(
 
             action = arg1.action
             y = arg1.y
-            // Handle tool bar visibility when doing slow scrolling
+            // Handle toolbar visibility during the gesture, not after the finger is lifted.
             if (action == MotionEvent.ACTION_DOWN) {
                 location = y
-                touchingScreen=true
-            }
-            // Only show or hide tool bar when the user stop touching the screen otherwise that looks ugly.
-            // ACTION_CANCEL (e.g. the system or our cursor controller taking the touch over) also ends
-            // the touch — clear the flag there too, or it would stay stuck true after a canceled touch.
-            else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                touchingScreen = true
+            } else if (action == MotionEvent.ACTION_MOVE) {
                 val distance = y - location
-                touchingScreen=false
+                if (distance < -SCROLL_UP_THRESHOLD) {
+                    // Hide as soon as an upward swipe crosses the threshold.
+                    webBrowser.hideActionBar()
+                }
+            } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                val distance = y - location
+                touchingScreen = false
                 if (view.scrollY < SCROLL_DOWN_THRESHOLD
                         // Touch input won't show tool bar again if no vertical scroll
                         // It can still be accessed using the back button
                         && view.canScrollVertically()) {
                     showToolBarOnPageTopIfNeeded()
-                } else if (distance < -SCROLL_UP_THRESHOLD) {
-                    // Aggressive hiding of tool bar
-                    webBrowser.hideActionBar()
                 } else if (distance > SCROLL_UP_THRESHOLD
                         && view.canScrollVertically()
                         && view.context.configPrefs.buttonsInBottomBar) {
-                    // Slow scroll in the opposite direction shows both bars again
+                    // Slow scroll in the opposite direction shows both bars again.
                     webBrowser.showActionBar()
                 }
                 location = 0f
