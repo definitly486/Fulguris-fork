@@ -1348,6 +1348,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
 
 
         iBindingToolbarContent.homeButton.setOnClickListener(this)
+        iBindingToolbarContent.buttonShare.setOnClickListener { executeAction(R.id.action_share) }
         iBindingToolbarContent.buttonNewTab.setOnClickListener { newTabButtonClicked() }
         iBindingToolbarContent.buttonNewTab.setOnLongClickListener { newTabButtonLongClicked(); true }
         iBindingToolbarContent.buttonActionBack.setOnClickListener{executeAction(R.id.action_back)}
@@ -3803,7 +3804,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         if (!buttonsInBottomBar) {
             list += listOf(it.buttonActionBack, it.buttonActionForward)
         }
-        list += listOf(it.homeButton, it.buttonNewTab, it.tabsButton, it.buttonMore)
+        list += listOf(it.homeButton, it.buttonShare, it.buttonNewTab, it.tabsButton, it.buttonMore)
         list
     }
 
@@ -3830,8 +3831,9 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
                 content.addView(button, toolbarButtonsOriginalParams[button])
             }
         }
-        // New tab button only makes sense in the bottom bar, bottom toolbars have it in the menu
+        // New tab and share buttons only make sense in the bottom bar, bottom toolbars have them in the menu
         iBindingToolbarContent.buttonNewTab.isVisible = toBottom
+        iBindingToolbarContent.buttonShare.isVisible = toBottom
         updateBottomBarVisibility(isToolBarVisible())
     }
 
@@ -4427,6 +4429,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         // Toolbar buttons filter
         iBindingToolbarContent.buttonMore.setColorFilter(currentToolBarTextColor)
         iBindingToolbarContent.buttonNewTab.setColorFilter(currentToolBarTextColor)
+        iBindingToolbarContent.buttonShare.setColorFilter(currentToolBarTextColor)
         iBindingToolbarContent.buttonReload.setColorFilter(currentToolBarTextColor)
 
         // Pull to refresh spinner color also follow current theme

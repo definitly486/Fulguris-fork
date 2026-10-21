@@ -98,6 +98,18 @@
         android:nextFocusDown="@id/web_view"
         />
 
+    <!-- Share button, only shown in the bottom bar -->
+    <ImageButton
+        android:id="@+id/button_share"
+        style="?android:attr/actionButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:contentDescription="@string/action_share"
+        app:tooltipText="@{@string/action_share}"
+        app:srcCompat="@drawable/ic_share"
+        android:visibility="gone" />
+
     <!-- New tab button, only shown in the bottom bar -->
     <ImageButton
         android:id="@+id/button_new_tab"
