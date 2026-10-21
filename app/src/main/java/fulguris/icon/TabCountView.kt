@@ -41,36 +41,12 @@ class TabCountView @JvmOverloads constructor(
     private var count: Int = 0
     public var textColor: Int = Color.BLACK
 
-    private var bitmap: Bitmap? = null
-    private var bitmapCanvas: Canvas? = null
-
     init {
-        setLayerType(LAYER_TYPE_SOFTWARE, null)
         context.withStyledAttributes(attrs, R.styleable.TabCountView) {
             paint.color = getColor(R.styleable.TabCountView_tabIconColor, Color.BLACK)
             textColor = paint.color
-            paint.textSize = getDimension(R.styleable.TabCountView_tabIconTextSize, 14F)
             borderRadius = getDimension(R.styleable.TabCountView_tabIconBorderRadius, 0F)
             borderWidth = getDimension(R.styleable.TabCountView_tabIconBorderWidth, 0F)
-        }
-
-    }
-
-    private fun updateBitmap()
-    {
-        // Assuming the size will never change
-        if (bitmap==null) {
-            val localBitmap = Bitmap.createBitmap(width ,
-                    height,
-                    Bitmap.Config.ARGB_8888);
-
-            bitmapCanvas = Canvas(localBitmap);
-            bitmap = localBitmap
-            // Keep the tab counter frame square even if the view's measured bounds are rectangular.
-            val side = minOf(width, height).toFloat() * 0.9f
-            val left = (width - side) / 2f
-            val top = (height - side) / 2f
-            workingRect.set(left, top, left + side, top + side)
         }
     }
 
@@ -84,38 +60,31 @@ class TabCountView @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+
         val text: String = if (count > MAX_DISPLAYABLE_NUMBER) {
             context.getString(R.string.infinity)
         } else {
             numberFormat.format(count)
         }
 
-        // Create our bitmap first time around
-        updateBitmap()
-        // Reset our bitmap
-        bitmapCanvas?.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-        // Make sure we reset our text color in case it did change
+        // Square frame centered in the view, recomputed on every draw so size changes are handled.
+        val side = minOf(width, height).toFloat() * 0.6f
+        val left = (width - side) / 2f
+        val top = (height - side) / 2f
+        workingRect.set(left, top, left + side, top + side)
+
         paint.color = textColor
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = borderWidth
-        // Draw antialias round rect in bitmap
-        bitmapCanvas?.drawRoundRect(workingRect, borderRadius, borderRadius, paint)
+        canvas.drawRoundRect(workingRect, borderRadius, borderRadius, paint)
 
-        // Draw that bitmap in our canvas using a local variable to make Kotlin happy
-        val localBitmap = bitmap;
-        if (localBitmap!=null)
-        {
-            canvas.drawBitmap(localBitmap, 0f, 0f, paint);
-        }
-
-        // Now render our text
+        // Text scaled to fit inside the frame
         paint.style = Paint.Style.FILL
-        paint.color = textColor
+        paint.textSize = side * if (text.length <= 1) 0.62f else if (text.length == 2) 0.5f else 0.38f
         val xPos = width / 2F
-        val yPos = height / 2 - (paint.descent() + paint.ascent()) / 2
+        val yPos = height / 2F - (paint.descent() + paint.ascent()) / 2
         canvas.drawText(text, xPos, yPos, paint)
-
-        super.onDraw(canvas)
     }
 
     companion object {
