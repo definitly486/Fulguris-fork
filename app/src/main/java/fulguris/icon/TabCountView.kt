@@ -66,8 +66,11 @@ class TabCountView @JvmOverloads constructor(
 
             bitmapCanvas = Canvas(localBitmap);
             bitmap = localBitmap
-            workingRect.set( 0f, 0f, width.toFloat(), height.toFloat())
-            workingRect.scale(0.45f)
+            // Keep the tab counter frame square even if the view's measured bounds are rectangular.
+            val side = minOf(width, height).toFloat() * 0.9f
+            val left = (width - side) / 2f
+            val top = (height - side) / 2f
+            workingRect.set(left, top, left + side, top + side)
         }
     }
 
