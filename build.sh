@@ -1,2 +1,2 @@
 #!/bin/sh
-./gradlew assembleSlionsFullAgentRelease --no-daemon "$@"
+./gradlew assembleSlionsFullAgentRelease --offline  -x lint --no-daemon "$@"
