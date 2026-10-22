@@ -96,5 +96,18 @@
             android:focusable="true"
             android:nextFocusDown="@id/web_view"
             />
+
+        <ImageButton
+            android:id="@+id/button_reload"
+            style="?android:attr/actionButtonStyle"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/action_reload"
+            android:padding="10dp"
+            app:tooltipText="@{@string/action_reload}"
+            app:srcCompat="@drawable/ic_action_refresh"
+            android:nextFocusDown="@id/web_view" />
     </fulguris.view.AddressBarLayout>
 </layout>
