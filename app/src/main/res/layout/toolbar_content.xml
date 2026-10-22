@@ -137,16 +137,6 @@
         android:nextFocusDown="@id/web_view"
         />
 
-    <ImageButton
-        android:id="@+id/button_reload"
-        style="?android:attr/actionButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:contentDescription="@string/action_reload"
-        app:tooltipText="@{@string/action_reload}"
-        app:srcCompat="@drawable/ic_action_refresh"
-        android:nextFocusDown="@id/web_view" />
 
     <ImageButton
         android:id="@+id/button_more"
@@ -159,6 +149,17 @@
         app:tooltipText="@{@string/action_menu}"
         android:nextFocusDown="@id/web_view"
         />
+
+    <ImageButton
+        android:id="@+id/button_reload"
+        style="?android:attr/actionButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:contentDescription="@string/action_reload"
+        app:tooltipText="@{@string/action_reload}"
+        app:srcCompat="@drawable/ic_action_refresh"
+        android:nextFocusDown="@id/web_view" />
 
 </LinearLayout>
 
