@@ -539,7 +539,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         //tabsManager.doAfterInitialization {}
 
         // Hook in buttons with onClick handler
-        iBindingToolbarContent.buttonReload.setOnClickListener(this)
+        iBindingToolbarContent.addressBarInclude.buttonReload.setOnClickListener(this)
     }
 
     /**
@@ -2977,7 +2977,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         if (!configPrefs.pullToRefresh) {
             // User does not want to use pull to refresh
             iTabViewContainerFront.isEnabled = false
-            iBindingToolbarContent.buttonReload.visibility = View.VISIBLE
+            iBindingToolbarContent.addressBarInclude.buttonReload.visibility = View.VISIBLE
             return
         }
 
@@ -2992,8 +2992,8 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      */
     private fun updateReloadButton() {
         // Don't show reload button if pull-to-refresh is enabled and once we are not loading
-        iBindingToolbarContent.buttonReload.isVisible = !iTabViewContainerFront.isEnabled || isLoading()
-        iBindingToolbarContent.buttonReload.setImageResource(if (isLoading()) R.drawable.ic_action_delete else R.drawable.ic_action_refresh);
+        iBindingToolbarContent.addressBarInclude.buttonReload.isVisible = !iTabViewContainerFront.isEnabled || isLoading()
+        iBindingToolbarContent.addressBarInclude.buttonReload.setImageResource(if (isLoading()) R.drawable.ic_action_delete else R.drawable.ic_action_refresh);
     }
 
     /**
@@ -4406,6 +4406,8 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      * Apply given color and derivative to our toolbar, its components and status bar too.
      */
     private fun applyToolbarColor(color: Int) {
+        // Keep browser chrome white; ignore theme colors supplied by websites.
+        val color = Color.WHITE
         //Workout a foreground color that will be working with our background color
         currentToolBarTextColor = foregroundColorFromBackgroundColor(color)
         // Change search view text color
@@ -4433,7 +4435,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         iBindingToolbarContent.buttonNewTab.setColorFilter(currentToolBarTextColor)
         iBindingToolbarContent.buttonShare.setColorFilter(currentToolBarTextColor)
         iBindingToolbarContent.buttonBookmarks.setColorFilter(currentToolBarTextColor)
-        iBindingToolbarContent.buttonReload.setColorFilter(currentToolBarTextColor)
+        iBindingToolbarContent.addressBarInclude.buttonReload.setColorFilter(currentToolBarTextColor)
 
         // Pull to refresh spinner color also follow current theme
         iTabViewContainerFront.setProgressBackgroundColorSchemeColor(color)
