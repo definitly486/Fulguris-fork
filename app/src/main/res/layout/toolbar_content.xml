@@ -110,6 +110,18 @@
         app:srcCompat="@drawable/ic_share"
         android:visibility="gone" />
 
+    <!-- Favorites shortcut, only shown in the bottom bar -->
+    <ImageButton
+        android:id="@+id/button_bookmarks"
+        style="?android:attr/actionButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:contentDescription="@string/action_bookmarks"
+        app:tooltipText="@{@string/action_bookmarks}"
+        app:srcCompat="@drawable/ic_search"
+        android:visibility="gone" />
+
     <!-- New tab button, only shown in the bottom bar -->
     <ImageButton
         android:id="@+id/button_new_tab"
