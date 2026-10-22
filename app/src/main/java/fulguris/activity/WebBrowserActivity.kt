@@ -4405,7 +4405,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
     /**
      * Apply given color and derivative to our toolbar, its components and status bar too.
      */
-    private fun applyToolbarColor(color: Int) {
+    private fun applyToolbarColor(ignoredColor: Int) {
         // Keep browser chrome white; ignore theme colors supplied by websites.
         val color = Color.WHITE
         //Workout a foreground color that will be working with our background color
