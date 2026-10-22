@@ -2991,8 +2991,8 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      *
      */
     private fun updateReloadButton() {
-        // Don't show reload button if pull-to-refresh is enabled and once we are not loading
-        iBindingToolbarContent.addressBarInclude.buttonReload.isVisible = !iTabViewContainerFront.isEnabled || isLoading()
+        // Always show the reload/stop button inside the address bar, even when pull-to-refresh is enabled
+        iBindingToolbarContent.addressBarInclude.buttonReload.isVisible = true
         iBindingToolbarContent.addressBarInclude.buttonReload.setImageResource(if (isLoading()) R.drawable.ic_action_delete else R.drawable.ic_action_refresh);
     }
 
