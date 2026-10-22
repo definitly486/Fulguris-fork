@@ -3801,7 +3801,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      */
     private fun toolbarButtons(): List<View> = iBindingToolbarContent.let {
         // Back and forward stay in the top toolbar (hidden) when using the bottom bar
-        val list = mutableListOf<View>(it.buttonReload)
+        val list = mutableListOf<View>()
         if (!buttonsInBottomBar) {
             list += listOf(it.buttonActionBack, it.buttonActionForward)
         }
