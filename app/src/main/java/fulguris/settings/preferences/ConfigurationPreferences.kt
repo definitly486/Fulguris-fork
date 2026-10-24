@@ -36,7 +36,7 @@ import fulguris.settings.preferences.delegates.floatPreference
  */
 abstract class ConfigurationPreferences constructor(
     val preferences: SharedPreferences,
-    screenSize: ScreenSize
+    private val screenSize: ScreenSize
 ) : ConfigurationDefaults {
 
     /**
@@ -96,9 +96,10 @@ abstract class ConfigurationPreferences constructor(
     /**
      * True when the action buttons (reload, back, forward, home, tabs, menu) live in a dedicated
      * bottom bar while the top toolbar only holds the address bar.
-     * Not used when the user moved all toolbars to the bottom.
+     * Not used when the user moved all toolbars to the bottom, nor on large screens
+     * where all buttons stay in the top toolbar.
      */
-    val buttonsInBottomBar: Boolean get() = !toolbarsBottom
+    val buttonsInBottomBar: Boolean get() = !toolbarsBottom && !screenSize.isLargeScreen()
 
     /**
      * True when popup menus are anchored to the bottom of the screen and open upwards.

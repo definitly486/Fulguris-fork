@@ -3860,16 +3860,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      * They get a different top toolbar: share button on the left, then address bar, then new tab,
      * tab counter and menu on the right, without home and search buttons.
      */
-    private fun isLargeScreenToolbar(): Boolean {
-        val metrics = android.util.DisplayMetrics()
-        @Suppress("DEPRECATION")
-        windowManager.defaultDisplay.getRealMetrics(metrics)
-        val xdpi = if (metrics.xdpi > 0f) metrics.xdpi else metrics.densityDpi.toFloat()
-        val ydpi = if (metrics.ydpi > 0f) metrics.ydpi else metrics.densityDpi.toFloat()
-        val w = metrics.widthPixels / xdpi
-        val h = metrics.heightPixels / ydpi
-        return kotlin.math.sqrt(w * w + h * h) >= 8.0
-    }
+    private fun isLargeScreenToolbar(): Boolean = fulguris.device.ScreenSize(this).isLargeScreen()
 
     /**
      * Bottom bar follows the top toolbar visibility, it only exists when buttons are in it.
