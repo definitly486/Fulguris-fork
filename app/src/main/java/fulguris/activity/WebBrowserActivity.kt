@@ -3838,9 +3838,15 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         // On large screens the new tab button is also shown in the top toolbar
         val largeTop = !toBottom && isLargeScreenToolbar()
         iBindingToolbarContent.buttonNewTab.isVisible = toBottom || largeTop
-        iBindingToolbarContent.buttonShare.isVisible = toBottom
+        iBindingToolbarContent.buttonShare.isVisible = toBottom || largeTop
         iBindingToolbarContent.buttonBookmarks.isVisible = toBottom
         if (largeTop) {
+            // Large screens: share button goes to the top left, before the address bar
+            val share = iBindingToolbarContent.buttonShare
+            if (content.indexOfChild(share) != 0) {
+                content.removeView(share)
+                content.addView(share, 0, toolbarButtonsOriginalParams[share] ?: share.layoutParams)
+            }
             // Large screens: no home button, no search button, tab counter shown
             iBindingToolbarContent.homeButton.isVisible = false
             iBindingToolbarContent.tabsButton.isVisible = true
@@ -3851,8 +3857,8 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
 
     /**
      * Large screens are those with a physical display diagonal of 8 inches or more.
-     * They get a different top toolbar: address bar, then new tab, tab counter and menu on the right,
-     * without home and search buttons.
+     * They get a different top toolbar: share button on the left, then address bar, then new tab,
+     * tab counter and menu on the right, without home and search buttons.
      */
     private fun isLargeScreenToolbar(): Boolean {
         val metrics = android.util.DisplayMetrics()
