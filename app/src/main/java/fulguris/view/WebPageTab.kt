@@ -1394,7 +1394,7 @@ class WebPageTab(
     fun showToolBarOnScrollUpIfNeeded() {
         // Always show when scrolling up with the bottom bar, that's how it is meant to behave
         if (webView?.context?.configPrefs?.showToolBarOnScrollUp == true
-                || webView?.context?.configPrefs?.buttonsInBottomBar == true) {
+                || webView?.context?.configPrefs?.barsAutoHide == true) {
             webBrowser.showActionBar()
         }
     }
@@ -1404,7 +1404,7 @@ class WebPageTab(
      */
     fun showToolBarOnPageTopIfNeeded() {
         if (webView?.context?.configPrefs?.showToolBarOnPageTop == true
-                || webView?.context?.configPrefs?.buttonsInBottomBar == true) {
+                || webView?.context?.configPrefs?.barsAutoHide == true) {
             webBrowser.showActionBar()
         }
     }
@@ -1492,7 +1492,7 @@ class WebPageTab(
                     webBrowser.hideActionBar()
                 } else if (distance > SCROLL_UP_THRESHOLD
                         && view.canScrollVertically()
-                        && view.context.configPrefs.buttonsInBottomBar) {
+                        && view.context.configPrefs.barsAutoHide) {
                     // Show bars immediately while swiping down.
                     webBrowser.showActionBar()
                 }

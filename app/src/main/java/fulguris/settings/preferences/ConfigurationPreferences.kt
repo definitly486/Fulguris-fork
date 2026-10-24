@@ -102,6 +102,13 @@ abstract class ConfigurationPreferences constructor(
     val buttonsInBottomBar: Boolean get() = !toolbarsBottom && !screenSize.isLargeScreen()
 
     /**
+     * True when bars always hide on scroll down and come back on scroll up, whatever the screen size.
+     * That is how the browser behaves when buttons live in the bottom bar, and large screens,
+     * which keep all buttons in the top toolbar, must behave the same.
+     */
+    val barsAutoHide: Boolean get() = !toolbarsBottom
+
+    /**
      * True when popup menus are anchored to the bottom of the screen and open upwards.
      */
     val menusFromBottom: Boolean get() = toolbarsBottom || buttonsInBottomBar

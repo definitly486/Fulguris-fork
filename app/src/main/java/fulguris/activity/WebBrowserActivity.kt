@@ -2179,8 +2179,10 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         // If our tool bar is longer than 10 action buttons then we show extra buttons
         (iBinding.toolbarInclude.toolbar.width>threshold).let{
             // Back and forward are not shown when buttons are in the bottom bar
-            iBindingToolbarContent.buttonActionBack.isVisible = it && !buttonsInBottomBar
-            iBindingToolbarContent.buttonActionForward.isVisible = it && !buttonsInBottomBar
+            // Not shown on large screens either, gestures and the menu do the job there
+            val showBackForward = it && !buttonsInBottomBar && !isLargeScreenToolbar()
+            iBindingToolbarContent.buttonActionBack.isVisible = showBackForward
+            iBindingToolbarContent.buttonActionForward.isVisible = showBackForward
             // Hide tab bar action buttons if no room for them
             if (tabsView is TabsDesktopView) {
                 (tabsView as TabsDesktopView).iBinding.actionButtons.isVisible = it
@@ -5352,7 +5354,7 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
      */
     override fun hideActionBar() {
         // With the bottom bar both bars always hide on scroll, no need for full screen mode
-        if (isFullScreen || buttonsInBottomBar) {
+        if (isFullScreen || configPrefs.barsAutoHide) {
             doHideToolBar()
         }
     }
