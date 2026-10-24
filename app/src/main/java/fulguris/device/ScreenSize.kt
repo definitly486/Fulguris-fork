@@ -20,7 +20,11 @@ class ScreenSize @Inject constructor(private val context: Context) {
         context.resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK == Configuration.SCREENLAYOUT_SIZE_XLARGE
 
     /**
-     * True when the physical display diagonal is [LARGE_SCREEN_MIN_INCHES] or more.
+     * True for large screens such as tablets with a display diagonal of [LARGE_SCREEN_MIN_INCHES] or more.
+     *
+     * The physical size reported by many cheap tablets is wrong (dpi often just mirrors the density
+     * bucket), which makes the computed diagonal too small. So a screen is also considered large when
+     * it has a lot of pixels for a low density, something phones do not have.
      * Uses the real display size so it does not change with split-screen or window resizing.
      */
     fun isLargeScreen(): Boolean {
@@ -33,7 +37,13 @@ class ScreenSize @Inject constructor(private val context: Context) {
         val ydpi = if (metrics.ydpi > 0f) metrics.ydpi else metrics.densityDpi.toFloat()
         val w = metrics.widthPixels / xdpi
         val h = metrics.heightPixels / ydpi
-        return kotlin.math.sqrt(w * w + h * h) >= LARGE_SCREEN_MIN_INCHES
+        val diagonalInches = kotlin.math.sqrt(w * w + h * h)
+        if (diagonalInches >= LARGE_SCREEN_MIN_INCHES) return true
+
+        // Fallback for wrong reported dpi: 800+ px on the short side with a density of 280 dpi or less
+        // (phones with such a resolution use much higher densities)
+        val shortSidePx = minOf(metrics.widthPixels, metrics.heightPixels)
+        return shortSidePx >= 800 && metrics.densityDpi <= 280
     }
 
     companion object {
