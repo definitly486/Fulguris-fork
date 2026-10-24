@@ -129,7 +129,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        app:tabIconBorderRadius="3dp"
+        app:tabIconBorderRadius="2dp"
         app:tabIconBorderWidth="2dp"
         app:tabIconColor="?attr/colorControlNormal"
         android:contentDescription="@string/tabs"
