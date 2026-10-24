@@ -1491,9 +1491,10 @@ class WebPageTab(
                     // Hide as soon as an upward swipe crosses the threshold.
                     webBrowser.hideActionBar()
                 } else if (distance > SCROLL_UP_THRESHOLD
-                        && view.canScrollVertically()
                         && view.context.configPrefs.barsAutoHide) {
                     // Show bars immediately while swiping down.
+                    // No check on the web view scrolling ability here: some pages, ChatGPT for instance,
+                    // scroll inside their own container and the web view itself never scrolls.
                     webBrowser.showActionBar()
                 }
             } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
@@ -1561,10 +1562,9 @@ class WebPageTab(
             val power = (velocityY * 100 / maxFling).toInt()
             if (power < -10) {
                 webBrowser.hideActionBar()
-            } else if (power > 15
-                    // Touch input won't show tool bar again if no top level vertical scroll
-                    // It can still be accessed using the back button
-                    && view.canScrollVertically()) {
+            } else if (power > 15) {
+                // No check on the web view scrolling ability: pages such as ChatGPT scroll inside
+                // their own container, the bars would never come back otherwise
                 showToolBarOnScrollUpIfNeeded()
             }
             return super.onFling(e1, e2, velocityX, velocityY)
