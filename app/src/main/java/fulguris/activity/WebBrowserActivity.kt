@@ -1621,14 +1621,15 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
 
         if (verticalTabBar) {
             iBindingToolbarContent.tabsButton.isVisible = true
-            iBindingToolbarContent.homeButton.isVisible = false
+            iBindingToolbarContent.homeButton.isVisible = isLargeScreenToolbar()
             iBinding.toolbarInclude.tabBarContainer.isVisible = false
             iBinding.layoutTabsLeft.isVisible = !tabBarInDrawer && !swapBookmarksAndTabs
             iBinding.layoutTabsRight.isVisible = !tabBarInDrawer && swapBookmarksAndTabs
             //iBinding.leftDrawer.isVisible = tabBarInDrawer
             //iBinding.rightDrawer.isVisible = tabBarInDrawer
         } else {
-            iBindingToolbarContent.tabsButton.isVisible = false
+            // Large screens keep the tab counter in the top toolbar, next to the new tab and menu buttons
+            iBindingToolbarContent.tabsButton.isVisible = isLargeScreenToolbar()
             iBindingToolbarContent.homeButton.isVisible = true
             iBinding.toolbarInclude.tabBarContainer.isVisible = true
             iBinding.layoutTabsLeft.isVisible = false
@@ -3833,11 +3834,28 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
             }
         }
         // New tab and share buttons only make sense in the bottom bar, bottom toolbars have them in the menu
-        iBindingToolbarContent.buttonNewTab.isVisible = toBottom
+        // On large screens the new tab button is also shown in the top toolbar
+        val largeTop = !toBottom && isLargeScreenToolbar()
+        iBindingToolbarContent.buttonNewTab.isVisible = toBottom || largeTop
         iBindingToolbarContent.buttonShare.isVisible = toBottom
         iBindingToolbarContent.buttonBookmarks.isVisible = toBottom
+        if (largeTop) {
+            // Large screens: home button goes to the top left, before the address bar
+            content.removeView(iBindingToolbarContent.homeButton)
+            content.addView(iBindingToolbarContent.homeButton, 0, toolbarButtonsOriginalParams[iBindingToolbarContent.homeButton] ?: iBindingToolbarContent.homeButton.layoutParams)
+            iBindingToolbarContent.homeButton.isVisible = true
+            iBindingToolbarContent.tabsButton.isVisible = true
+            // Search button is removed on large screens
+            iBindingToolbarContent.buttonBookmarks.isVisible = false
+        }
         updateBottomBarVisibility(isToolBarVisible())
     }
+
+    /**
+     * Large screens, such as tablets and desktop windows, get a different top toolbar layout:
+     * home on the left, then address bar, then new tab, tab counter and menu on the right.
+     */
+    private fun isLargeScreenToolbar(): Boolean = resources.configuration.smallestScreenWidthDp >= 600
 
     /**
      * Bottom bar follows the top toolbar visibility, it only exists when buttons are in it.
