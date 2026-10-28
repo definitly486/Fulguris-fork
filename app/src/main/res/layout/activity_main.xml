@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ The contents of this file are subject to the Common Public Attribution License Version 1.0.
+ (the "License"); you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at:
+ https://github.com/Slion/Fulguris/blob/main/LICENSE.CPAL-1.0.
+ The License is based on the Mozilla Public License Version 1.1, but Sections 14 and 15 have been
+ added to cover use of software over a computer network and provide for limited attribution for
+ the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B.
+
+ Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF
+ ANY KIND, either express or implied. See the License for the specific language governing rights
+ and limitations under the License.
+
+ The Original Code is Fulguris.
+
+ The Original Developer is the Initial Developer.
+ The Initial Developer of the Original Code is Stéphane Lenclud.
+
+ All portions of the code written by Stéphane Lenclud are Copyright © 2020 Stéphane Lenclud.
+ All Rights Reserved.
+-->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Don't put a background here as it breaks our status bar color -->
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="fulguris.activity.WebBrowserActivity"
+
+        android:animateLayoutChanges="true"
+        android:fitsSystemWindows="true">
+
+        <androidx.drawerlayout.widget.DrawerLayout
+            android:id="@+id/drawer_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true">
+
+            <!-- No animateLayoutChanges on ui_layout, layoutHorizontal and layoutPageContainer: it made toolbar hide/show take about a second -->
+            <LinearLayout
+                android:id="@+id/ui_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="?android:attr/colorBackground">
+
+                <include android:id="@+id/toolbar_include"
+                    layout="@layout/toolbar"/>
+
+                <LinearLayout
+                    android:id="@+id/layoutHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:background="?android:attr/colorBackground">
+
+                    <LinearLayout
+                        android:id="@+id/layoutTabsLeft"
+                        android:layout_width="@dimen/vertical_tab_width"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:orientation="vertical"
+                        android:background="?android:attr/colorBackground"
+                        tools:background="?attr/colorError"
+                        android:animateLayoutChanges="true"
+                        tools:visibility="visible">
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutPageContainer"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:background="?android:attr/colorBackground">
+
+                        <include android:id="@+id/findInPageInclude" layout="@layout/search_interface"/>
+
+                        <!--
+                        FrameLayout needed to animate our tabs.
+                        We keep swapping both PullRefreshLayout to perform smooth flicker free tab animations.
+                        We switched from a FrameLayout to a CoordinatorLayout to be able to display snackbar within our WebView.
+                        -->
+                        <androidx.coordinatorlayout.widget.CoordinatorLayout
+                            android:id="@+id/web_view_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:animateLayoutChanges="false">
+
+                            <fulguris.view.PullRefreshLayout
+                                android:id="@+id/tabViewContainerOne"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="?android:attr/colorBackground"
+                                android:clipChildren="true"
+                                android:animateLayoutChanges="false" />
+
+                            <fulguris.view.PullRefreshLayout
+                                android:id="@+id/tabViewContainerTwo"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="?android:attr/colorBackground"
+                                android:clipChildren="true"
+                                android:animateLayoutChanges="false" />
+
+                            <!--
+                                                        Empty state shown when there is no tab open (the last one was
+                                                        closed): the large Fulguris logo on the empty background, as on
+                                                        the onboarding first screen. The address field (focused) is the
+                                                        way to get back in by typing a URL or search.
+                                                        -->
+                                                        <FrameLayout
+                                                            android:id="@+id/emptyTabsView"
+                                                            android:layout_width="match_parent"
+                                                            android:layout_height="match_parent"
+                                                            android:background="?android:attr/colorBackground"
+                                                            android:visibility="gone"
+                                                            tools:visibility="visible">
+
+                                                            <ImageView
+                                                                android:layout_width="240dp"
+                                                                android:layout_height="240dp"
+                                                                android:layout_gravity="center"
+                                                                android:src="@drawable/ic_lightning_large"
+                                                                android:importantForAccessibility="no" />
+                                                        </FrameLayout>
+
+                            <include layout="@layout/touch_tab_switcher"
+                                android:id="@+id/fabInclude" />
+
+                        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutTabsRight"
+                        android:layout_width="@dimen/vertical_tab_width"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:orientation="vertical"
+                        android:background="?android:attr/colorBackground"
+                        tools:background="?attr/colorError"
+                        android:animateLayoutChanges="true">
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!--
+                Bottom bar: action buttons (reload, back, forward, home, tabs, menu) are moved here
+                from the top toolbar at runtime, see WebBrowserActivity.updateToolbarButtonsPlacement.
+                Hidden when the user puts all toolbars at the bottom.
+                -->
+                <LinearLayout
+                    android:id="@+id/bottom_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/bottom_bar_height_portrait"
+                    android:layout_weight="0"
+                    android:background="?attr/colorSurface"
+                    android:elevation="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+
+            <!--
+            - android:clickable="true":
+            Needed to fix click through issues.
+            See: https://github.com/Slion/Fulguris/issues/290
+            -->
+            <FrameLayout
+                android:id="@+id/left_drawer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:background="?android:attr/colorBackground"
+                android:fitsSystemWindows="true"
+                android:weightSum="1"
+                android:layout_marginLeft="-64dp"
+                android:clickable="true" >
+
+                <!--  We added the content for cutout support to be able to set margins conveniently -->
+                <FrameLayout
+                    android:id="@+id/leftDrawerContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:attr/colorBackground" />
+
+            </FrameLayout>
+
+            <!--
+            - android:clickable="true":
+            Needed to fix click through issues.
+            See: https://github.com/Slion/Fulguris/issues/290
+            -->
+            <FrameLayout
+                android:id="@+id/right_drawer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:background="?android:attr/colorBackground"
+                android:fitsSystemWindows="true"
+                android:weightSum="1"
+                android:layout_marginLeft="-64dp"
+                android:clickable="true">
+
+                <!--  We added the content for cutout support to be able to set margins conveniently -->
+                <FrameLayout
+                    android:id="@+id/rightDrawerContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:attr/colorBackground" />
+
+            </FrameLayout>
+
+        </androidx.drawerlayout.widget.DrawerLayout>
+
+        <!-- Android TV cursor overlay, controlled by fulguris.cursor.CursorController.
+             The CursorView is transparent and non-focusable and spans the WHOLE activity (toolbar
+             AND web view, even over the drawers) so the cursor can be used over the toolbar as
+             well as the page. It lives in a plain FrameLayout host (match_parent, the last/top
+             child of the root CoordinatorLayout) rather than directly in the CoordinatorLayout:
+             on some devices/Android versions removing a direct CoordinatorLayout child can leave
+             the child's parent reference stale, making a later re-parent (fullscreen) throw
+             "already has a parent"; a plain FrameLayout parent repars reliably. While an HTML5
+             video is fullscreen the activity re-parents the CursorView into the fullscreen
+             container (which sits on the decor view, above this one) instead. -->
+        <FrameLayout
+            android:id="@+id/cursorOverlayHost"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <fulguris.cursor.CursorView
+                android:id="@+id/cursorOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0"
+                android:visibility="gone" />
+        </FrameLayout>
+
+
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

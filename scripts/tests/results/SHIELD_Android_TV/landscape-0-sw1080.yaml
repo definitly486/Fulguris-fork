@@ -1,0 +1,28 @@
+# Fulguris UI test run — SHIELD Android TV · landscape-0-sw1080
+timestamp: '2026-08-24T00:51:06+00:00'
+device:
+  model: SHIELD Android TV
+  brand: Nvidia
+  product_name: SHIELD Android TV
+  android: '11'
+config:
+  id: landscape-0-sw1080
+  orientation: landscape
+  rotation: 0
+  smallest_width_dp: 1080
+package: net.slions.fulguris.full.download.debug
+options:
+  restart: false
+  keep_tabs: false
+  orientation: null
+  test_filter: scrubber_seek_after_idle
+  group: null
+summary:
+  passed: 1
+  failed: 0
+  total: 1
+  duration_s: 85.8
+tests:
+- name: test_cursor_youtube_scrubber_seek_after_idle
+  status: pass
+  duration_s: 84.2

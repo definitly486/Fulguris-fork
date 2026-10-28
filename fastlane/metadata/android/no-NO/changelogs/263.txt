@@ -1,0 +1,6 @@
+📺 Android TV-støtte med skjermpil for fjernkontroller og gamepads
+⏱️ Ny tidsbegrensning "Skjul verktøylinje etter"
+🔍 Forbedringer i søkefeltet: ESC avbryter som tilbake
+📝 Android-versjon lagt til i Om-skjermen
+🌐 Oversettelsesoppdatering
+🐛 Diverse feilrettinger og forbedringer

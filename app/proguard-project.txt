@@ -1,0 +1,148 @@
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontpreverify
+-verbose
+# Do not obfuscate, we are open source anyway so we have nothing to hide.
+# Obfuscation scrambles our crash logs with no benefit.
+-dontobfuscate
+
+# Classes we need to explicitly keep are notably the ones not referenced in code but loaded dynamically from resources or manifest usage
+-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Application
+-keep public class * extends android.app.Service
+-keep public class * extends android.content.BroadcastReceiver
+-keep public class * extends android.content.ContentProvider
+-keep public class * extends android.app.backup.BackupAgentHelper
+-keep public class * extends android.preference.Preference
+-keep public class fulguris.reading.*
+-keep public class fulguris.settings.fragment.*
+-keep public class fulguris.settings.NoYesAsk
+-keep public class fulguris.enums.LogLevel
+-keep public class fulguris.enums.*
+
+# Needed for now to fix our bottom sheet issue from com.google.android.material:material:1.4.0-alpha02
+-keep class com.google.android.material.bottomsheet.BottomSheetDialog$EdgeToEdgeCallback {
+    private void setPaddingForPosition(android.view.View);
+}
+
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** w(...);
+    public static *** i(...);
+}
+
+# this will fix a force close in ReadingActivity
+-keep public class org.jsoup.** {
+    public *;
+}
+
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+-keepclasseswithmembers class * {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+
+-keepclasseswithmembers class * {
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+}
+
+-keepclassmembers class * extends android.app.Activity {
+   public void *(android.view.View);
+}
+
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+-keep class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
+}
+
+# The support library contains references to newer platform versions.
+# Don't warn about those in case this app is linking against an older
+# platform version.  We know about them, and they are safe.
+-dontwarn android.support.**
+
+-dontwarn org.apache.http.conn.ssl.DefaultHostnameVerifier
+
+-dontwarn org.apache.http.HttpHost
+
+# Needed for okhttp
+-dontwarn javax.annotation.Nullable
+-dontwarn javax.annotation.ParametersAreNonnullByDefault
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
+# A resource is loaded with a relative path so the package of this class must be preserved.
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+
+-dontwarn org.slf4j.impl.StaticLoggerBinder
+-dontwarn org.slf4j.impl.StaticMDCBinder
+-dontwarn org.slf4j.impl.StaticMarkerBinder
+
+# Mezzanine library rules
+-keep class com.anthonycr.mezzanine.** { *; }
+-keepclasseswithmembernames class * {
+    @com.anthonycr.mezzanine.FileStream <methods>;
+}
+-keepclassmembers enum * {
+    @com.anthonycr.mezzanine.FileStream *;
+}
+
+# Keep all Mezzanine generated classes
+-keep class **._Mezzanine_* { *; }
+
+# Keep all classes that have @FileStream annotations
+-keep @com.anthonycr.mezzanine.FileStream class * { *; }
+-keep class * {
+    @com.anthonycr.mezzanine.FileStream *;
+}
+
+# Specifically keep all the generated Mezzanine reader classes
+-keep class com.anthonycr.mezzanine._Mezzanine_HomePageReader { *; }
+-keep class com.anthonycr.mezzanine._Mezzanine_BookmarkPageReader { *; }
+-keep class com.anthonycr.mezzanine._Mezzanine_IncognitoPageReader { *; }
+-keep class com.anthonycr.mezzanine._Mezzanine_ListPageReader { *; }
+-keep class com.anthonycr.mezzanine._Mezzanine_InvertPage { *; }
+-keep class com.anthonycr.mezzanine._Mezzanine_SetMetaViewport { *; }
+-keep class com.anthonycr.mezzanine._Mezzanine_TextReflow { *; }
+-keep class com.anthonycr.mezzanine._Mezzanine_ThemeColor { *; }
+
+# Keep MezzanineReader utility methods
+-keep class com.anthonycr.mezzanine.MezzanineReaderKt { *; }
+-keep class com.anthonycr.mezzanine.MezzanineReader { *; }
+
+# Keep all interface methods that provide HTML content
+-keepclassmembers interface * {
+    @com.anthonycr.mezzanine.FileStream *;
+    java.lang.String provideHtml();
+    java.lang.String provideJs();
+}
+# End Mezzanine library rules
+
+# Keep Hilt modules and their @Provides methods
+-keep class * implements dagger.hilt.InstallIn { <fields>; <methods>; }
+-keep class * { @dagger.hilt.android.lifecycle.HiltViewModel <methods>; }
+-keep class * { @dagger.Module <methods>; }
+-keepclassmembers class * { @dagger.Provides *; }
+-keep @dagger.hilt.android.HiltAndroidApp class * { *; }
+-keep @dagger.hilt.components.SingletonComponent class * { *; }
+-keep @dagger.hilt.DefineComponent class * { *; }
+
+# Specifically keep AppModule and its provider methods that return Mezzanine readers
+-keep class fulguris.di.AppModule {
+    public static com.anthonycr.mezzanine._Mezzanine_BookmarkPageReader providesBookmarkPageReader();
+    public static com.anthonycr.mezzanine._Mezzanine_HomePageReader providesHomePageReader();
+    public static com.anthonycr.mezzanine._Mezzanine_IncognitoPageReader providesIncognitoPageReader();
+    public static com.anthonycr.mezzanine._Mezzanine_InvertPage providesInvertPage();
+    public static com.anthonycr.mezzanine._Mezzanine_ListPageReader providesListPageReader();
+    public static com.anthonycr.mezzanine._Mezzanine_SetMetaViewport providesSetMetaViewport();
+    public static com.anthonycr.mezzanine._Mezzanine_TextReflow providesTextReflow();
+}
+# End Hilt specific rules

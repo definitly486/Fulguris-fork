@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>start</title>
+<style>
+  html, body { margin: 0; height: 100%; touch-action: none; }
+  body { display: flex; align-items: center; justify-content: center;
+         background: #653212; font: 32px sans-serif; }
+  /* Same shape as longpress_log.html, but with touch-action:none (like a video player
+     surface / YouTube player), where Chromium's internal gesture handling differs — a
+     candidate for why a long press might also yield a click on some pages. */
+  a { display: flex; align-items: center; justify-content: center;
+      width: 100%; height: 100%; color: #fff; text-decoration: underline;
+      touch-action: none; user-select: none; }
+</style>
+</head>
+<body>
+<a id="target" href="javascript:void 0">long-press log (touch-action:none)</a>
+<script>
+  var t0 = null, evs = [];
+  function stamp(name) {
+    if (t0 === null) t0 = performance.now();
+    evs.push(name + Math.round(performance.now() - t0));
+    document.title = evs.join(' ');
+  }
+  var el = document.getElementById('target');
+  ['pointerdown', 'pointerup', 'pointercancel', 'mousedown', 'mouseup',
+   'touchstart', 'touchend', 'touchcancel', 'contextmenu'].forEach(function (name, i) {
+    var code = ['pd', 'pu', 'pc', 'md', 'mu', 'ts', 'te', 'tc', 'ctx'][i];
+    el.addEventListener(name, function () { stamp(code); }, { passive: false });
+  });
+  el.addEventListener('click', function (e) {
+    e.preventDefault();
+    stamp('CLICK');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:a="http://schemas.android.com/apk/res/android"
+    xmlns:x="http://schemas.android.com/apk/res-auto">
+
+    <x.PreferenceCategory
+        a:title="EditText Preference Demos"
+        a:summary="Text input using Material Design dialogs"
+        x:iconSpaceReserved="false" />
+
+    <x.EditTextPreference
+        a:key="user_name"
+        a:title="User Name"
+        a:summary="Current: %s"
+        a:defaultValue="John Doe"
+        a:dialogTitle="Enter Name"
+        a:dialogMessage="Please enter your full name"
+        x:hint="Full name"
+        x:useSimpleSummaryProvider="true" />
+
+    <x.EditTextPreference
+        a:key="email_address"
+        a:title="Email Address"
+        a:summary="%s"
+        a:defaultValue="user@example.com"
+        a:dialogTitle="Email"
+        a:dialogMessage="Enter your email address"
+        a:inputType="textEmailAddress"
+        x:hint="email@example.com"
+        x:useSimpleSummaryProvider="true" />
+
+    <x.EditTextPreference
+        a:key="password"
+        a:title="Password"
+        a:summary="Tap to change password"
+        a:dialogTitle="Change Password"
+        a:dialogMessage="Enter a new password"
+        a:inputType="textPassword"
+        x:hint="Enter password" />
+
+    <x.EditTextPreference
+        a:key="phone_number"
+        a:title="Phone Number"
+        a:summary="%s"
+        a:dialogTitle="Phone Number"
+        a:inputType="phone"
+        x:hint="+1 234 567-8900"
+        x:useSimpleSummaryProvider="true" />
+
+    <x.EditTextPreference
+        a:key="age"
+        a:title="Age"
+        a:summary="%s years old"
+        a:dialogTitle="Your Age"
+        a:dialogMessage="Enter your age (0-120)"
+        a:inputType="number"
+        x:useSimpleSummaryProvider="true" />
+
+    <x.EditTextPreference
+        a:key="website"
+        a:title="Website"
+        a:summary="%s"
+        a:defaultValue="https://example.com"
+        a:dialogTitle="Website URL"
+        a:inputType="textUri"
+        x:hint="https://"
+        x:useSimpleSummaryProvider="true" />
+
+    <x.PreferenceCategory
+        a:title="Text Field Styles"
+        a:summary="Outlined vs Filled styles"
+        x:iconSpaceReserved="false" />
+
+    <x.EditTextPreference
+        a:key="style_outlined"
+        a:title="Outlined Style (Default)"
+        a:summary="Material Design 3 outlined text field"
+        a:dialogTitle="Outlined Style"
+        a:dialogMessage="This uses the outlined style with border"
+        x:hint="Outlined text field"
+        x:boxStyle="outlined" />
+
+    <x.EditTextPreference
+        a:key="style_filled"
+        a:title="Filled Style"
+        a:summary="Material Design 3 filled text field"
+        a:dialogTitle="Filled Style"
+        a:dialogMessage="This uses the filled style with background"
+        x:hint="Filled text field"
+        x:boxStyle="filled" />
+
+    <x.PreferenceCategory
+        a:title="Dialog Message Demonstrations"
+        a:summary="With/without dialog messages, long/short text"
+        x:iconSpaceReserved="false" />
+
+    <x.EditTextPreference
+        a:key="no_dialog_message"
+        a:title="No Dialog Message"
+        a:summary="Dialog has no message"
+        a:dialogTitle="No Message"
+        x:hint="Enter text" />
+
+    <x.EditTextPreference
+        a:key="short_dialog_message"
+        a:title="Short Dialog Message"
+        a:summary="Has brief dialog message"
+        a:dialogTitle="Short Message"
+        a:dialogMessage="Brief instruction."
+        x:hint="Enter text" />
+
+    <x.EditTextPreference
+        a:key="medium_dialog_message"
+        a:title="Medium Dialog Message"
+        a:summary="Has medium length message"
+        a:dialogTitle="Medium Message"
+        a:dialogMessage="This is a medium-length dialog message just two lines."
+        x:hint="Enter text" />
+
+    <x.EditTextPreference
+        a:key="long_dialog_message"
+        a:title="Long Dialog Message"
+        a:summary="Has lengthy dialog message"
+        a:dialogTitle="Long Message"
+        a:dialogMessage="This is a much longer dialog message that demonstrates how text wraps and displays when it exceeds the available space."
+        x:hint="Enter text" />
+
+    <x.EditTextPreference
+        a:key="multiline_dialog_message"
+        a:title="Multi-line Dialog Message"
+        a:summary="Message with line breaks"
+        a:dialogTitle="Multi-line Message"
+        a:dialogMessage="Line 1: First instruction.\nLine 2: Second instruction.\nLine 3: Third instruction.\n\nThis demonstrates explicit line breaks in the dialog message."
+        x:hint="Enter text" />
+
+    <x.PreferenceCategory
+        a:title="Icon Demonstrations"
+        a:summary="Start and end icons in text fields"
+        x:iconSpaceReserved="false" />
+
+    <x.EditTextPreference
+        a:key="search_with_icon"
+        a:title="Search with Icon"
+        a:summary="Has search icon"
+        a:dialogTitle="Search"
+        x:hint="Search..."
+        x:startIconDrawable="@drawable/ic_search" />
+
+    <x.EditTextPreference
+        a:key="email_with_icon"
+        a:title="Email with Icon"
+        a:summary="Has email icon"
+        a:dialogTitle="Email Address"
+        a:inputType="textEmailAddress"
+        x:hint="email@example.com"
+        x:startIconDrawable="@drawable/ic_email" />
+
+    <x.EditTextPreference
+        a:key="phone_with_icon"
+        a:title="Phone with Icons"
+        a:summary="Start and end icons"
+        a:dialogTitle="Phone Number"
+        a:inputType="phone"
+        x:hint="Phone number"
+        x:startIconDrawable="@drawable/ic_phone"
+        x:endIconDrawable="@drawable/ic_check" />
+
+    <x.EditTextPreference
+        a:key="location_with_icon"
+        a:title="Location with Icon"
+        a:summary="Has location icon"
+        a:dialogTitle="Location"
+        x:hint="Enter location"
+        x:endIconDrawable="@drawable/ic_location" />
+
+    <x.PreferenceCategory
+        a:title="Hint Demonstrations"
+        a:summary="Shows preferences with and without hints"
+        x:iconSpaceReserved="false" />
+
+    <x.EditTextPreference
+        a:key="with_hint"
+        a:title="With Hint"
+        a:summary="Has a hint in the text field"
+        a:dialogTitle="With Hint"
+        a:dialogMessage="This field has a floating hint label"
+        x:hint="Type something here..." />
+
+    <x.EditTextPreference
+        a:key="without_hint"
+        a:title="Without Hint"
+        a:summary="No hint - clean look"
+        a:dialogTitle="Without Hint"
+        a:dialogMessage="This field has no hint for a cleaner appearance" />
+
+    <x.PreferenceCategory
+        a:title="Prefix and Suffix Text"
+        a:summary="Shows prefix/suffix examples"
+        x:iconSpaceReserved="false" />
+
+    <x.EditTextPreference
+        a:key="price"
+        a:title="Price"
+        a:summary="$%s"
+        a:dialogTitle="Enter Price"
+        a:inputType="numberDecimal"
+        x:hint="0.00"
+        x:prefixText="$"
+        x:useSimpleSummaryProvider="true" />
+
+    <x.EditTextPreference
+        a:key="weight"
+        a:title="Weight"
+        a:dialogTitle="Enter Weight"
+        a:inputType="numberDecimal"
+        x:hint="Tell us"
+        x:suffixText=" kg"
+        x:textGravity="right"
+        />
+
+
+    <x.EditTextPreference
+        a:key="url"
+        a:title="URL"
+        a:dialogTitle="Enter URL"
+        a:inputType="textUri"
+        x:hint="example.com"
+        x:prefixText="https://"
+        x:useSimpleSummaryProvider="true" />
+
+    <x.EditTextPreference
+        a:key="percentage"
+        a:title="Percentage"
+        a:dialogTitle="Enter Percentage"
+        a:inputType="number"
+        x:hint="0"
+        x:suffixText="%"
+        x:useSimpleSummaryProvider="true" />
+
+    <x.EditTextPreference
+        a:key="temperature"
+        a:title="Temperature"
+        a:summary="Temperature range"
+        a:dialogTitle="Enter Temperature"
+        a:dialogMessage="Prefix and suffix automatically shown in summary"
+        a:inputType="numberDecimal"
+        x:hint="0.0"
+        x:prefixText="From "
+        x:suffixText="°C"
+        x:useSimpleSummaryProvider="true" />
+
+    <x.PreferenceCategory
+        a:title="Validation Demonstrations"
+        a:summary="Input validation and error handling"
+        x:iconSpaceReserved="false" />
+
+    <x.EditTextPreference
+        a:key="validation_required"
+        a:title="Required Field"
+        a:summary="Must not be empty"
+        a:dialogTitle="Required Field"
+        a:dialogMessage="This field is required and cannot be empty"
+        x:hint="Enter value" />
+
+    <x.EditTextPreference
+        a:key="validation_email"
+        a:title="Email Validation"
+        a:summary="Must be valid email"
+        a:dialogTitle="Email Address"
+        a:dialogMessage="Enter a valid email address"
+        a:inputType="textEmailAddress"
+        x:hint="email@example.com"
+        x:startIconDrawable="@drawable/ic_email" />
+
+    <x.EditTextPreference
+        a:key="validation_length"
+        a:title="Length Validation"
+        a:summary="Minimum 6 characters"
+        a:dialogTitle="Password"
+        a:dialogMessage="Password must be at least 6 characters"
+        a:inputType="textPassword"
+        x:hint="Enter password" />
+
+    <x.EditTextPreference
+        a:key="validation_number_range"
+        a:title="Number Range"
+        a:summary="Between 1-100"
+        a:dialogTitle="Age"
+        a:dialogMessage="Enter age between 1 and 100"
+        a:inputType="number"
+        x:hint="Age"
+        x:suffixText="years" />
+
+    <x.PreferenceCategory
+        a:title="Text Alignment Demonstrations"
+        a:summary="Different text alignments (gravity)"
+        x:iconSpaceReserved="false" />
+
+    <x.EditTextPreference
+        a:key="align_start"
+        a:title="Start Aligned (Default)"
+        a:summary="Text aligned to start"
+        a:dialogTitle="Start Alignment"
+        a:dialogMessage="Text is aligned to the start (left in LTR, right in RTL)"
+        x:hint="Start aligned text"
+        x:textGravity="start|center_vertical" />
+
+    <x.EditTextPreference
+        a:key="align_end"
+        a:title="End Aligned"
+        a:summary="Text aligned to end"
+        a:dialogTitle="End Alignment"
+        a:dialogMessage="Text is aligned to the end (right in LTR, left in RTL)"
+        x:hint="End aligned text"
+        x:textGravity="end|center_vertical" />
+
+    <x.EditTextPreference
+        a:key="align_center"
+        a:title="Center Aligned"
+        a:summary="Text centered"
+        a:dialogTitle="Center Alignment"
+        a:dialogMessage="Text is centered horizontally"
+        x:hint="Centered text"
+        x:textGravity="center" />
+
+    <x.EditTextPreference
+        a:key="align_right"
+        a:title="Right Aligned (Absolute)"
+        a:summary="Text aligned right"
+        a:dialogTitle="Right Alignment"
+        a:dialogMessage="Text is always aligned right (regardless of RTL)"
+        a:hint="Right aligned text"
+        x:textGravity="right|center_vertical" />
+
+    <x.EditTextPreference
+        a:key="align_number"
+        a:title="Number Right Aligned"
+        a:summary="Numbers typically right-aligned"
+        a:dialogTitle="Enter Amount"
+        a:dialogMessage="Numbers are often right-aligned for easier comparison"
+        a:inputType="numberDecimal"
+        x:hint="0.00"
+        x:prefixText="$"
+        x:textGravity="end|center_vertical" />
+
+    <x.PreferenceCategory
+        a:title="Multi-line Text"
+        x:iconSpaceReserved="false" />
+
+    <x.EditTextPreference
+        a:key="bio"
+        a:title="Biography"
+        a:summary="Tap to edit your bio"
+        a:dialogTitle="Your Biography"
+        a:dialogMessage="Tell us about yourself..."
+        a:inputType="textMultiLine|textCapSentences" />
+
+    <x.EditTextPreference
+        a:key="notes"
+        a:title="Notes"
+        a:summary="Tap to edit notes"
+        a:dialogTitle="Notes"
+        a:dialogMessage="Your notes..."
+        a:inputType="textMultiLine" />
+
+</PreferenceScreen>
+

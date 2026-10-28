@@ -1,0 +1,6 @@
+📺 Dukungan Android TV dengan kursor di layar untuk remote dan gamepad
+⏱️ Pengaturan batas waktu baru "Sembunyikan bilah alat setelah"
+🔍 Peningkatan kolom pencarian: ESC membatalkan seperti kembali
+📝 Versi Android ditambahkan ke layar Tentang
+🌐 Pembaruan terjemahan
+🐛 Perbaikan dan peningkatan lainnya

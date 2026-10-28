@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="download_folder">
+        <item>@string/folder_default</item>
+        <item>@string/folder_custom</item>
+    </string-array>
+
+    <string-array name="homepage">
+        <item>@string/search_action</item>
+        <item>@string/action_blank</item>
+        <item>@string/action_bookmarks</item>
+        <item>@string/action_webpage</item>
+    </string-array>
+
+    <string-array name="suggestions">
+        <item>@string/powered_by_google</item>
+        <item>@string/powered_by_duck</item>
+        <item>@string/powered_by_baidu</item>
+        <item>@string/powered_by_naver</item>
+        <item>@string/search_suggestions_off</item>
+    </string-array>
+
+    <string-array name="themes">
+        <item>@string/theme_light</item>
+        <item>@string/theme_white</item>
+        <item>@string/theme_dark</item>
+        <item>@string/theme_black</item>
+    </string-array>
+
+    <string-array name="new_tab_positions">
+        <item>@string/new_tab_position_before</item>
+        <item>@string/new_tab_position_after</item>
+        <item>@string/new_tab_position_start</item>
+        <item>@string/new_tab_position_end</item>
+    </string-array>
+
+    <string-array name="new_tab_position_values">
+        <item>@string/new_tab_position_before_value</item>
+        <item>@string/new_tab_position_after_value</item>
+        <item>@string/new_tab_position_start_value</item>
+        <item>@string/new_tab_position_end_value</item>
+    </string-array>
+
+    <string-array name="incoming_view_actions">
+        <item>@string/action_new_tab</item>
+        <item>@string/action_incognito_tab</item>
+        <item>@string/action_select_browser</item>
+    </string-array>
+
+    <string-array name="incoming_url_actions">
+        <item>@string/action_new_tab</item>
+        <item>@string/action_incognito_tab</item>
+        <item>@string/action_block</item>
+        <item>@string/action_ask</item>
+    </string-array>
+
+    <string-array name="suggestion_name_array">
+        <item>@string/two</item>
+        <item>@string/three</item>
+        <item>@string/four</item>
+        <item>@string/five</item>
+        <item>@string/six</item>
+        <item>@string/seven</item>
+        <item>@string/eight</item>
+        <item>@string/nine</item>
+        <item>@string/ten</item>
+    </string-array>
+
+    <string-array name="NoYesAsk">
+        <item>@string/action_no</item>
+        <item>@string/action_yes</item>
+        <item>@string/action_ask</item>
+    </string-array>
+
+    <string-array name="LayerTypes">
+        <item>@string/layer_type_none</item>
+        <item>@string/layer_type_software</item>
+        <item>@string/layer_type_hardware</item>
+    </string-array>
+
+    <string-array name="HeaderInfo">
+        <item>@string/label_url</item>
+        <item>@string/label_short_url</item>
+        <item>@string/label_domain</item>
+        <item>@string/label_title</item>
+        <item>@string/label_session</item>
+        <item>@string/label_app_name</item>
+    </string-array>
+
+
+    <string-array name="AbortProceedAsk">
+        <item>@string/action_abort</item>
+        <item>@string/action_proceed</item>
+        <item>@string/action_ask</item>
+    </string-array>
+
+    <string-array name="LogLevel">
+        <item>@string/log_level_verbose</item>
+        <item>@string/log_level_debug</item>
+        <item>@string/log_level_info</item>
+        <item>@string/log_level_warn</item>
+        <item>@string/log_level_error</item>
+        <item>@string/log_level_assert</item>
+    </string-array>
+
+</resources>

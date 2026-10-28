@@ -1,0 +1,31 @@
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+include ':app'
+
+// Warn when required git submodules were not checked out (empty folders after a plain clone or zip download)
+def requiredSubmodules = [
+        'subs/Preference/lib',
+        'subs/AppIntro/appintro'
+]
+def missingSubmodules = requiredSubmodules.findAll { !new File(rootDir, it).directory }
+if (!missingSubmodules.isEmpty()) {
+    println """
+==========================================================================
+WARNING: required git submodules are missing:
+  ${missingSubmodules.join('\n  ')}
+
+The build will fail. Run this command in the project root first:
+
+  git submodule update --init subs/Preference subs/AppIntro
+==========================================================================
+"""
+}
+
+// Add our Preference library from submodule
+include ':Preference'
+project(':Preference').projectDir = new File(rootDir, 'subs/Preference/lib')
+
+// Add AppIntro library from submodule
+include ':AppIntro'
+project(':AppIntro').projectDir = new File(rootDir, 'subs/AppIntro/appintro')

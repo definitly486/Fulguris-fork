@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#FF5722">
+  <title>Console Test - Fulguris</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link href="https://cdn.jsdelivr.net/npm/beercss@3.13.1/dist/cdn/beer.min.css" rel="stylesheet" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.13.1/dist/cdn/beer.min.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"></script>
+  <style>
+    #consoleOutput {
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      padding: 1rem;
+      height: 300px;
+      overflow-y: auto;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .console-entry {
+      padding: 0.25rem 0;
+      border-bottom: 1px solid rgba(var(--outline), 0.2);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .console-entry:last-child {
+      border-bottom: none;
+    }
+
+    .console-log { color: var(--on-surface); }
+    .console-info { color: rgb(33, 150, 243); }
+    .console-warn { color: rgb(255, 152, 0); }
+    .console-error { color: rgb(244, 67, 54); }
+    .console-debug { color: rgb(39, 176, 112); }
+
+    .small-text {
+      font-size: 0.8em;
+      opacity: 0.7;
+    }
+  </style>
+  <script>
+    function theme(color) {
+      ui("theme", color || "#FF5722");
+      localStorage.setItem('themeColor', color || "#FF5722");
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', color || "#FF5722");
+    }
+
+    const mode = () => {
+      const currentMode = ui("mode");
+      const newMode = currentMode === 'dark' ? 'light' : 'dark';
+      ui("mode", newMode);
+      document.querySelector('meta[name="color-scheme"]').setAttribute('content', newMode);
+      localStorage.setItem('themeMode', newMode);
+      updateModeIcon();
+    }
+
+    function updateModeIcon() {
+      const icon = document.getElementById('modeIcon');
+      const currentMode = ui("mode");
+      icon.textContent = currentMode === "dark" ? "light_mode" : "dark_mode";
+    }
+
+    function changeThemeColor(color) {
+      theme(color);
+    }
+
+    function openColorPicker() {
+      const input = document.createElement('input');
+      input.type = 'color';
+      input.value = localStorage.getItem('themeColor') || '#FF6B35';
+      input.addEventListener('change', (e) => {
+        changeThemeColor(e.target.value);
+        ui('#colorMenu');
+      });
+      input.click();
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedMode = localStorage.getItem('themeMode');
+      if (savedMode) {
+        ui("mode", savedMode);
+        document.querySelector('meta[name="color-scheme"]').setAttribute('content', savedMode);
+      }
+      updateModeIcon();
+
+      const savedColor = localStorage.getItem('themeColor');
+      theme(savedColor || "#FF5722");
+
+      // Override console methods to capture output
+      interceptConsole();
+    });
+
+    // Console output capture
+    function addOutput(message, type = 'log') {
+      const output = document.getElementById('consoleOutput');
+      const entry = document.createElement('div');
+      entry.className = `console-entry console-${type}`;
+
+      const timestamp = new Date().toLocaleTimeString();
+      const icon = {
+        log: 'description',
+        info: 'info',
+        warn: 'warning',
+        error: 'error',
+        debug: 'bug_report'
+      }[type] || 'description';
+
+      entry.innerHTML = `<i class="small">${icon}</i> <span class="small-text">[${timestamp}]</span> ${escapeHtml(message)}`;
+      output.appendChild(entry);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = String(text);
+      return div.innerHTML;
+    }
+
+    function clearOutput() {
+      document.getElementById('consoleOutput').innerHTML = '';
+    }
+
+    // Intercept console methods
+    const originalConsole = {
+      log: console.log,
+      info: console.info,
+      warn: console.warn,
+      error: console.error,
+      debug: console.debug,
+      clear: console.clear
+    };
+
+    function interceptConsole() {
+      console.log = function(...args) {
+        originalConsole.log.apply(console, args);
+        addOutput(args.join(' '), 'log');
+      };
+
+      console.info = function(...args) {
+        originalConsole.info.apply(console, args);
+        addOutput(args.join(' '), 'info');
+      };
+
+      console.warn = function(...args) {
+        originalConsole.warn.apply(console, args);
+        addOutput(args.join(' '), 'warn');
+      };
+
+      console.error = function(...args) {
+        originalConsole.error.apply(console, args);
+        addOutput(args.join(' '), 'error');
+      };
+
+      console.debug = function(...args) {
+        originalConsole.debug.apply(console, args);
+        addOutput(args.join(' '), 'debug');
+      };
+
+      console.clear = function() {
+        originalConsole.clear.apply(console);
+        clearOutput();
+      };
+    }
+
+    // Console test functions
+    function testLog() {
+      console.log('Test log message');
+    }
+
+    function testInfo() {
+      console.info('Test info message');
+    }
+
+    function testWarn() {
+      console.warn('Test warning message');
+    }
+
+    function testError() {
+      console.error('Test error message');
+    }
+
+    function testDebug() {
+      console.debug('Test debug message');
+    }
+
+    function testTable() {
+      const data = [
+        { name: 'Alice', age: 30, city: 'New York' },
+        { name: 'Bob', age: 25, city: 'London' },
+        { name: 'Charlie', age: 35, city: 'Tokyo' }
+      ];
+      console.table(data);
+      addOutput('console.table() called (see browser console for table)', 'log');
+    }
+
+    function testGroup() {
+      console.group('Test Group');
+      console.log('Message 1');
+      console.log('Message 2');
+      console.groupEnd();
+    }
+
+    function testTrace() {
+      function innerFunction() {
+        console.trace('Stack trace');
+        addOutput('console.trace() called (see browser console for stack trace)', 'log');
+      }
+      innerFunction();
+    }
+
+    function testTime() {
+      console.time('timer');
+      let sum = 0;
+      for (let i = 0; i < 1000000; i++) {
+        sum += i;
+      }
+      console.timeEnd('timer');
+      addOutput('console.time() completed (see browser console for timing)', 'log');
+    }
+
+    function testAssert() {
+      console.assert(1 === 1, 'This should not show');
+      console.assert(1 === 2, 'This assertion failed: 1 !== 2');
+      addOutput('console.assert() called (see browser console for failed assertions)', 'log');
+    }
+
+    function testMultiple() {
+      console.log('Multiple types test:');
+      console.log('String', 123, true, null, undefined, { key: 'value' }, ['array']);
+    }
+
+    function testClear() {
+      console.clear();
+      console.log('Console cleared!');
+    }
+  </script>
+</head>
+<body>
+
+  <header class="fixed transparent right-align">
+    <div class="margin">
+      <nav class="toolbar tertiary elevate min">
+        <button class="circle transparent" onclick="ui('#colorMenu')">
+          <i>palette</i>
+        </button>
+        <button class="circle transparent" onclick="mode()">
+          <i id="modeIcon">dark_mode</i>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <dialog id="colorMenu">
+    <h5>Choose Theme Color</h5>
+    <nav class="wrap">
+      <button class="circle border" style="background-color: #FF5722;" onclick="changeThemeColor('#FF5722'); ui('#colorMenu')"></button>
+      <button class="circle border" style="background-color: #E91E63;" onclick="changeThemeColor('#E91E63'); ui('#colorMenu')"></button>
+      <button class="circle border" style="background-color: #9C27B0;" onclick="changeThemeColor('#9C27B0'); ui('#colorMenu')"></button>
+      <button class="circle border" style="background-color: #3F51B5;" onclick="changeThemeColor('#3F51B5'); ui('#colorMenu')"></button>
+      <button class="circle border" style="background-color: #2196F3;" onclick="changeThemeColor('#2196F3'); ui('#colorMenu')"></button>
+      <button class="circle border" style="background-color: #009688;" onclick="changeThemeColor('#009688'); ui('#colorMenu')"></button>
+      <button class="circle border" style="background-color: #4CAF50;" onclick="changeThemeColor('#4CAF50'); ui('#colorMenu')"></button>
+      <button class="circle border" style="background-color: #FF9800;" onclick="changeThemeColor('#FF9800'); ui('#colorMenu')"></button>
+      <button class="circle border" style="background-color: #795548;" onclick="changeThemeColor('#795548'); ui('#colorMenu')"></button>
+      <button class="circle border transparent" onclick="openColorPicker()">
+        <i>colorize</i>
+      </button>
+    </nav>
+    <nav>
+      <button onclick="ui('#colorMenu')">Close</button>
+    </nav>
+  </dialog>
+
+  <main class="responsive">
+    <h3><i>terminal</i> JavaScript Console Test</h3>
+    <p>Console output is shown below and also in your browser's developer console (F12).</p>
+
+    <article class="border">
+      <h5><i>monitor</i> Console Output</h5>
+      <div id="consoleOutput" class="surface-container"></div>
+      <button onclick="clearOutput()">
+        <i>clear_all</i>
+        <span>Clear Output</span>
+      </button>
+    </article>
+
+    <article class="border">
+      <h5><i>code</i> Basic Console Methods</h5>
+      <nav class="wrap">
+        <button onclick="testLog()">
+          <i>description</i>
+          <span>console.log()</span>
+        </button>
+        <button onclick="testInfo()">
+          <i>info</i>
+          <span>console.info()</span>
+        </button>
+        <button onclick="testWarn()">
+          <i>warning</i>
+          <span>console.warn()</span>
+        </button>
+        <button onclick="testError()">
+          <i>error</i>
+          <span>console.error()</span>
+        </button>
+        <button onclick="testDebug()">
+          <i>bug_report</i>
+          <span>console.debug()</span>
+        </button>
+      </nav>
+    </article>
+
+    <article class="border">
+      <h5><i>table_chart</i> Advanced Console Methods</h5>
+      <nav class="wrap">
+        <button onclick="testTable()">
+          <i>table_chart</i>
+          <span>console.table()</span>
+        </button>
+        <button onclick="testGroup()">
+          <i>folder</i>
+          <span>console.group()</span>
+        </button>
+        <button onclick="testTrace()">
+          <i>call_split</i>
+          <span>console.trace()</span>
+        </button>
+        <button onclick="testTime()">
+          <i>timer</i>
+          <span>console.time()</span>
+        </button>
+        <button onclick="testAssert()">
+          <i>check_circle</i>
+          <span>console.assert()</span>
+        </button>
+      </nav>
+    </article>
+
+    <article class="border">
+      <h5><i>build</i> Other Tests</h5>
+      <nav class="wrap">
+        <button onclick="testMultiple()">
+          <i>view_list</i>
+          <span>Multiple Types</span>
+        </button>
+        <button onclick="testClear()">
+          <i>clear_all</i>
+          <span>console.clear()</span>
+        </button>
+      </nav>
+    </article>
+
+    <article class="border">
+      <h5><i>info</i> About Console Testing</h5>
+      <p>
+        This page tests JavaScript console methods. Make sure to open your browser's developer console
+        (usually F12 or Ctrl+Shift+I) to see the output of these tests.
+      </p>
+      <p>
+        Different browsers may display console output differently. Some methods like <code>console.debug()</code>
+        may require enabling verbose logging in your browser's console settings.
+      </p>
+    </article>
+
+    <article class="border">
+      <h5><i>home</i> Navigation</h5>
+      <nav class="wrap">
+        <a href="index.html" class="chip">
+          <i>home</i>
+          <span>Home</span>
+        </a>
+        <a href="tests.html" class="chip">
+          <i>science</i>
+          <span>Browser Tests</span>
+        </a>
+        <a href="page.html" class="chip">
+          <i>sync</i>
+          <span>Navigation Test</span>
+        </a>
+      </nav>
+    </article>
+
+  </main>
+
+</body>
+</html>

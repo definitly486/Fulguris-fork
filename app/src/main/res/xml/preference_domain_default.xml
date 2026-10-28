@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ The contents of this file are subject to the Common Public Attribution License Version 1.0.
+ (the "License"); you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at:
+ https://github.com/Slion/Fulguris/blob/main/LICENSE.CPAL-1.0.
+ The License is based on the Mozilla Public License Version 1.1, but Sections 14 and 15 have been
+ added to cover use of software over a computer network and provide for limited attribution for
+ the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B.
+
+ Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF
+ ANY KIND, either express or implied. See the License for the specific language governing rights
+ and limitations under the License.
+
+ The Original Code is Fulguris.
+
+ The Original Developer is the Initial Developer.
+ The Initial Developer of the Original Code is Stéphane Lenclud.
+
+ All portions of the code written by Stéphane Lenclud are Copyright © 2023 Stéphane Lenclud.
+ All Rights Reserved.
+-->
+<androidx.preference.PreferenceScreen
+    xmlns:a="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <x.Preference
+        a:key="@string/pref_key_back"
+        a:title="@string/action_domain_settings"
+        a:summary="@string/pref_title_default_domain_settings"
+        a:icon="@drawable/ic_arrow_back_ios"
+        a:fragment="back"
+        a:layout="@layout/preference_category_material"
+        a:allCapsTitle="true"
+        tools:ignore="PrivateResource" />
+
+    <x.SwitchPreference
+        a:defaultValue="true"
+        a:key="@string/pref_key_location"
+        a:icon="@drawable/ic_location"
+        a:title="@string/pref_title_location"
+        a:summaryOn="@string/pref_summary_on_location"
+        a:summaryOff="@string/pref_summary_off_location"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="false" />
+
+    <x.SwitchPreference
+        a:defaultValue="false"
+        a:key="@string/pref_key_dark_mode"
+        a:title="@string/pref_title_dark_mode_default"
+        a:summary="@string/pref_summary_dark_mode_default"
+        a:iconSpaceReserved="false"
+        a:icon="@drawable/ic_dark_mode"
+        a:singleLineTitle="false" />
+
+    <x.SwitchPreference
+        a:defaultValue="false"
+        a:key="@string/pref_key_desktop_mode"
+        a:title="@string/pref_title_desktop_mode_default"
+        a:summary="@string/pref_summary_desktop_mode_default"
+        a:iconSpaceReserved="false"
+        a:icon="@drawable/ic_desktop"
+        a:singleLineTitle="false" />
+
+    <x.SwitchPreference
+        a:defaultValue="true"
+        a:key="@string/pref_key_javascript"
+        a:title="@string/pref_title_javascript"
+        a:summaryOn="@string/pref_summary_on_javascript"
+        a:summaryOff="@string/pref_summary_off_javascript"
+        a:icon="@drawable/ic_script"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="false" />
+
+    <x.SwitchPreference
+        a:defaultValue="true"
+        a:key="@string/pref_key_third_party_cookies"
+        a:title="@string/pref_title_third_party_cookies"
+        a:summaryOn="@string/pref_summary_on_third_party_cookies"
+        a:summaryOff="@string/pref_summary_off_third_party_cookies"
+        a:icon="@drawable/ic_cookie_outline"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="false" />
+
+    <x.EnumListPreference
+        a:key="@string/pref_key_launch_app"
+        a:title="@string/pref_title_launch_app"
+        a:useSimpleSummaryProvider="true"
+        a:defaultValue="ASK"
+        a:entries="@array/NoYesAsk"
+        a:icon="@drawable/ic_apps"
+        a:singleLineTitle="false"
+        a:enumClassName="fulguris.settings.NoYesAsk"
+        />
+
+    <x.EnumListPreference
+        a:key="@string/pref_key_ssl_error"
+        a:title="@string/pref_title_ssl_error"
+        a:useSimpleSummaryProvider="true"
+        a:defaultValue="ASK"
+        a:entries="@array/AbortProceedAsk"
+        a:icon="@drawable/ic_encrypted_off_outline"
+        a:singleLineTitle="false"
+        a:enumClassName="fulguris.settings.NoYesAsk"
+        />
+
+    <x.EnumListPreference
+        a:key="@string/pref_key_incoming_url_action"
+        a:title="@string/pref_title_incoming_url_action"
+        a:useSimpleSummaryProvider="true"
+        a:defaultValue="NEW_TAB"
+        a:entries="@array/incoming_url_actions"
+        a:icon="@drawable/ic_baseline_open_in_new_24"
+        a:singleLineTitle="false"
+        a:enumClassName="fulguris.enums.IncomingUrlAction"
+        />
+
+    <x.Preference
+        a:key="@string/pref_key_reset_default_domain"
+        a:title="@string/pref_title_reset_default_domain"
+        a:icon="@drawable/ic_delete_forever_outline"
+        a:fragment="back"
+        a:allowDividerAbove="true"
+        tools:ignore="PrivateResource" />
+
+</androidx.preference.PreferenceScreen>

@@ -1,0 +1,6 @@
+📺 Android-TV-Unterstützung mit Bildschirmcursor für Fernbedienungen und Gamepads
+⏱️ Neue Zeitbegrenzungs-Einstellung "Werkzeugleiste ausblenden nach"
+🔍 Verbesserungen am Suchfeld: ESC bricht wie Zurück ab
+📝 Android-Version wurde zum Info-Bildschirm hinzugefügt
+🌐 Übersetzungsupdate
+🐛 Verschiedene Fehlerbehebungen und Verbesserungen

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ The contents of this file are subject to the Common Public Attribution License Version 1.0.
+ (the "License"); you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at:
+ https://github.com/Slion/Fulguris/blob/main/LICENSE.CPAL-1.0.
+ The License is based on the Mozilla Public License Version 1.1, but Sections 14 and 15 have been
+ added to cover use of software over a computer network and provide for limited attribution for
+ the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B.
+
+ Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF
+ ANY KIND, either express or implied. See the License for the specific language governing rights
+ and limitations under the License.
+
+ The Original Code is Fulguris.
+
+ The Original Developer is the Initial Developer.
+ The Initial Developer of the Original Code is Stéphane Lenclud.
+
+ All portions of the code written by Stéphane Lenclud are Copyright © 2023 Stéphane Lenclud.
+ All Rights Reserved.
+-->
+<PreferenceScreen xmlns:a="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <x.Preference
+        a:key="@string/pref_key_back"
+        a:title="@string/pref_title_configuration"
+        a:icon="@drawable/ic_arrow_back_ios"
+        a:fragment="back"
+        a:layout="@layout/preference_category_material"
+        a:allCapsTitle="true"
+        tools:ignore="PrivateResource" />
+
+    <x.SwitchPreference
+        android:key="@string/pref_key_tab_bar_vertical"
+        android:title="@string/pref_title_tab_bar_orientation"
+        android:summaryOn="@string/pref_summary_on_tab_bar_orientation"
+        android:summaryOff="@string/pref_summary_off_tab_bar_orientation"
+        a:icon="@drawable/ic_screen_rotation_alt"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="false"
+        tools:defaultValue="false"
+        />
+
+    <x.SwitchPreference
+        android:key="@string/pref_key_tab_bar_in_drawer"
+        android:title="@string/pref_title_tab_bar_placement"
+        android:summaryOn="@string/pref_summary_on_tab_bar_placement"
+        android:summaryOff="@string/pref_summary_off_tab_bar_placement"
+        a:icon="@drawable/ic_view_quilt_outline"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="false"
+        a:dependency="@string/pref_key_tab_bar_vertical"
+        tools:defaultValue="true"
+        />
+
+    <x.SwitchPreference
+        android:key="@string/pref_key_toolbars_bottom"
+        android:title="@string/pref_title_toolbars_position"
+        android:summaryOn="@string/pref_summary_on_toolbars_position"
+        android:summaryOff="@string/pref_summary_off_toolbars_position"
+        a:icon="@drawable/ic_power_input"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="false"
+        tools:defaultValue="true" />
+
+
+    <x.SwitchPreference
+        android:key="@string/pref_key_pull_to_refresh"
+        android:title="@string/pref_title_pull_to_refresh"
+        a:icon="@drawable/ic_action_refresh"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="false" />
+
+    <x.SwitchPreference
+        a:key="@string/pref_key_hide_status_bar"
+        a:title="@string/pref_title_hide_status_bar"
+        a:icon="@drawable/ic_fullscreen"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="false" />
+
+    <x.SwitchPreference
+        a:key="@string/pref_key_hide_tool_bar"
+        a:title="@string/pref_title_hide_tool_bar"
+        a:icon="@drawable/ic_baseline_aspect_ratio_24"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="false" />
+
+    <x.SwitchPreference
+        a:key="@string/pref_key_show_tool_bar_on_scroll_up"
+        a:title="@string/pref_title_show_tool_bar_when_scroll_up"
+        a:icon="@drawable/ic_eye"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="false" />
+
+    <x.SwitchPreference
+        a:key="@string/pref_key_show_tool_bar_on_page_top"
+        a:title="@string/pref_title_show_tool_bar_on_page_top"
+        a:icon="@drawable/ic_bottom_app_bar_outline"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="false" />
+
+    <x.SliderPreference
+        a:key="@string/pref_key_hide_tool_bar_timeout"
+        a:title="@string/pref_title_hide_tool_bar_after"
+        a:summary="@string/pref_summary_hide_tool_bar_after"
+        a:icon="@drawable/ic_timer"
+        a:seekBarIncrement="1"
+        a:showSeekBarValue="true"
+        a:iconSpaceReserved="false"
+        a:updatesContinuously="true"
+        android:valueFrom="0"
+        android:valueTo="10"
+        android:stepSize="1"
+        android:value="0"
+        a:labelBehavior="gone"
+        a:format="%.0f"
+        a:singleLineTitle="false" />
+
+    <x.SwitchPreference
+        a:key="@string/pref_key_use_cutout_area"
+        a:title="@string/pref_title_use_cutout_area"
+        a:summaryOn="@string/pref_summary_on_use_cutout_area"
+        a:summaryOff="@string/pref_summary_off_use_cutout_area"
+        a:icon="@drawable/ic_mobile_camera_outline"
+        a:singleLineTitle="false"
+        a:defaultValue="true"
+        />
+
+    <x.SliderPreference
+        a:key="@string/pref_key_system_gesture_clearance"
+        a:title="@string/pref_title_system_gesture_clearance"
+        a:summary="@string/pref_summary_system_gesture_clearance"
+        a:icon="@drawable/ic_bottom_navigation_outline"
+        a:seekBarIncrement="5"
+        a:showSeekBarValue="true"
+        a:iconSpaceReserved="false"
+        a:updatesContinuously="true"
+        android:valueFrom="0"
+        android:valueTo="100"
+        android:stepSize="5"
+        android:value="0"
+        a:labelBehavior="gone"
+        a:format="%.0f%%"
+        a:singleLineTitle="false"
+        />
+
+    <x.SliderPreference
+        a:key="@string/pref_key_desktop_width"
+        a:title="@string/pref_title_desktop_width"
+        a:summary="@string/pref_summary_desktop_width"
+        a:icon="@drawable/ic_desktop"
+        a:seekBarIncrement="25"
+        a:showSeekBarValue="true"
+        a:iconSpaceReserved="false"
+        a:updatesContinuously="true"
+        android:valueFrom="100"
+        android:valueTo="400"
+        android:stepSize="25"
+        android:value="200"
+        a:labelBehavior="gone"
+        a:format="%.0f%%"
+        a:singleLineTitle="false"
+        />
+
+    <Preference
+        a:key="@string/pref_key_delete"
+        a:title="@string/pref_title_delete_configuration"
+        a:icon="@drawable/ic_delete_forever_outline"
+        a:fragment="back"
+        a:isPreferenceVisible="false"
+        tools:isPreferenceVisible="true"
+        />
+
+</PreferenceScreen>

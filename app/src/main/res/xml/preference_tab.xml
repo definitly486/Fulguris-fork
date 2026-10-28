@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:a="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <x.PreferenceCategory android:title="@string/pref_category_on_tab_change">
+        <x.SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_on_tab_change_show_animation"
+            android:title="@string/pref_title_show_animation"
+            a:icon="@drawable/ic_animation"
+            a:iconSpaceReserved="true"
+            a:singleLineTitle="false"
+            />
+
+        <x.SliderPreference
+            a:key="@string/pref_key_on_tab_change_animation_duration"
+            a:dependency="@string/pref_key_on_tab_change_show_animation"
+            a:title="@string/pref_title_animation_duration"
+            a:icon="@drawable/ic_timer"
+            a:seekBarIncrement="25"
+            a:showSeekBarValue="true"
+            a:iconSpaceReserved="false"
+            a:updatesContinuously="true"
+            android:valueFrom="100"
+            android:valueTo="1000"
+            android:stepSize="50"
+            android:value="@integer/pref_default_animation_duration_tab_change"
+            a:labelBehavior="gone"
+            a:format="%.0fms"
+            a:singleLineTitle="false"
+            />
+    </x.PreferenceCategory>
+
+    <x.PreferenceCategory android:title="@string/pref_category_on_tab_close">
+        <x.SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_on_tab_close_show_snackbar"
+            android:title="@string/pref_title_show_snackbar"
+            a:icon="@drawable/ic_info"
+            a:iconSpaceReserved="true"
+            a:singleLineTitle="false"
+            />
+        <x.SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_key_on_tab_close_vibrate"
+            android:title="@string/pref_title_vibrate"
+            a:icon="@drawable/ic_vibrate"
+            a:iconSpaceReserved="true"
+            a:singleLineTitle="false"
+            />
+    </x.PreferenceCategory>
+
+    <x.PreferenceCategory android:title="@string/pref_category_on_tab_back_forward">
+        <x.SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_on_tab_back_show_animation"
+            android:title="@string/pref_title_show_animation"
+            a:icon="@drawable/ic_animation"
+            a:iconSpaceReserved="true"
+            a:singleLineTitle="false"
+            />
+
+        <x.SliderPreference
+            a:key="@string/pref_key_on_tab_flip_animation_duration"
+            a:dependency="@string/pref_key_on_tab_back_show_animation"
+            a:title="@string/pref_title_animation_duration"
+            a:icon="@drawable/ic_timer"
+            a:seekBarIncrement="25"
+            a:showSeekBarValue="true"
+            a:iconSpaceReserved="false"
+            a:updatesContinuously="true"
+            android:valueFrom="100"
+            android:valueTo="1000"
+            android:stepSize="50"
+            android:value="@integer/pref_default_animation_duration_flip"
+            a:labelBehavior="gone"
+            a:format="%.0fms"
+            a:singleLineTitle="false"
+            />
+
+    </x.PreferenceCategory>
+
+    <x.PreferenceCategory android:title="@string/settings_category_on_follow_link">
+        <x.SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_on_page_started_show_animation"
+            android:title="@string/pref_title_show_animation"
+            a:icon="@drawable/ic_animation"
+            a:iconSpaceReserved="true"
+            a:singleLineTitle="false"
+            />
+
+    </x.PreferenceCategory>
+
+
+
+</PreferenceScreen>

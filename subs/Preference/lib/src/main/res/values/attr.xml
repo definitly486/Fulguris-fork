@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Theme-level attributes for preference spacing control -->
+    <!-- These can be set in your theme to apply globally to all preferences -->
+    <attr name="preferencePaddingVertical" format="dimension" />
+    <attr name="preferenceCategoryPaddingVertical" format="dimension" />
+
+    <!-- EditTextPreference attributes -->
+    <attr name="hint" format="string" />
+    <attr name="selectAllOnFocus" format="boolean" />
+    <attr name="inputType" format="integer" />
+    <attr name="boxStyle" format="enum">
+        <enum name="outlined" value="0" />
+        <enum name="filled" value="1" />
+    </attr>
+    <attr name="prefixText" format="string" />
+    <attr name="suffixText" format="string" />
+    <attr name="startIconDrawable" format="reference" />
+    <attr name="endIconDrawable" format="reference" />
+    <attr name="errorText" format="string" />
+    <attr name="textGravity" format="flags">
+        <flag name="start" value="0x00800003" />
+        <flag name="end" value="0x00800005" />
+        <flag name="left" value="0x03" />
+        <flag name="right" value="0x05" />
+        <flag name="center" value="0x01" />
+        <flag name="center_horizontal" value="0x01" />
+        <flag name="center_vertical" value="0x10" />
+    </attr>
+
+    <declare-styleable name="EditTextPreference">
+        <!-- Hint text to display in the EditText -->
+        <attr name="hint" />
+        <!-- Whether to select all text when dialog opens -->
+        <attr name="selectAllOnFocus" />
+        <!-- Input type for the EditText (text, textPassword, textEmailAddress, phone, number, etc.) -->
+        <attr name="inputType" />
+        <!-- Box style for the TextInputLayout (outlined or filled) -->
+        <attr name="boxStyle" />
+        <!-- Prefix text shown at the start of the text field -->
+        <attr name="prefixText" />
+        <!-- Suffix text shown at the end of the text field -->
+        <attr name="suffixText" />
+        <!-- Start icon drawable (shown at the start of the text field) -->
+        <attr name="startIconDrawable" />
+        <!-- End icon drawable (shown at the end of the text field, overrides password toggle) -->
+        <attr name="endIconDrawable" />
+        <!-- Error text to display when validation fails -->
+        <attr name="errorText" />
+        <!-- Text alignment/gravity (start, end, left, right, center) -->
+        <attr name="textGravity" />
+        <!-- Android standard attributes -->
+        <attr name="android:inputType" />
+        <attr name="android:maxLength" />
+    </declare-styleable>
+
+    <declare-styleable name="Preference">
+        <!-- Custom breadcrumb text for navigation context. If empty, defaults to title or summary. -->
+        <attr name="breadcrumb" format="string" />
+
+        <!-- Displayed title text. Use this to show a different title than the one used for sorting. -->
+        <attr name="displayedTitle" format="string|reference" />
+
+        <!-- Swap the title and summary texts. Useful when preferences are sorted by title but you want to display summary as title. -->
+        <attr name="swapTitleSummary" format="boolean" />
+
+        <!-- If true, summary text will be single line. If false, summary can wrap to multiple lines. -->
+        <attr name="singleLineSummary" format="boolean" />
+
+        <!-- Maximum number of lines for summary text. Default is 100. -->
+        <attr name="summaryMaxLines" format="integer" />
+
+        <!-- Maximum number of lines for title text. Default is 1. -->
+        <attr name="titleMaxLines" format="integer" />
+
+        <!-- Ellipsize mode for summary text when it exceeds max lines. -->
+        <attr name="summaryEllipsize">
+            <!-- Ellipsis at the end (e.g., "This is a long text...") -->
+            <enum name="end" value="0" />
+            <!-- Ellipsis at the start (e.g., "...is a long text") -->
+            <enum name="start" value="1" />
+            <!-- Ellipsis in the middle (e.g., "This is...long text") -->
+            <enum name="middle" value="2" />
+            <!-- Marquee scrolling effect for long text -->
+            <enum name="marquee" value="3" />
+            <!-- No ellipsis, text is just cut off -->
+            <enum name="none" value="-1" />
+        </attr>
+
+        <!-- Ellipsize mode for title text when it exceeds max lines. -->
+        <attr name="titleEllipsize">
+            <!-- Ellipsis at the end (e.g., "This is a long title...") -->
+            <enum name="end" value="0" />
+            <!-- Ellipsis at the start (e.g., "...is a long title") -->
+            <enum name="start" value="1" />
+            <!-- Ellipsis in the middle (e.g., "This is...long title") -->
+            <enum name="middle" value="2" />
+            <!-- Marquee scrolling effect for long text -->
+            <enum name="marquee" value="3" />
+            <!-- No ellipsis, text is just cut off -->
+            <enum name="none" value="-1" />
+        </attr>
+
+        <!-- Number of times the summary marquee animation repeats. Use -1 for infinite repeat. Default is -1. -->
+        <attr name="summaryMarqueeRepeatLimit" format="integer" />
+
+        <!-- Number of times the title marquee animation repeats. Use -1 for infinite repeat. Default is -1. -->
+        <attr name="titleMarqueeRepeatLimit" format="integer" />
+
+        <!-- Summary display mode. Controls how summary text is displayed and interacted with. -->
+        <attr name="summaryMode">
+            <!-- Normal mode with ellipsize (default) -->
+            <enum name="normal" value="0" />
+            <!-- Scrollable mode - horizontal for single line, vertical for multi-line. Ellipsize is disabled. -->
+            <enum name="scrollable" value="1" />
+            <!-- Selectable mode - enables text selection and scrolling. Ellipsize is disabled. -->
+            <enum name="selectable" value="2" />
+        </attr>
+
+        <!-- Title display mode. Controls how title text is displayed and interacted with. -->
+        <attr name="titleMode">
+            <!-- Normal mode with ellipsize (default) -->
+            <enum name="normal" value="0" />
+            <!-- Scrollable mode - horizontal for single line, vertical for multi-line. Ellipsize is disabled. -->
+            <enum name="scrollable" value="1" />
+            <!-- Selectable mode - enables text selection and scrolling. Ellipsize is disabled. -->
+            <enum name="selectable" value="2" />
+        </attr>
+
+        <!-- Drawable to display at the start of the title text (left in LTR, right in RTL). -->
+        <attr name="titleDrawableStart" format="reference" />
+
+        <!-- Drawable to display at the end of the title text (right in LTR, left in RTL). -->
+        <attr name="titleDrawableEnd" format="reference" />
+
+        <!-- Drawable to display at the top of the title text. -->
+        <attr name="titleDrawableTop" format="reference" />
+
+        <!-- Drawable to display at the bottom of the title text. -->
+        <attr name="titleDrawableBottom" format="reference" />
+
+        <!-- Padding between title drawables and text. Default is 8dp. -->
+        <attr name="titleDrawablePadding" format="dimension" />
+
+        <!-- Custom text color for the title. If not set, uses the theme default. -->
+        <attr name="titleTextColor" format="color|reference" />
+
+        <!-- If true, title text will be displayed in all caps. Default is false. -->
+        <attr name="allCapsTitle" format="boolean" />
+
+        <!-- If true, summary text will be displayed in all caps. Default is false. -->
+        <attr name="allCapsSummary" format="boolean" />
+
+        <!-- Drawable to display at the start of the summary text (left in LTR, right in RTL). -->
+        <attr name="summaryDrawableStart" format="reference" />
+
+        <!-- Drawable to display at the end of the summary text (right in LTR, left in RTL). -->
+        <attr name="summaryDrawableEnd" format="reference" />
+
+        <!-- Drawable to display at the top of the summary text. -->
+        <attr name="summaryDrawableTop" format="reference" />
+
+        <!-- Drawable to display at the bottom of the summary text. -->
+        <attr name="summaryDrawableBottom" format="reference" />
+
+        <!-- Padding between summary drawables and text. Default is 8dp. -->
+        <attr name="summaryDrawablePadding" format="dimension" />
+
+        <!-- Custom text color for the summary. If not set, uses the theme default. -->
+        <attr name="summaryTextColor" format="color|reference" />
+
+        <!-- Top padding for the preference item content. -->
+        <attr name="paddingTop" format="dimension" />
+
+        <!-- Bottom padding for the preference item content. -->
+        <attr name="paddingBottom" format="dimension" />
+
+        <!-- Start padding for the preference item content (left in LTR, right in RTL). -->
+        <attr name="paddingStart" format="dimension" />
+
+        <!-- End padding for the preference item content (right in LTR, left in RTL). -->
+        <attr name="paddingEnd" format="dimension" />
+
+        <!-- Vertical padding for the preference item content. Sets both top and bottom padding. -->
+        <attr name="paddingVertical" format="dimension" />
+
+        <!-- Horizontal padding for the preference item content. Sets both start and end padding. -->
+        <attr name="paddingHorizontal" format="dimension" />
+
+        <!-- Override the minimum height of the preference item. Default uses ?android:attr/listPreferredItemHeightSmall from theme. -->
+        <attr name="minHeight" format="dimension" />
+
+        <!-- Override the horizontal padding from theme. Sets both left/start and right/end padding, overriding listPreferredItemPaddingLeft/Start/Right/End. -->
+        <attr name="horizontalPadding" format="dimension" />
+
+        <!-- Override the vertical padding inside the content area (the RelativeLayout containing title/summary). -->
+        <attr name="verticalPadding" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="SliderPreference">
+        <!-- Format string for displaying the slider value. -->
+        <attr name="format" format="string" />
+        <!-- Default style for slider preferences. -->
+        <attr name="sliderPreferenceStyle" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="EnumListPreference">
+        <!-- Fully qualified class name of the enum to use for list values. -->
+        <attr name="enumClassName" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="SwitchPreference">
+        <!-- Default style for switch preferences. -->
+        <attr name="switchPreferenceStyle" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="PreferenceCategory">
+        <!-- If true, summary text will be single line. If false, summary can wrap to multiple lines. Default is false. -->
+        <attr name="singleLineSummary" />
+
+        <!-- Maximum number of lines for summary text. Default is 10. -->
+        <attr name="summaryMaxLines" />
+
+        <!-- If true, summary text will be displayed in all caps. Default is false. -->
+        <attr name="allCapsSummary" />
+
+        <!-- If true, title text will be single line. If false, title can wrap to multiple lines. Default is true. -->
+        <attr name="singleLineTitle" format="boolean" />
+
+        <!-- Maximum number of lines for title text. Default is 1. -->
+        <attr name="titleMaxLines" />
+
+        <!-- If true, title text will be displayed in all caps. Default is true. -->
+        <attr name="allCapsTitle" />
+
+        <!-- Top padding for the category item content. -->
+        <attr name="paddingTop" />
+
+        <!-- Bottom padding for the category item content. -->
+        <attr name="paddingBottom" />
+
+        <!-- Start padding for the category item content (left in LTR, right in RTL). -->
+        <attr name="paddingStart" />
+
+        <!-- End padding for the category item content (right in LTR, left in RTL). -->
+        <attr name="paddingEnd" />
+
+        <!-- Vertical padding for the category item content. Sets both top and bottom padding. -->
+        <attr name="paddingVertical" />
+
+        <!-- Horizontal padding for the category item content. Sets both start and end padding. -->
+        <attr name="paddingHorizontal" />
+
+        <!-- Override the minimum height of the category item. Default uses ?android:attr/listPreferredItemHeightSmall from theme. -->
+        <attr name="minHeight" />
+
+        <!-- Override the horizontal padding from theme. Sets both left/start and right/end padding, overriding listPreferredItemPaddingLeft/Start/Right/End. -->
+        <attr name="horizontalPadding" />
+
+        <!-- Override the vertical padding inside the content area (the RelativeLayout containing title/summary). -->
+        <attr name="verticalPadding" />
+    </declare-styleable>
+
+</resources>

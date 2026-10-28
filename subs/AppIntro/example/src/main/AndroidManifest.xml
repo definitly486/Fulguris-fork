@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:theme="@style/AppIntroTheme"
+        android:supportsRtl="true">
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.default.DefaultIntro"
+            android:theme="@style/AppIntroTheme"/>
+        <!--Example Class for Java Intro-->
+        <activity
+            android:name=".ui.java.JavaIntro"
+            android:theme="@style/AppIntroTheme"/>
+        <activity
+            android:name=".ui.default.DefaultIntro2"
+            android:theme="@style/AppIntroTheme"/>
+        <activity
+            android:name=".ui.custom.CustomLayoutIntro"
+            android:theme="@style/AppIntroTheme"/>
+        <activity
+            android:name=".ui.custom.CustomBackgroundIntro"
+            android:theme="@style/AppIntroTheme"/>
+        <activity
+            android:name=".ui.custom.SlidePolicyIntro"
+            android:theme="@style/AppIntroTheme"/>
+        <activity
+            android:name=".ui.custom.MarginsIntro"
+            android:theme="@style/AppIntroTheme"/>
+        <activity
+            android:name=".ui.permissions.PermissionsIntro"
+            android:theme="@style/AppIntroTheme"/>
+        <activity
+            android:name=".ui.permissions.PermissionsIntro2"
+            android:theme="@style/AppIntroTheme"/>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+    </application>
+
+</manifest>

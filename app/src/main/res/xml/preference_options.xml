@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:a="http://schemas.android.com/apk/res-auto">
+
+    <x.PreferenceCategory android:title="@string/options">
+
+        <Preference
+            a:fragment="fulguris.settings.fragment.DomainSettingsFragment"
+            a:key="@string/pref_key_domain"
+            a:title="@string/action_domain_settings"
+            a:summary="@string/pref_summary_domains"
+            a:icon="@drawable/ic_domain"
+            a:singleLineTitle="false"
+            />
+
+        <Preference
+            a:fragment="fulguris.settings.fragment.CookiesSettingsFragment"
+            a:title="@string/pref_title_cookies"
+            a:summary="@string/pref_summary_manage_cookies"
+            a:icon="@drawable/ic_cookie_outline"
+            a:singleLineTitle="false"
+            />
+
+        <Preference
+            a:key="@string/pref_key_portrait"
+            a:fragment="fulguris.settings.fragment.PortraitSettingsFragment"
+            a:title="@string/pref_title_configuration"
+            a:summary="@string/pref_title_portrait"
+            a:icon="@drawable/ic_phone"
+            a:singleLineTitle="false"
+            />
+
+        <Preference
+            a:key="@string/pref_key_landscape"
+            a:fragment="fulguris.settings.fragment.LandscapeSettingsFragment"
+            a:title="@string/pref_title_configuration"
+            a:summary="@string/pref_title_landscape"
+            a:icon="@drawable/ic_landscape"
+            a:singleLineTitle="false"
+            />
+
+        <Preference
+            a:key="@string/pref_key_configuration_custom"
+            a:fragment="fulguris.settings.fragment.ConfigurationCustomSettingsFragment"
+            a:title="@string/pref_title_configuration"
+            a:summary="@string/agent_custom"
+            a:icon="@drawable/ic_conf_settings"
+            a:singleLineTitle="false"
+            />
+
+        <Preference
+            a:key="@string/pref_key_full_menu"
+            a:title="@string/action_menu"
+            a:summary="@string/pref_summary_full_menu"
+            a:icon="@drawable/ic_menu"
+            a:singleLineTitle="false"
+            />
+
+        <Preference
+            a:fragment="fulguris.settings.fragment.ScrollbarsSettingsFragment"
+            a:title="@string/pref_category_scrollbars"
+            a:summary="@string/pref_summary_scrollbars"
+            a:icon="@drawable/ic_scroll_vertical"
+            a:singleLineTitle="false"
+            />
+
+    </x.PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,0 +1,6 @@
+📺 Suporte a Android TV com cursor na tela para controles e gamepads
+⏱️ Nova configuração de tempo limite "Ocultar barra de ferramentas depois de"
+🔍 Melhorias no campo de busca: ESC cancela como voltar
+📝 Versão do Android adicionada à tela Sobre
+🌐 Atualização de traduções
+🐛 Diversas correções e melhorias

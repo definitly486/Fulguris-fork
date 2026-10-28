@@ -1,0 +1,6 @@
+📺 Suport pentru Android TV cu cursor pe ecran pentru telecomenzi și gamepad-uri
+⏱️ Noua setare de timp „Ascunde bara de instrumente după”
+🔍 Îmbunătățiri câmpului de căutare: ESC anulează ca înapoi
+📝 Versiunea Android adăugată pe ecranul Despre
+🌐 Actualizare traduceri
+🐛 Diverse corecturi și îmbunătățiri

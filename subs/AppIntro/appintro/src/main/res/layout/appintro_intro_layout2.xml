@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    android:theme="@style/AppIntroStyle"
+    android:descendantFocusability="afterDescendants">
+
+    <android.gesture.GestureOverlayView
+        android:id="@+id/pager_gesture_overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gestureColor="@android:color/transparent"
+        android:focusable="false"
+        android:descendantFocusability="afterDescendants"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="false"
+            android:overScrollMode="never"
+            android:descendantFocusability="afterDescendants" />
+    </android.gesture.GestureOverlayView>
+
+    <FrameLayout
+        android:id="@+id/bottom"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/appintro2_bottombar_height"
+        android:background="@color/appintro_bar_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/skip"
+            style="@style/AppIntro2ButtonStyleCompat"
+            android:layout_gravity="start|center_vertical"
+            android:contentDescription="@string/app_intro_skip_button"
+            app:srcCompat="@drawable/ic_appintro_fab_skip" />
+
+        <ImageButton
+            android:id="@+id/back"
+            style="@style/AppIntro2ButtonStyleCompat"
+            android:layout_gravity="start|center_vertical"
+            android:contentDescription="@string/app_intro_back_button"
+            android:rotation="180"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_appintro_fab_next" />
+
+        <FrameLayout
+            android:id="@+id/indicator_container"
+            style="@style/AppIntroIndicatorContainer"
+            android:layout_gravity="center"
+            android:layoutDirection="ltr"
+            tools:background="@drawable/ic_appintro_indicator" />
+
+        <!-- focusedByDefault makes the Next button the initial D-pad focus target when the
+             window is attached, so focus starts on the primary action instead of the
+             leftmost (back/skip) button. Only Next is marked (not Done) because the
+             framework stops at the FIRST view with this flag, and Next precedes Done in
+             the layout; Done is reached via the DOWN-key handling in AppIntroBase. -->
+        <ImageButton
+            android:id="@+id/next"
+            style="@style/AppIntro2ButtonStyleCompat"
+            android:focusedByDefault="true"
+            android:layout_gravity="end|center_vertical"
+            android:contentDescription="@string/app_intro_next_button"
+            app:srcCompat="@drawable/ic_appintro_fab_next" />
+
+        <ImageButton
+            android:id="@+id/done"
+            style="@style/AppIntro2ButtonStyleCompat"
+            android:layout_gravity="end|center_vertical"
+            android:contentDescription="@string/app_intro_done_button"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_appintro_fab_done" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

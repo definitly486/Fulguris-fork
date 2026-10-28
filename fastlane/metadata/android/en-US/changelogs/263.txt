@@ -1,0 +1,6 @@
+📺 Android TV support with on-screen cursor for remotes and gamepads
+⏱️ New "Hide tool bar after" timeout setting
+🔍 Search field improvements: ESC cancels like back
+📝 Added Android version to the About screen
+🌐 Translations update
+🐛 Various fixes and improvements

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+android:focusableInTouchMode="true"
+    Makes it so that you need to double tap an item to select it
+    Could be an interesting settings option
+-->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/tab_item_background"
+        app:cardBackgroundColor="?attr/colorSurface"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/material_grid_touch_large"
+        android:layout_marginHorizontal="@dimen/material_grid_unit"
+        android:layout_marginVertical="2dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:checkable="true"
+        android:focusableInTouchMode="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="@dimen/material_grid_margin"
+            android:weightSum="1">
+
+            <fulguris.view.ImageView
+                android:id="@+id/faviconTab"
+                android:layout_width="@dimen/material_grid_small_icon"
+                android:layout_height="@dimen/material_grid_small_icon"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="@dimen/material_grid_margin"
+                android:contentDescription="@null"
+                android:gravity="center_vertical"
+                tools:srcCompat="@drawable/ic_web" />
+
+            <TextView
+                android:id="@+id/textTab"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                android:singleLine="true"
+                android:textAppearance="?android:attr/textAppearanceListItemSmall"
+                tools:text="My web page title is too long to fit in here much too long"/>
+
+            <fulguris.view.ImageView
+                android:id="@+id/deleteAction"
+                android:layout_width="76dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="-16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/close_tab"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_action_delete"
+                tools:visibility="visible"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>
+

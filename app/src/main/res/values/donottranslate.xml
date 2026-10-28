@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ The contents of this file are subject to the Common Public Attribution License Version 1.0.
+ (the "License"); you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at:
+ https://github.com/Slion/Fulguris/blob/main/LICENSE.CPAL-1.0.
+ The License is based on the Mozilla Public License Version 1.1, but Sections 14 and 15 have been
+ added to cover use of software over a computer network and provide for limited attribution for
+ the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B.
+
+ Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF
+ ANY KIND, either express or implied. See the License for the specific language governing rights
+ and limitations under the License.
+
+ The Original Code is Fulguris.
+
+ The Original Developer is the Initial Developer.
+ The Initial Developer of the Original Code is Stéphane Lenclud.
+
+ All portions of the code written by Stéphane Lenclud are Copyright © 2020 Stéphane Lenclud.
+ All Rights Reserved.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="app_name">Fulguris</string>
+    <string name="url_app_home_page">http://fulguris.slions.net</string>
+    <string name="url_privacy_policy">https://slions.net/threads/fulguris-privacy-policy.99/</string>
+    <string name="url_terms_and_conditions">https://slions.net/threads/fulguris-terms-conditions.100/</string>
+    <string name="url_discord">https://discord.com/invite/7M4Ms5dMZE</string>
+    <string name="url_fulguris_home_page">http://fulguris.slions.net</string>
+    <string name="url_google_play_app">https://play.google.com/store/apps/details?id=net.slions.fulguris.full.playstore</string>
+    <string name="url_github_sponsors">https://github.com/sponsors/Slion</string>
+    <string name="url_crowdin_project">https://crowdin.com/project/fulguris-web-browser</string>
+    <string name="url_greasy_fork">https://greasyfork.org</string>
+    <string name="name_greasy_fork">Greasy Fork</string>
+
+    <!-- Settings keys -->
+    <string name="pref_key_hide_status_bar">pref_key_hide_status_bar</string>
+    <string name="pref_key_hide_tool_bar">pref_key_hide_tool_bar</string>
+    <string name="pref_key_show_tool_bar_on_scroll_up">pref_key_show_tool_bar_when_scroll_up</string>
+    <string name="pref_key_show_tool_bar_on_page_top">pref_key_show_tool_bar_on_page_top</string>
+    <string name="pref_key_hide_tool_bar_timeout">pref_key_hide_tool_bar_timeout</string>
+    <string name="pref_key_desktop_width">pref_key_desktop_width_float</string>
+    <string name="pref_key_pull_to_refresh">pref_key_pull_to_refresh</string>
+    <string name="pref_key_tab_bar_vertical">pref_key_tab_bar_vertical</string>
+    <string name="pref_key_tab_bar_in_drawer">pref_key_tab_bar_in_drawer</string>
+    <string name="pref_key_toolbars_bottom">pref_key_toolbars_bottom</string>
+    <string name="pref_key_cutout_mode">pref_key_cutout_mode</string>
+    <string name="pref_key_use_cutout_area">pref_key_use_cutout_area</string>
+    <string name="pref_key_system_gesture_clearance">pref_key_system_gesture_clearance</string>
+    <string name="pref_key_user_agent">pref_key_user_agent</string>
+    <string name="pref_key_network_engine">pref_key_network_engine</string>
+    <string name="pref_key_network_cache_size">pref_key_network_cache_size</string>
+    <string name="pref_key_clear_network_cache">pref_key_clear_network_cache</string>
+
+
+    <!-- On tab close -->
+    <string name="pref_key_on_tab_close_show_snackbar">pref_key_on_tab_close_show_snackbar</string>
+    <string name="pref_key_on_tab_close_vibrate">pref_key_on_tab_close_vibrate</string>
+
+    <!-- On tab change -->
+    <string name="pref_key_on_tab_change_show_animation">pref_key_on_tab_change_show_animation</string>
+    <string name="pref_key_on_tab_change_animation_duration">pref_key_on_tab_change_animation_duration</string>
+
+    <!-- On tab back -->
+    <string name="pref_key_on_tab_back_show_animation">pref_key_on_tab_back_show_animation</string>
+    <string name="pref_key_on_tab_flip_animation_duration">pref_key_on_tab_flip_animation_duration</string>
+    <string name="pref_key_on_page_started_show_animation">pref_key_on_page_started_show_animation</string>
+
+    <string name="pref_key_browser_text_size">pref_key_browser_text_size</string>
+    <string name="pref_key_overview_mode">pref_key_overview_mode</string>
+    <string name="pref_key_text_reflow">pref_key_text_reflow</string>
+    <string name="pref_key_black_status_bar">pref_key_black_status_bar</string>
+    <string name="pref_key_web_page_theme">pref_key_web_page_theme</string>
+    <string name="pref_key_swap_tabs_and_bookmarks">pref_key_swap_tabs_and_bookmarks</string>
+    <string name="pref_key_locked_drawers">pref_key_locked_drawers</string>
+    <string name="pref_key_use_bottom_sheets">pref_key_use_bottom_sheets</string>
+    <string name="pref_key_tab_list_item_show_close_button">pref_key_tab_list_item_show_close_button</string>
+    <string name="pref_key_menu_show_exit">pref_key_menu_show_exit</string>
+    <string name="pref_key_menu_show_new_tab">pref_key_menu_show_new_tab</string>
+    <!-- Privacy -->
+    <string name="pref_key_accept_terms">pref_key_accept_terms</string>
+    <string name="pref_key_crash_report">pref_key_crash_report</string>
+    <string name="pref_key_analytics">pref_key_analytics</string>
+    <string name="pref_key_crash_logs">pref_key_crash_logs</string>
+    <string name="pref_key_logs">pref_key_logs</string>
+    <string name="pref_key_log_level">pref_key_log_level</string>
+    <string name="pref_key_rendering_mode">pref_key_rendering_mode</string>
+    <string name="pref_key_restore_tabs_on_startup">pref_key_restore_tabs_on_startup</string>
+    <string name="pref_key_support_multiple_window">pref_key_support_multiple_window</string>
+    <string name="pref_key_default_text_encoding">pref_key_default_text_encoding</string>
+    <string name="pref_key_cookies">pref_key_cookies</string>
+    <string name="pref_key_cookies_incognito">pref_key_cookies_incognito</string>
+    <string name="pref_key_third_party_cookies">pref_key_third_party_cookies</string>
+    <string name="pref_key_third_party_cookies_override">pref_key_third_party_cookies_override</string>
+    <string name="pref_key_javascript">pref_key_javascript</string>
+    <string name="pref_key_javascript_override">pref_key_javascript_override</string>
+    <string name="pref_key_request_save_data">pref_key_request_save_data</string>
+    <string name="pref_key_load_images">pref_key_load_images</string>
+    <string name="pref_key_desktop_mode">pref_key_desktop_mode</string>
+    <string name="pref_key_desktop_mode_override">pref_key_desktop_mode_override</string>
+    <string name="pref_key_dark_mode">pref_key_dark_mode</string>
+    <string name="pref_key_dark_mode_override">pref_key_dark_mode_override</string>
+    <string name="pref_key_webrtc">pref_key_webrtc</string>
+    <string name="pref_key_cursor_hotkey">pref_key_cursor_hotkey</string>
+    <string name="pref_key_cursor_speed">pref_key_cursor_speed</string>
+    <string name="pref_key_cursor_acceleration">pref_key_cursor_acceleration</string>
+    <string name="pref_key_cursor_fade_timeout">pref_key_cursor_fade_timeout</string>
+    <string name="pref_key_cursor_action_hold">pref_key_cursor_action_hold</string>
+    <string name="pref_key_location">pref_key_location</string>
+    <string name="pref_key_location_override">pref_key_location_override</string>
+    <string name="pref_key_content_control">pref_key_content_control</string>
+    <string name="pref_key_content_control_filters">pref_key_content_control_filters</string>
+    <string name="pref_key_extensions_enabled">pref_key_extensions_enabled</string>
+    <string name="pref_key_extensions_list">pref_key_extensions_list</string>
+    <string name="pref_key_extension_show_popup">pref_key_extension_show_popup</string>
+    <string name="pref_key_extension_name">pref_key_extension_name</string>
+    <string name="pref_key_extension_description">pref_key_extension_description</string>
+    <string name="pref_key_extension_version">pref_key_extension_version</string>
+    <string name="pref_key_extension_author">pref_key_extension_author</string>
+    <string name="pref_key_extension_namespace">pref_key_extension_namespace</string>
+    <string name="pref_key_extension_match_urls">pref_key_extension_match_urls</string>
+    <string name="pref_key_extension_exclude_urls">pref_key_extension_exclude_urls</string>
+    <string name="pref_key_extension_view_source">pref_key_extension_view_source</string>
+    <string name="pref_key_extension_delete">pref_key_extension_delete</string>
+
+    <string name="pref_key_search_in_new_tab">pref_key_search_in_new_tab</string>
+    <string name="pref_key_url_in_new_tab">pref_key_url_in_new_tab</string>
+    <string name="pref_key_homepage_in_new_tab">pref_key_homepage_in_new_tab</string>
+    <string name="pref_key_bookmark_in_new_tab">pref_key_bookmark_in_new_tab</string>
+    <string name="pref_key_new_tab_position">pref_key_new_tab_position</string>
+    <string name="pref_key_incoming_view_action">pref_key_incoming_view_action</string>
+    <string name="pref_key_theme">pref_key_theme</string>
+    <string name="pref_key_open_theme_picker">pref_key_open_theme_picker</string>
+    <string name="pref_key_sponsorship">pref_key_sponsorship</string>
+    <string name="pref_key_version_code">pref_key_version_code</string>
+    <string name="pref_key_reset_settings">pref_key_reset_settings</string>
+    <string name="pref_key_reset_default_domain">pref_key_reset_default_domain</string>
+
+
+    <string name="pref_key_locale">pref_key_locale</string>
+    <string name="pref_key_default_browser">pref_key_default_browser</string>
+
+    <string name="pref_key_blocklist_auto_update">pref_key_blocklist_auto_update</string>
+    <string name="pref_key_blocklist_auto_update_frequency">pref_key_blocklist_auto_update_frequency</string>
+    <string name="pref_key_modify_filters">pref_key_modify_filters</string>
+
+
+    <string name="pref_key_session_export_category">pref_key_session_export_category</string>
+    <string name="pref_key_sessions_import">pref_key_sessions_import</string>
+<!--    <string name="pref_key_sessions_export">pref_key_sessions_export</string>
+    <string name="pref_key_sessions_reset">pref_key_sessions_reset</string>
+-->
+
+    <!-- Settings keys -->
+    <string name="pref_key_visit_domain">pref_key_visit_domain</string>
+    <string name="pref_key_contact_us">pref_key_contact_us</string>
+    <string name="pref_key_accent">pref_key_accent</string>
+    <string name="pref_key_close_drawer">pref_key_close_drawer</string>
+    <string name="pref_key_always_incognito">pref_key_always_incognito</string>
+    <string name="pref_key_force_zoom">pref_key_force_zoom</string>
+    <string name="pref_key_image_url">pref_key_image_url</string>
+    <string name="pref_key_long_click_tab">pref_key_long_click_tab</string>
+    <string name="pref_key_search_suggestions_number">pref_key_search_suggestions_number</string>
+    <string name="pref_key_search_custom_image_url">pref_key_search_custom_image_url</string>
+    <string name="pref_key_scrollbar_fading">pref_key_scrollbar_fading</string>
+    <string name="pref_key_scrollbar_delay_before_fade">pref_key_scrollbar_delay_before_fade</string>
+    <string name="pref_key_scrollbar_fade_duration">pref_key_scrollbar_fade_duration</string>
+    <string name="pref_key_scrollbar_size">pref_key_scrollbar_size</string>
+    <string name="pref_key_back">pref_key_back</string>
+    <string name="pref_key_delete">pref_key_delete</string>
+
+    <string name="pref_key_debug">pref_key_debug</string>
+    <string name="pref_key_webview">pref_key_webview</string>
+    <string name="pref_key_android">pref_key_android</string>
+    <!-- Brand name, shown as fallback title for the Android version entry (overridden at runtime). -->
+    <string name="android">Android</string>
+
+    <string name="pref_key_subscriptions_category">pref_key_subscriptions_category</string>
+    <string name="pref_key_contribute_category">pref_key_contribute_category</string>
+
+    <!-- Domain settings -->
+    <string name="pref_key_launch_app">pref_key_launch_app</string>
+    <string name="pref_key_launch_app_override">pref_key_launch_app_override</string>
+    <string name="pref_key_domains">pref_key_domains</string>
+    <string name="pref_key_domain">pref_key_domain</string>
+    <string name="pref_key_parent">pref_key_parent</string>
+    <string name="pref_key_ssl_error">pref_key_ssl_error</string>
+    <string name="pref_key_ssl_error_override">pref_key_ssl_error_override</string>
+    <string name="pref_key_incoming_url_action">pref_key_incoming_url_action</string>
+    <string name="pref_key_incoming_url_action_override">pref_key_incoming_url_action_override</string>
+    <string name="pref_key_cat_cookies">pref_key_cat_cookies</string>
+    <string name="pref_key_delete_page_cookies">pref_key_delete_page_cookies</string>
+    <string name="pref_key_clear_location_permissions">pref_key_clear_location_permissions</string>
+    <string name="pref_key_delete_all_domains_settings">pref_key_delete_all_domains_settings</string>
+
+    <string name="pref_key_page_history">pref_key_page_history</string>
+
+    <!-- Display settings -->
+    <string name="pref_key_task_label">pref_key_task_label</string>
+    <string name="pref_key_task_icon">pref_key_task_icon</string>
+    <string name="pref_key_toolbar_label">pref_key_toolbar_label</string>
+    <string name="pref_key_add_configuration">pref_key_add_configuration</string>
+    <string name="pref_key_configurations">pref_key_configurations</string>
+    <string name="pref_key_layer_type">pref_key_layer_type</string>
+
+
+    <string name="pref_key_portrait">pref_key_portrait</string>
+    <string name="pref_key_landscape">pref_key_landscape</string>
+    <string name="pref_key_configuration_custom">pref_key_configuration_custom</string>
+    <string name="pref_key_full_menu">pref_key_full_menu</string>
+
+    <!-- See: NewTabPosition -->
+    <string name="new_tab_position_before_value">BEFORE_CURRENT_TAB</string>
+    <string name="new_tab_position_after_value">AFTER_CURRENT_TAB</string>
+    <string name="new_tab_position_start_value">START_OF_TAB_LIST</string>
+    <string name="new_tab_position_end_value">END_OF_TAB_LIST</string>
+
+
+    <string name="slions_update_check_url">https://slions.net/api/resources/10/versions</string>
+    <string name="slions_api_key">eQxvqk5DGEXUBqdt5Y_7rGRxF2m0REdb</string>
+
+
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="seven">7</string>
+    <string name="eight">8</string>
+    <string name="nine">9</string>
+    <string name="ten">10</string>
+
+    <string name="app_name_yuzu_browser">Yuzu Browser</string>
+    <string name="app_name_lightning_browser">Lightning Browser</string>
+
+    <string name="license_mpl">Mozilla Public License 2.0</string>
+    <string name="license_cpal">Common Public Attribution License 1.0</string>
+    <string name="license_apache">Apache License 2.0</string>
+
+    <!-- Search Engines -->
+    <string name="search_engine_ask">Ask</string>
+    <string name="search_engine_baidu">Baidu</string>
+    <string name="search_engine_bing">Bing</string>
+    <string name="search_engine_brave">Brave</string>
+    <string name="search_engine_duckduckgo_lite_no_js">DuckDuckGo Lite - No JavaScript</string>
+    <string name="search_engine_duckduckgo_lite">DuckDuckGo Lite</string>
+    <string name="search_engine_duckduckgo_no_js">DuckDuckGo - No JavaScript</string>
+    <string name="search_engine_duckduckgo">DuckDuckGo</string>
+    <string name="search_engine_ecosia">Ecosia</string>
+    <string name="search_engine_ekoru">Ekoru</string>
+    <string name="search_engine_google">Google</string>
+    <string name="search_engine_mojeek">Mojeek</string>
+    <string name="search_engine_naver">Naver</string>
+    <string name="search_engine_qwant">Qwant</string>
+    <string name="search_engine_qwant_lite">Qwant Lite</string>
+    <string name="search_engine_searx">Searx</string>
+    <string name="search_engine_startpage_mobile">StartPage Mobile</string>
+    <string name="search_engine_startpage">StartPage</string>
+    <string name="search_engine_yahoo_no_js">Yahoo - No JavaScript</string>
+    <string name="search_engine_yahoo">Yahoo</string>
+    <string name="search_engine_yandex">Yandex</string>
+
+    <!-- Universal technical terms -->
+    <string name="request_url">URL</string>
+
+</resources>

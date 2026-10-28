@@ -1,0 +1,6 @@
+📺 Android TV -tuki näytöllä näkyvällä osoittimella kaukosäätimiin ja peliohjaimiin
+⏱️ Uusi aikakatkais asetukseella "Piilota työkalupalkki jälkeen"
+🔍 Parannukset hakukenttään: ESC peruuttaa kuten takaisin-nappi
+📝 Androidin versiotieto lisätty Tietoja-näkymään
+🌐 Käännöspäivitys
+🐛 Erilaisia korjauksia ja parannuksia

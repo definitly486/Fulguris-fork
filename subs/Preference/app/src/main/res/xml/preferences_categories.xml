@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:a="http://schemas.android.com/apk/res/android"
+    xmlns:x="http://schemas.android.com/apk/res-auto">
+
+    <!-- Standard category with default settings -->
+    <x.PreferenceCategory
+        x:title="Standard Category"
+        x:summary="This is a standard category with default settings: single line title (all caps), multi-line summary (normal case)">
+
+        <x.Preference
+            x:title="Preference 1"
+            x:summary="First preference in standard category" />
+
+        <x.Preference
+            x:title="Preference 2"
+            x:summary="Second preference in standard category" />
+    </x.PreferenceCategory>
+
+    <!-- Category with multi-line title -->
+    <x.PreferenceCategory
+        x:title="Category Title Line 1\nCategory Title Line 2\nCategory Title Line 3"
+        x:summary="Multi-line title category with 3 lines maximum"
+        x:singleLineTitle="false"
+        x:titleMaxLines="3">
+
+        <x.Preference
+            x:title="Preference A"
+            x:summary="Preference in multi-line title category" />
+    </x.PreferenceCategory>
+
+    <!-- Category with single-line summary -->
+    <x.PreferenceCategory
+        x:title="Single Line Summary"
+        x:summary="This is a very long summary that would normally wrap to multiple lines but is constrained to a single line with ellipsis at the end"
+        x:singleLineSummary="true"
+        x:summaryMaxLines="1">
+
+        <x.Preference
+            x:title="Preference B"
+            x:summary="Preference with parent having single-line summary" />
+    </x.PreferenceCategory>
+
+    <!-- Category with multi-line summary (max 2 lines) -->
+    <x.PreferenceCategory
+        x:title="Two Line Summary"
+        x:summary="Line 1: This is the first line of the summary.\nLine 2: This is the second line.\nLine 3: This line should be cut off."
+        x:singleLineSummary="false"
+        x:summaryMaxLines="2">
+
+        <x.Preference
+            x:title="Preference C"
+            x:summary="Preference with parent having 2-line summary" />
+    </x.PreferenceCategory>
+
+    <!-- Category with multi-line summary (max 4 lines) -->
+    <x.PreferenceCategory
+        x:title="Four Line Summary"
+        x:summary="Line 1\nLine 2\nLine 3\nLine 4\nLine 5 should not show\nLine 6 should not show"
+        x:singleLineSummary="false"
+        x:summaryMaxLines="4">
+
+        <x.Preference
+            x:title="Preference D"
+            x:summary="Preference with parent having 4-line summary" />
+    </x.PreferenceCategory>
+
+    <!-- Category with all caps summary -->
+    <x.PreferenceCategory
+        x:title="All Caps Summary"
+        x:summary="This summary text will be displayed in all caps"
+        x:allCapsSummary="true">
+
+        <x.Preference
+            x:title="Preference E"
+            x:summary="Preference with parent having all caps summary" />
+    </x.PreferenceCategory>
+
+    <!-- Category with normal case title -->
+    <x.PreferenceCategory
+        x:title="Normal Case Title"
+        x:summary="Title is not in all caps"
+        x:allCapsTitle="false">
+
+        <x.Preference
+            x:title="Preference F"
+            x:summary="Preference with parent having normal case title" />
+    </x.PreferenceCategory>
+
+    <!-- Category with multi-line title and summary, both normal case -->
+    <x.PreferenceCategory
+        x:title="Multi-Line Title\nLine 2\nLine 3"
+        x:summary="Multi-line summary\nLine 2\nLine 3\nLine 4"
+        x:singleLineTitle="false"
+        x:titleMaxLines="3"
+        x:singleLineSummary="false"
+        x:summaryMaxLines="4"
+        x:allCapsTitle="false"
+        x:allCapsSummary="false">
+
+        <x.Preference
+            x:title="Preference G"
+            x:summary="Preference with fully customized category parent" />
+    </x.PreferenceCategory>
+
+    <!-- Category All Caps Tests -->
+    <x.PreferenceCategory
+        x:title="Category All Caps Tests"
+        x:iconSpaceReserved="false">
+
+        <x.Preference
+            x:title="Normal Category Title"
+            x:summary="Category title is in normal case (not all caps)" />
+    </x.PreferenceCategory>
+
+    <x.PreferenceCategory
+        x:title="This Category Title Is All Caps"
+        x:allCapsTitle="true"
+        x:iconSpaceReserved="false">
+
+        <x.Preference
+            x:title="Category with All Caps Title"
+            x:summary="The parent category has allCapsTitle set to true" />
+    </x.PreferenceCategory>
+
+    <x.PreferenceCategory
+        x:title="Category with All Caps Summary"
+        x:summary="This summary is displayed in all caps"
+        x:allCapsSummary="true"
+        x:iconSpaceReserved="false">
+
+        <x.Preference
+            x:title="Category with All Caps Summary"
+            x:summary="The parent category has allCapsSummary set to true" />
+    </x.PreferenceCategory>
+
+    <x.PreferenceCategory
+        x:title="Both Title and Summary All Caps"
+        x:summary="This summary is also in all caps"
+        x:allCapsTitle="true"
+        x:allCapsSummary="true"
+        x:iconSpaceReserved="false">
+
+        <x.Preference
+            x:title="Category with Both All Caps"
+            x:summary="The parent category has both allCapsTitle and allCapsSummary set to true" />
+    </x.PreferenceCategory>
+
+
+</PreferenceScreen>
+

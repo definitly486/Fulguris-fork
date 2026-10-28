@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ The contents of this file are subject to the Common Public Attribution License Version 1.0.
+ (the "License"); you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at:
+ https://github.com/Slion/Fulguris/blob/main/LICENSE.CPAL-1.0.
+ The License is based on the Mozilla Public License Version 1.1, but Sections 14 and 15 have been
+ added to cover use of software over a computer network and provide for limited attribution for
+ the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B.
+
+ Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF
+ ANY KIND, either express or implied. See the License for the specific language governing rights
+ and limitations under the License.
+
+ The Original Code is Fulguris.
+
+ The Original Developer is the Initial Developer.
+ The Initial Developer of the Original Code is Stéphane Lenclud.
+
+ All portions of the code written by Stéphane Lenclud are Copyright © 2020 Stéphane Lenclud.
+ All Rights Reserved.
+-->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:a="http://schemas.android.com/apk/res-auto">
+
+<!--
+⚠️: Needed to use orders as the Default domain settings is added on top dynamically
+To limit the number of items initial shown you can use: a:initialExpandedChildrenCount="6"
+-->
+
+    <x.Preference
+        a:defaultValue="false"
+        a:key="@string/pref_key_delete_all_domains_settings"
+        a:title="@string/pref_title_domains_delete_all"
+        a:summary="@string/pref_summary_domains_delete_all"
+        a:iconSpaceReserved="false"
+        a:icon="@drawable/ic_delete_forever_outline"
+        a:singleLineTitle="false"
+        a:allowDividerAbove="true"
+        a:order="10"
+        />
+
+    <x.Preference
+        a:key="@string/pref_key_clear_location_permissions"
+        a:title="@string/pref_title_clear_location_permissions"
+        a:summary="@string/pref_summary_clear_location_permissions"
+        a:icon="@drawable/ic_wrong_location_outline"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="false"
+        a:allowDividerAbove="true"
+        a:order="20"
+        />
+
+    <x.PreferenceCategory
+        a:key="@string/pref_key_domains"
+        a:icon="@drawable/ic_domain"
+        a:title="@string/pref_title_domains"
+        a:singleLineTitle="false"
+        a:order="100"/>
+
+</PreferenceScreen>

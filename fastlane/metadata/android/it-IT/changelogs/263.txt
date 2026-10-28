@@ -1,0 +1,6 @@
+📺 Supporto per Android TV con cursore a schermo per telecomandi e gamepad
+⏱️ Nuova impostazione di timeout "Nascondi barra degli strumenti dopo"
+🔍 Miglioramenti al campo di ricerca: ESC annulla come indietro
+📝 Aggiunta la versione di Android alla schermata Informazioni
+🌐 Aggiornamento delle traduzioni
+🐛 Diverse correzioni e miglioramenti

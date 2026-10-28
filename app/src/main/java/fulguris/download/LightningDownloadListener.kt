@@ -1,0 +1,450 @@
+/*
+ * Copyright 2014 A.C.R. Development
+ */
+package fulguris.download
+
+import fulguris.R
+import fulguris.activity.WebBrowserActivity
+import fulguris.database.downloads.DownloadsRepository
+import fulguris.di.HiltEntryPoint
+import fulguris.di.configPrefs
+import fulguris.extensions.KDuration
+import fulguris.extensions.makeSnackbar
+import fulguris.extensions.snackbar
+import fulguris.settings.preferences.UserPreferences
+import fulguris.utils.FileUtils
+import fulguris.view.WebViewEx
+import android.Manifest
+import android.app.Activity
+import android.app.Dialog
+import android.app.DownloadManager
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.text.format.Formatter
+import android.util.Base64
+import android.view.Gravity
+import android.webkit.DownloadListener
+import android.webkit.MimeTypeMap
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.text.parseAsHtml
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.EntryPointAccessors
+import fulguris.app
+import fulguris.extensions.launch
+import fulguris.permissions.PermissionsManager
+import fulguris.permissions.PermissionsResultAction
+import timber.log.Timber
+import java.io.File
+
+//@AndroidEntryPoint
+class LightningDownloadListener     //Injector.getInjector(context).inject(this);
+    (private val mActivity: Activity,
+     private val webViewProvider: () -> WebViewEx? = { null }) : BroadcastReceiver(),
+    DownloadListener {
+
+    // Could not get injection working in broadcast receiver
+    private val hiltEntryPoint = EntryPointAccessors.fromApplication(app, HiltEntryPoint::class.java)
+
+    val userPreferences: UserPreferences = hiltEntryPoint.userPreferences
+    val downloadHandler: fulguris.download.DownloadHandler = hiltEntryPoint.downloadHandler
+    val downloadManager: DownloadManager = hiltEntryPoint.downloadManager
+    val downloadsRepository: DownloadsRepository = hiltEntryPoint.downloadsRepository
+    val blobDownloadJs: String = hiltEntryPoint.blobDownloadJs.provideJs()
+
+    // From BroadcastReceiver
+    // We use this to receive download complete notifications
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action == DownloadManager.ACTION_DOWNLOAD_COMPLETE) {
+            //Fetching the download id received with the broadcast
+            val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+            //Checking if the received broadcast is for our enqueued download by matching download id
+            // TODO: what if we have multiple downloads going on? I doubt our architecture supports that properly for now.
+            if (downloadHandler.iDownloadId == id) {
+
+                // Our download is complete check if it was a success
+                val q = DownloadManager.Query()
+                q.setFilterById(id)
+                val c = downloadManager.query(q)
+                var contentTitle = ""
+                var contentText: String? = ""
+                var success = false
+                if (c.moveToFirst()) {
+                    val status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                        success = true
+                        contentTitle = context.getString(R.string.download_complete)
+                        val filePath =
+                            c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
+                        contentText =
+                            filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length)
+                    }
+                    // Assume failure
+                    //if (status == DownloadManager.STATUS_FAILED) {
+                    // That stupidly returns "placeholder" on F(x)tec Pro1
+                    //filename = c.getString(c.getColumnIndex(DownloadManager.COLUMN_REASON));
+                }
+                c.close()
+
+                // Create system notification
+                // Passing a null intent in case of failure means nothing happens when user taps our notification
+                // User needs to dismiss it using swipe
+                var pendingIntent: PendingIntent? = null
+                var downloadsIntent: Intent? = null
+                if (!success) {
+                    contentTitle = context.getString(R.string.download_failed)
+                    contentText = downloadHandler.iFilename
+                } else {
+                    // Create pending intent to open downloads folder when tapping notification
+                    val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        PendingIntent.FLAG_IMMUTABLE
+                    } else {
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    }
+                    downloadsIntent =
+                        fulguris.utils.Utils.getIntentForDownloads(mActivity, userPreferences.downloadDirectory)
+                    pendingIntent = PendingIntent.getActivity(mActivity, 0, downloadsIntent, flags)
+                }
+                val builder =
+                    NotificationCompat.Builder(mActivity, (mActivity as WebBrowserActivity).CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_download_outline) // TODO: different icon for failure?
+                        .setContentTitle(contentTitle) //
+                        .setContentText(contentText) //
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT) // Set the intent that will fire when the user taps the notification
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true)
+                val notificationManager = NotificationManagerCompat.from(mActivity)
+                // notificationId is a unique int for each notification that you must define
+                notificationManager.notify(0, builder.build())
+
+                //Show a snackbar with a link to open the downloads list
+                if (success) {
+                    mActivity.makeSnackbar(
+                        contentTitle,
+                        KDuration,
+                        if (mActivity.configPrefs.toolbarsBottom) Gravity.TOP else Gravity.BOTTOM
+                    ).setAction(
+                        R.string.show
+                    ) {
+                        @Suppress("USELESS_CAST")
+                        (mActivity as WebBrowserActivity).openDownloads()
+                    }.show()
+                } else {
+                    mActivity.snackbar(
+                        contentTitle,
+                        if (mActivity.configPrefs.toolbarsBottom) Gravity.TOP else Gravity.BOTTOM
+                    )
+                }
+            }
+        }
+    }
+
+    private fun getFileName(id: Long): String {
+        val q = DownloadManager.Query()
+        q.setFilterById(id)
+        val c = downloadManager.query(q)
+        var filename = ""
+        if (c.moveToFirst()) {
+            val status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS))
+            if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                val filePath = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
+                filename = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length)
+            } else if (status == DownloadManager.STATUS_FAILED) {
+                // That stupidly returns "placeholder" on F(x)tec Pro1
+                //filename = c.getString(c.getColumnIndex(DownloadManager.COLUMN_REASON));
+                filename = "Failed"
+            }
+        }
+        c.close()
+        return filename
+    }
+
+    override fun onDownloadStart(
+        url: String, userAgent: String,
+        contentDisposition: String, mimetype: String, contentLength: Long
+    ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // No permissions needed anymore from Android 13
+            doDownloadStart(url, userAgent, contentDisposition, mimetype, contentLength)
+        } else {
+            PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(mActivity, arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ),
+                object : PermissionsResultAction() {
+                    override fun onGranted() {
+                        doDownloadStart(url, userAgent, contentDisposition, mimetype, contentLength)
+                    }
+
+                    override fun onDenied(permission: String) {
+                        //TODO show message
+                    }
+                })
+        }
+
+
+        // Some download link spawn an empty tab, just close it then
+        if (mActivity is WebBrowserActivity) {
+            mActivity.closeCurrentTabIfEmpty()
+        }
+    }
+
+    private fun doDownloadStart(
+        url: String, userAgent: String,
+        contentDisposition: String, mimetype: String, contentLength: Long
+    ) {
+        // Get original filename WITHOUT extension changes to check for mismatches
+        var originalFileName = fulguris.utils.guessFileNameWithoutExtensionChange(url, contentDisposition, mimetype, null)
+
+        // BlobHook.js may have already captured the real filename from the
+        // HTML5 download attribute (on any anchor click, blob: or not) and
+        // sent it to us via the JS bridge. The WebView's download listener
+        // never receives the download attribute itself, so without this the
+        // file would be saved under the URL's basename.
+        val webView = webViewProvider()
+        var capturedFilename: String? = null
+        if (webView != null) {
+            synchronized(webView.blobFilenames) {
+                capturedFilename = webView.blobFilenames.remove(url)
+            }
+            if (capturedFilename != null) {
+                originalFileName = capturedFilename
+                Timber.d("Download: using captured download-attribute filename: %s", originalFileName)
+            }
+            if (url.startsWith("blob:")) {
+                // If the user already confirmed this download via the early dialog
+                // shown from BlobHook.js (onConfirmDownload), skip the duplicate dialog
+                // and proceed directly to downloading the blob data.
+                if (webView.blobDownloadPreConfirmed) {
+                    webView.blobDownloadPreConfirmed = false
+                    Timber.d("Blob download pre-confirmed, skipping dialog")
+                    downloadBlobUrl(url, originalFileName, showPending = false)
+                    return
+                }
+            }
+        }
+
+        val downloadSize: String = if (contentLength > 0) {
+            Formatter.formatFileSize(mActivity, contentLength)
+        } else {
+            mActivity.getString(R.string.unknown_file_size)
+        }
+
+        val builder = MaterialAlertDialogBuilder(mActivity)
+
+        // Build descriptive message following MD3 guidelines
+        // If server sends generic octet-stream, infer MIME type from file extension
+        // Notably the case for Fulguris APK download from slions.net
+        val mimeTypeDetectedFromExtension = mimetype == "application/octet-stream" || mimetype.isBlank()
+        val fileType = when {
+            mimeTypeDetectedFromExtension -> {
+                val extension = originalFileName.substringAfterLast('.', "").lowercase()
+                if (extension.isNotEmpty()) {
+                    val detectedMimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+                    Timber.d("Server sent octet-stream for .$extension file, detected MIME type: $detectedMimeType")
+                    detectedMimeType ?: mimetype.ifEmpty { mActivity.getString(R.string.unknown_file_type) }
+                } else {
+                    mimetype.ifEmpty { mActivity.getString(R.string.unknown_file_type) }
+                }
+            }
+            mimetype.isNotEmpty() -> mimetype
+            else -> mActivity.getString(R.string.unknown_file_type)
+        }
+
+        Timber.d("Final MIME type for display: $fileType (original server MIME: $mimetype)")
+
+        // Only check for extension mismatch if server provided a real MIME type (not octet-stream)
+        // If we detected type from extension, don't offer "Download as" button since we already fixed it
+        val (hasMismatch, correctedFilename) = if (!mimeTypeDetectedFromExtension) {
+            fulguris.utils.hasExtensionMismatch(originalFileName, mimetype)
+        } else {
+            Pair(false, null)
+        }
+
+        // Parameters: filename, type, size (size is last)
+        val message = mActivity.getString(R.string.dialog_download_message, originalFileName, fileType, downloadSize)
+
+        // Use question as title per MD3 guidelines
+        val dialog: Dialog = builder.setIcon(R.drawable.ic_download_outline)
+            .setTitle(R.string.dialog_download_title)
+            .setMessage(message.parseAsHtml())
+            .setPositiveButton(
+                mActivity.resources.getString(R.string.action_download)
+            ) { _, _ ->
+                if (url.startsWith("blob:")) {
+                    downloadBlobUrl(url, originalFileName)
+                } else if (capturedFilename != null) {
+                    // The download attribute named the file (the WebView's
+                    // download listener never reports it), so DownloadManager
+                    // would guess the URL's basename — save it as requested.
+                    downloadHandler.onDownloadStartWithFilename(
+                        mActivity,
+                        userPreferences,
+                        url,
+                        userAgent,
+                        contentDisposition,
+                        mimetype,
+                        downloadSize,
+                        originalFileName
+                    )
+                } else {
+                    downloadHandler.onDownloadStart(
+                        mActivity,
+                        userPreferences,
+                        url,
+                        userAgent,
+                        contentDisposition,
+                        mimetype,
+                        downloadSize
+                    )
+                }
+            }
+            .apply {
+                // Add neutral button if there's an extension mismatch
+                if (hasMismatch && correctedFilename != null) {
+                    // Extract just the extension for the button label
+                    val correctedExt = correctedFilename.substringAfterLast('.').uppercase()
+                    setNeutralButton(
+                        mActivity.getString(R.string.download_as_format, correctedExt)
+                    ) { _, _ ->
+                        // Download with corrected filename
+                        downloadHandler.onDownloadStartWithFilename(
+                            mActivity,
+                            userPreferences,
+                            url,
+                            userAgent,
+                            contentDisposition,
+                            mimetype,
+                            downloadSize,
+                            correctedFilename
+                        )
+                    }
+                }
+            }
+            .setNegativeButton(
+                mActivity.resources.getString(R.string.action_cancel)
+            ) { _, _ -> }
+            .launch()
+        Timber.d("Downloading: $originalFileName (mimetype: $mimetype, hasMismatch: $hasMismatch, correctedFilename: $correctedFilename)")
+    }
+
+    /**
+     * Handle a blob: URL download by reading the blob data from the WebView via JavaScript
+     * and writing the bytes directly to disk. The Android DownloadManager cannot resolve
+     * blob: URLs since they are in-memory object URLs created by the page.
+     */
+    private fun downloadBlobUrl(blobUrl: String, filename: String, showPending: Boolean = true) {
+        val webView = webViewProvider() ?: run {
+            Timber.w("Cannot download blob: no WebView available")
+            val gravity = if (mActivity.configPrefs.toolbarsBottom) Gravity.TOP else Gravity.BOTTOM
+            mActivity.snackbar(R.string.cannot_download, gravity)
+            return
+        }
+
+        if (showPending) {
+            val gravity = if (mActivity.configPrefs.toolbarsBottom) Gravity.TOP else Gravity.BOTTOM
+            mActivity.snackbar(mActivity.getString(R.string.download_pending) + ' ' + filename, gravity)
+        }
+
+        webView.onBlobDownload = { dataUrl, jsFilename ->
+            // Prefer the filename captured from the HTML5 download attribute by BlobHook.js;
+            // fall back to the filename derived from the URL shown in the download dialog.
+            val finalFilename = jsFilename.ifBlank { filename }
+            Timber.d("Blob download complete, saving as: %s (JS filename: '%s')", finalFilename, jsFilename)
+            saveBlobDataUrl(dataUrl, finalFilename)
+        }
+
+        // Set the blob URL for the script to read, then evaluate the Mezzanine-managed JS
+        val escapedUrl = blobUrl.replace("\\", "\\\\").replace("'", "\\'")
+        webView.evaluateJavascript("window._fulgurisBlobUrl = '$escapedUrl';", null)
+        webView.evaluateJavascript(blobDownloadJs, null)
+    }
+
+    /**
+     * Decode a base64 data URL received from [downloadBlobUrl] and write it to the download directory.
+     */
+    private fun saveBlobDataUrl(dataUrl: String, filename: String) {
+        Thread {
+            try {
+                val base64 = dataUrl.substringAfter(",", "")
+                if (base64.isEmpty()) throw IllegalArgumentException("Empty base64 payload in data URL")
+                val bytes = Base64.decode(base64, Base64.DEFAULT)
+
+                // Detect MIME type from the data URL header (e.g. "data:model/gltf-binary;base64,...")
+                val mimeType = dataUrl.substringAfter("data:", "").substringBefore(";", "application/octet-stream")
+                    .ifBlank { "application/octet-stream" }
+
+                // Use MediaStore on Q+ for scoped storage compatibility;
+                // fall back to direct file write on older versions.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val values = android.content.ContentValues().apply {
+                        put(android.provider.MediaStore.Downloads.DISPLAY_NAME, filename)
+                        put(android.provider.MediaStore.Downloads.MIME_TYPE, mimeType)
+                        put(android.provider.MediaStore.Downloads.IS_PENDING, 1)
+                    }
+                    val resolver = mActivity.contentResolver
+                    val uri = resolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                        ?: throw java.io.IOException("MediaStore insert returned null")
+                    resolver.openOutputStream(uri)?.use { it.write(bytes) }
+                        ?: throw java.io.IOException("Could not open output stream for $uri")
+                    values.clear()
+                    values.put(android.provider.MediaStore.Downloads.IS_PENDING, 0)
+                    resolver.update(uri, values, null, null)
+                } else {
+                    val location = FileUtils.addNecessarySlashes(userPreferences.downloadDirectory)
+                    val destFile = File(location, filename)
+                    destFile.parentFile?.mkdirs()
+                    destFile.writeBytes(bytes)
+                }
+
+                Handler(Looper.getMainLooper()).post { showBlobDownloadComplete(filename) }
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to save blob download as %s", filename)
+                Handler(Looper.getMainLooper()).post {
+                    val gravity = if (mActivity.configPrefs.toolbarsBottom) Gravity.TOP else Gravity.BOTTOM
+                    mActivity.snackbar(R.string.problem_download, gravity)
+                }
+            }
+        }.start()
+    }
+
+    /**
+     * Show a system notification and snackbar after a blob download is saved to disk.
+     */
+    private fun showBlobDownloadComplete(filename: String) {
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+        val intent = fulguris.utils.Utils.getIntentForDownloads(mActivity, userPreferences.downloadDirectory)
+        val pending = PendingIntent.getActivity(mActivity, 0, intent, flags)
+
+        val notification = NotificationCompat.Builder(mActivity, (mActivity as WebBrowserActivity).CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_download_outline)
+            .setContentTitle(mActivity.getString(R.string.download_complete))
+            .setContentText(filename)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pending)
+            .setAutoCancel(true)
+            .build()
+        NotificationManagerCompat.from(mActivity).notify(0, notification)
+
+        val gravity = if (mActivity.configPrefs.toolbarsBottom) Gravity.TOP else Gravity.BOTTOM
+        mActivity.makeSnackbar(
+            mActivity.getString(R.string.download_complete), KDuration, gravity
+        ).setAction(R.string.show) {
+            // Open the download folder in a file manager since blob downloads
+            // are not tracked by the Android system DownloadManager.
+            try {
+                mActivity.startActivity(intent)
+            } catch (e: Exception) {
+                Timber.w(e, "Could not open downloads folder")
+                (mActivity as? WebBrowserActivity)?.openDownloads()
+            }
+        }.show()
+    }
+
+}

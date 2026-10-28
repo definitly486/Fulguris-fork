@@ -1,0 +1,318 @@
+package fulguris.utils
+
+import android.app.Activity
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.net.MailTo
+import android.net.Uri
+import android.webkit.MimeTypeMap
+import android.webkit.URLUtil
+import android.webkit.WebView
+import androidx.annotation.StringRes
+import androidx.core.content.FileProvider
+import fulguris.BuildConfig
+import fulguris.R
+import fulguris.constant.INTENT_ORIGIN
+import timber.log.Timber
+import java.io.File
+import java.net.URISyntaxException
+import java.util.regex.Pattern
+
+
+    /**
+     * Provide the intent corresponding to the give URL.
+     * Returns null if the candidate intent would do noop such as when the corresponding app is not available.
+     * Exclusively used to launch app associated with a given URL.
+     * Notably needed to make hooks with Google login work if I recall well.
+     *
+     * @param tab
+     * @param url
+     * @return
+     */
+    fun Activity.intentForUrl(tab: WebView?, uri: Uri): Intent? {
+
+        // If it's a special scheme provide it
+        intentForScheme(uri)?.let {return it}
+
+        // Otherwise try build a generic intent
+        val intent = try {
+            Intent.parseUri(uri.toString(), Intent.URI_INTENT_SCHEME)
+        } catch (ex: URISyntaxException) {
+            Timber.w(ex, "Bad URI: $uri")
+            return null
+        }
+        intent.addCategory(Intent.CATEGORY_BROWSABLE)
+        intent.setComponent(null)
+        intent.selector = null
+        if (tab != null) {
+            intent?.putExtra(INTENT_ORIGIN, tab.hashCode())
+        }
+
+        // Allows us to not ask to launch an app that's not installed on the device
+        // To test it you could for instance visit https://t.me/durov while Telegram app is not installed and launch app option set to ASK
+        // Skipping HTTP and HTTPS schemes can be useful to debug but is not the expected behaviour
+        return if (/*uri.scheme=="http" || uri.scheme=="https" ||*/ !isSpecializedHandlerAvailable(intent)) {
+            null
+        } else intent
+    }
+
+    /**
+     *
+     */
+    private fun handleUnresolvableIntent(intent: Intent?): Intent? {
+        val packageName = intent!!.getPackage()
+        if (packageName != null) {
+            val marketUri = Uri.parse("market://search?q=pname:$packageName")
+            val marketIntent = Intent(Intent.ACTION_VIEW, marketUri)
+            marketIntent.addCategory(Intent.CATEGORY_BROWSABLE)
+            return marketIntent
+        }
+        return null
+    }
+
+    /**
+     *
+     */
+    private fun Activity.startActivityForIntent(aIntent: Intent?): Boolean {
+        var intent = aIntent
+        if (packageManager.resolveActivity(intent!!, 0) == null) {
+            intent = handleUnresolvableIntent(intent)
+        }
+        try {
+            if (startActivityIfNeeded(intent!!, -1)) {
+                return true
+            }
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+            // TODO: 6/5/17 fix case where this could throw a FileUriExposedException due to file:// urls
+        }
+        return false
+    }
+
+    /**
+     *
+     */
+    fun Activity.startActivityForUrl(tab: WebView?, url: Uri): Boolean {
+        val intent = intentForUrl(tab, url)
+        return startActivityForIntent(intent)
+    }
+
+    /**
+     * Try launching the given [intent] and fall back to its `browser_fallback_url` if any.
+     *
+     * Per the Android intent scheme spec, when an `intent://` URL targets an app that is not
+     * installed, the `browser_fallback_url` extra (if present) takes precedence over going to
+     * the Play Store. This avoids landing on `ERR_UNKNOWN_URL_SCHEME` or a blank tab.
+     * See https://github.com/Slion/Fulguris/issues/799
+     */
+    fun Activity.startActivityWithFallback(tab: WebView?, intent: Intent, onlyFallback: Boolean): Boolean {
+        Timber.d("startActivityWithFallback")
+        val fallbackUrl = intent.getStringExtra("browser_fallback_url")
+
+        if (!onlyFallback) {
+            // If the intent's target app is not installed and we have a fallback URL,
+            // prefer the fallback URL over the Play Store / market intent.
+            val canResolve = packageManager.resolveActivity(intent, 0) != null
+            if (canResolve || fallbackUrl.isNullOrEmpty()) {
+                if (startActivityForIntent(intent)) {
+                    Timber.d("Intent successfully started.")
+                    return true
+                }
+            } else {
+                Timber.d("Intent has no resolvable activity, using fallback URL instead of market intent.")
+            }
+        }
+
+        Timber.d("Checking for fallback URL.")
+        if (!fallbackUrl.isNullOrEmpty()) {
+            Timber.d("Fallback URL found: $fallbackUrl")
+            tab?.loadUrl(fallbackUrl)
+            return true
+        }
+        Timber.d("No fallback URL found.")
+        return false
+    }
+
+    /**
+     * Search for intent handlers that are specific to this URL, such as specialized apps like google maps or youtube.
+     * Notably avoid asking user if she wants to launch an app when we don't have one.
+     */
+    private fun Activity.isSpecializedHandlerAvailable(intent: Intent): Boolean {
+        val pm = packageManager
+        val handlers = pm.queryIntentActivities(
+            intent,
+            PackageManager.GET_RESOLVED_FILTER
+        )
+        if (handlers.isEmpty()) {
+            return false
+        }
+        for (resolveInfo in handlers) {
+            val filter = resolveInfo.filter
+                ?: // No intent filter matches this intent?
+                // Error on the side of staying in the browser, ignore
+                continue
+            if (filter.isSpecializedFor(intent.data)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * Whether this intent filter is "specialized" for the given URL, i.e. it refers
+     * specifically to this URL rather than to URLs in general (a plain browser).
+     * Shared by [isSpecializedHandlerAvailable] (whether to ask the user at all) and
+     * by the app-launch dialog's app list so both make the same call.
+     *
+     * For web URLs (http/https) a filter only counts when at least one of its data
+     * authorities actually refers to the URL's host: a filter that merely matched
+     * the URL can still declare unrelated or wildcard authorities (e.g. a browser
+     * whose filter also covers a custom scheme, or a wildcard authority that matches
+     * any host), which would otherwise make every site look launchable.
+     * See https://github.com/Slion/Fulguris/issues/542
+     *
+     * For non-web URLs (mailto, custom schemes) there is no host to match against,
+     * so any declared data authority, or any non-web data scheme, counts.
+     */
+    internal fun IntentFilter.isSpecializedFor(url: Uri?): Boolean {
+        url?.scheme?.lowercase()?.let { scheme ->
+            if (scheme == "http" || scheme == "https") {
+                return hasAuthorityMatchingHost(url.host)
+            }
+        }
+        return countDataAuthorities() > 0 ||
+                (countDataSchemes() > 0 && !hasDataScheme("http") && !hasDataScheme("https"))
+    }
+
+    private fun IntentFilter.hasAuthorityMatchingHost(host: String?): Boolean {
+        if (host.isNullOrEmpty()) return false
+        val target = host.lowercase()
+        val count = countDataAuthorities()
+        for (i in 0 until count) {
+            val authority = getDataAuthority(i)?.host ?: continue
+            val base = authority.lowercase().removePrefix(".")
+            if (base.isNotEmpty() &&
+                (target == base || target.endsWith(".$base"))
+            ) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * Handles URLs with special schemes by querying the system for apps that can handle them.
+     * This dynamically detects which schemes have registered handlers on the device,
+     * eliminating the need to hardcode specific schemes like mailto, tel, geo, etc.
+     *
+     * Special cases handled explicitly:
+     * - "intent" scheme: Parsed using Intent.URI_INTENT_SCHEME
+     * - "file" scheme: Uses FileProvider for secure file access
+     * - "mailto" scheme: Uses MailTo.parse() for better email parsing
+     * - Other schemes: Queries system for registered handlers
+     *
+     * @param uri The URI to be handled
+     * @return An Intent that corresponds to the action required by the URI's scheme,
+     * or null if no app can handle the scheme or an error occurs
+     */
+    private fun Activity.intentForScheme(uri: Uri): Intent? {
+        val url = uri.toString()
+        val scheme = uri.scheme?.lowercase() ?: return null
+
+        Timber.d("Handling scheme: $scheme for URL: $uri")
+
+        // Special case: intent scheme requires specific parsing
+        // intent:// scheme is how webpages are explicitly requesting app launch, try https://maps.google.com for instance
+        if (scheme == "intent") {
+            return try {
+                Timber.d("Parsing intent scheme")
+                val intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+                intent.addCategory(Intent.CATEGORY_BROWSABLE)
+                intent.setComponent(null)
+                intent.selector = null
+                intent
+            } catch (e: URISyntaxException) {
+                Timber.e(e, "URISyntaxException for URL: $url")
+                null
+            }
+        }
+
+        // Special case: file URLs need FileProvider for security
+        if (URLUtil.isFileUrl(url) && !url.isSpecialUrl()) {
+            Timber.d("Handling file URL")
+            val file = File(url.replace("file://", ""))
+            return if (file.exists()) {
+                val newMimeType = MimeTypeMap.getSingleton()
+                    .getMimeTypeFromExtension(Utils.guessFileExtension(file.toString()))
+                val intentFile = Intent(Intent.ACTION_VIEW)
+                intentFile.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                val contentUri = FileProvider.getUriForFile(
+                    this,
+                    BuildConfig.APPLICATION_ID + ".fileprovider",
+                    file
+                )
+                intentFile.setDataAndType(contentUri, newMimeType)
+                intentFile
+            } else {
+                Timber.d("File not found for URL: $url")
+                null
+            }
+        }
+
+        // Special case: mailto scheme has better parsing with MailTo.parse()
+        if (scheme == "mailto") {
+            Timber.d("Parsing mailto URL")
+            val mailTo = MailTo.parse(url)
+            return Utils.newEmailIntent(mailTo.to, mailTo.subject, mailTo.body, mailTo.cc)
+        }
+
+        // For all other schemes, create a generic intent and check if any specialized app can handle it
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        intent.addCategory(Intent.CATEGORY_BROWSABLE)
+
+        // For non-web schemes (tel:, geo:, sms:, etc.), we want to launch any available handler
+        // For web schemes (http/https), use isSpecializedHandlerAvailable to filter out browsers
+        val isWebScheme = scheme == "http" || scheme == "https"
+
+        if (isWebScheme) {
+            // For web schemes, only return intent if there's a specialized (non-browser) handler
+            return if (isSpecializedHandlerAvailable(intent)) {
+                Timber.d("Found specialized handler for web scheme: $scheme")
+                intent
+            } else {
+                Timber.d("Only generic browser handlers found for scheme: $scheme, not launching external app")
+                null
+            }
+        } else {
+            // For non-web schemes, check if any handler exists (don't filter out browsers)
+            val handlers = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            return if (handlers.isNotEmpty()) {
+                Timber.d("Found handler for scheme: $scheme")
+                intent
+            } else {
+                Timber.d("No handler found for scheme: $scheme")
+                null
+            }
+        }
+    }
+
+    /**
+     * Shares a URL to the system.
+     *
+     * @param url   the URL to share. If the URL is null
+     * or a special URL, no sharing will occur.
+     * @param title the title of the URL to share. This
+     * is optional.
+     */
+    fun Activity.shareUrl(url: String?, title: String?, @StringRes aTitleId: Int = R.string.dialog_title_share) {
+        if (url != null && !url.isSpecialUrl()) {
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.setType("text/plain")
+            if (title != null) {
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, title)
+            }
+            shareIntent.putExtra(Intent.EXTRA_TEXT, url)
+            startActivity(Intent.createChooser(shareIntent, getString(aTitleId)))
+        }
+    }

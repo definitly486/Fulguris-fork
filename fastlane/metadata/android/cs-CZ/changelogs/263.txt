@@ -1,0 +1,6 @@
+📺 Podpora Android TV s kurzorem na obrazovce pro ovladače a herní ovladače
+⏱️ Nová nastavení časového limitu „Skrýt panel nástrojů po“
+🔍 Vylepšení pole pro vyhledávání: ESC zruší jako zpět
+📝 Na obrazovce O aplikaci se zobrazuje verze Androidu
+🌐 Aktualizace překladů
+🐛 Různé opravy a vylepšení

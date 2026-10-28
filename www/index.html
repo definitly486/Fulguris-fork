@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#FF5722">
+  <title>Fulguris Test Suite</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link href="https://cdn.jsdelivr.net/npm/beercss@3.13.1/dist/cdn/beer.min.css" rel="stylesheet" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.13.1/dist/cdn/beer.min.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"></script>
+  <script>
+    function theme(color) {
+      ui("theme", color || "#FF5722");
+      localStorage.setItem('themeColor', color || "#FF5722");
+      // Update meta theme-color
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', color || "#FF5722");
+    }
+
+    // Toggle mode between light and dark
+    const mode = () => {
+      const currentMode = ui("mode");
+      const newMode = currentMode === 'dark' ? 'light' : 'dark';
+      ui("mode", newMode);
+      document.querySelector('meta[name="color-scheme"]').setAttribute('content', newMode);
+      localStorage.setItem('themeMode', newMode);
+      updateModeIcon();
+    }
+
+    function updateModeIcon() {
+      const icon = document.getElementById('modeIcon');
+      const currentMode = ui("mode");
+      icon.textContent = currentMode === "dark" ? "light_mode" : "dark_mode";
+    }
+
+    function changeThemeColor(color) {
+      theme(color);
+    }
+
+    function openColorPicker() {
+      const input = document.createElement('input');
+      input.type = 'color';
+      input.value = localStorage.getItem('themeColor') || '#FF6B35';
+      input.addEventListener('change', (e) => {
+        changeThemeColor(e.target.value);
+        ui('#colorMenu');
+      });
+      input.click();
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedMode = localStorage.getItem('themeMode');
+      if (savedMode) {
+        ui("mode", savedMode);
+        document.querySelector('meta[name="color-scheme"]').setAttribute('content', savedMode);
+      }
+      updateModeIcon();
+
+      // Restore saved theme color
+      const savedColor = localStorage.getItem('themeColor');
+      theme(savedColor || "#FF5722");
+    });
+  </script>
+</head>
+<body>
+
+  <header class="fixed transparent right-align">
+    <div class="margin">
+      <nav class="toolbar tertiary elevate min">
+        <button class="circle transparent" onclick="ui('#colorMenu')">
+          <i>palette</i>
+        </button>
+        <button class="circle transparent" onclick="mode()">
+          <i id="modeIcon">dark_mode</i>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <dialog id="colorMenu">
+    <h5>Choose Theme Color</h5>
+    <nav class="wrap">
+      <button class="circle" style="background:#FF5722" onclick="changeThemeColor('#FF5722'); ui('#colorMenu')" title="Deep Orange"><i>check</i></button>
+      <button class="circle" style="background:#2196F3" onclick="changeThemeColor('#2196F3'); ui('#colorMenu')" title="Blue"><i>check</i></button>
+      <button class="circle" style="background:#4CAF50" onclick="changeThemeColor('#4CAF50'); ui('#colorMenu')" title="Green"><i>check</i></button>
+      <button class="circle" style="background:#9C27B0" onclick="changeThemeColor('#9C27B0'); ui('#colorMenu')" title="Purple"><i>check</i></button>
+      <button class="circle" style="background:#E91E63" onclick="changeThemeColor('#E91E63'); ui('#colorMenu')" title="Pink"><i>check</i></button>
+      <button class="circle" style="background:#00BCD4" onclick="changeThemeColor('#00BCD4'); ui('#colorMenu')" title="Cyan"><i>check</i></button>
+      <button class="circle" style="background:#FFC107" onclick="changeThemeColor('#FFC107'); ui('#colorMenu')" title="Amber"><i>check</i></button>
+      <button class="circle" style="background:#009688" onclick="changeThemeColor('#009688'); ui('#colorMenu')" title="Teal"><i>check</i></button>
+      <button class="circle" style="background:#FF9800" onclick="changeThemeColor('#FF9800'); ui('#colorMenu')" title="Orange"><i>check</i></button>
+      <button class="circle border" onclick="openColorPicker()" title="Custom Color"><i>palette</i></button>
+    </nav>
+    <nav class="right-align">
+      <button class="border" onclick="ui('#colorMenu')">Close</button>
+    </nav>
+  </dialog>
+
+  <main class="responsive">
+    <h3 class="large-text"><i>science</i> Fulguris Browser Test Suite</h3>
+    <p>Welcome to the Fulguris test page collection. These pages help test various browser features, navigation, dialogs, deep links, and more.</p>
+
+    <article class="border">
+      <h5><i>description</i> Test Pages</h5>
+      <nav class="wrap">
+        <a href="tests.html" class="chip">
+          <i>science</i>
+          <span>Browser Tests</span>
+        </a>
+        <a href="page.html" class="chip">
+          <i>sync</i>
+          <span>Navigation Test</span>
+        </a>
+        <a href="console.html" class="chip">
+          <i>terminal</i>
+          <span>Console Test</span>
+        </a>
+        <a href="minimal.html" class="chip">
+          <i>bolt</i>
+          <span>Minimal Page</span>
+        </a>
+      </nav>
+    </article>
+
+    <article class="border">
+      <h5><i>quiz</i> Quick Tests</h5>
+
+      <h6>Dialog Tests</h6>
+      <nav class="wrap">
+        <button onclick="alert('Simple alert test')">Alert</button>
+        <button onclick="confirm('Test confirm dialog')">Confirm</button>
+        <button onclick="prompt('Enter test value:')">Prompt</button>
+        <button onclick="alert('Multi-line test:\nLine 1\nLine 2\nLine 3')">Multi-line</button>
+      </nav>
+
+      <h6>Navigation Tests</h6>
+      <nav class="wrap">
+        <button onclick="window.history.back()"><i>arrow_back</i><span>Back</span></button>
+        <button onclick="window.history.forward()"><i>arrow_forward</i><span>Forward</span></button>
+        <button onclick="location.reload()"><i>refresh</i><span>Reload</span></button>
+      </nav>
+
+      <h6>Deep Link Tests</h6>
+      <nav class="wrap">
+        <a href="tel:+1234567890" class="chip"><i>call</i><span>Tel Link</span></a>
+        <a href="mailto:test@example.com" class="chip"><i>email</i><span>Email</span></a>
+        <a href="sms:+1234567890" class="chip"><i>chat</i><span>SMS</span></a>
+        <a href="geo:0,0?q=Eiffel+Tower" class="chip"><i>location_on</i><span>Geo URI</span></a>
+      </nav>
+    </article>
+
+    <article class="border">
+      <h5><i>info</i> About</h5>
+      <p>This test suite is designed for <strong>Fulguris Web Browser</strong> to validate:</p>
+      <ul>
+        <li>✅ Dialog functionality (alert, confirm, prompt)</li>
+        <li>✅ Navigation and history management</li>
+        <li>✅ Deep links and URI schemes (tel:, mailto:, geo:, etc.)</li>
+        <li>✅ JavaScript execution and DOM manipulation</li>
+        <li>✅ Form handling and input validation</li>
+        <li>✅ Page state and storage (localStorage, sessionStorage)</li>
+        <li>✅ CSS rendering and layout</li>
+        <li>✅ Resource loading behavior</li>
+      </ul>
+    </article>
+
+    <article class="border primary-container">
+      <h6><i>build</i> Testing Tips</h6>
+      <ul>
+        <li><strong>tests.html</strong> - Comprehensive test suite with all features</li>
+        <li><strong>page.html</strong> - Focus on navigation, history, and page state</li>
+        <li><strong>minimal.html</strong> - Zero external resources for baseline testing</li>
+        <li>Use browser DevTools console to monitor JavaScript execution</li>
+        <li>Test back/forward navigation between pages</li>
+        <li>Check Network tab for resource loading</li>
+      </ul>
+    </article>
+
+    <article class="border secondary-container">
+      <h6><i>warning</i> Note</h6>
+      <p>Some deep links (tel:, mailto:, sms:, geo:) may launch external apps or show permission dialogs depending on your device and OS settings.</p>
+    </article>
+
+    <div class="space"></div>
+    <div class="center-align small-text">
+      <p>Fulguris Browser Test Suite | <a href="https://github.com/Slion/Fulguris">GitHub</a></p>
+    </div>
+  </main>
+</body>
+</html>

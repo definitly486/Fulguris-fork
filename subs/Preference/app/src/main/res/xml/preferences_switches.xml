@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:a="http://schemas.android.com/apk/res-auto">
+
+    <x.SwitchPreference
+        a:icon="@drawable/ic_check_circle_outline"
+        a:key="switch_demo"
+        a:title="With summary"
+        a:summaryOn="That switch is on"
+        a:summaryOff="That switch is off"/>
+
+    <x.SwitchPreference
+        a:title="With summary no icon"
+        a:summaryOn="That switch is on"
+        a:summaryOff="That switch is off"
+        a:iconSpaceReserved="false"
+        />
+
+    <x.SwitchPreference
+        a:title="Long single line title should be truncated"
+        a:summaryOn="That switch is on"
+        a:summaryOff="That switch is off"
+        a:iconSpaceReserved="false"
+        a:singleLineTitle="true"
+        />
+
+    <x.SwitchPreference
+        a:iconSpaceReserved="true"
+        a:title="No summary"
+        />
+
+
+    <x.SwitchPreference
+        a:iconSpaceReserved="false"
+        a:title="Master switch"
+        a:key="master_switch"
+        a:summaryOn="Dependencies are enabled"
+        a:summaryOff="Dependencies are disabled"
+        />
+
+    <x.SwitchPreference
+        a:iconSpaceReserved="false"
+        a:title="Depends on the above"
+        a:dependency="master_switch"
+        />
+
+    <x.SwitchPreference
+        a:iconSpaceReserved="false"
+        a:title="Master switch reverse"
+        a:key="master_switch_reverse"
+        a:disableDependentsState="true"
+        a:summaryOn="Dependencies are disabled"
+        a:summaryOff="Dependencies are enabled"
+        />
+
+    <x.SwitchPreference
+        a:iconSpaceReserved="false"
+        a:title="Depends on the above"
+        a:dependency="master_switch_reverse"
+        />
+
+
+    <SwitchPreferenceCompat
+        a:title="Legacy switch"
+        a:summary="Should not be using SwitchPreferenceCompat anymore"
+        a:iconSpaceReserved="false"
+        />
+
+</PreferenceScreen>

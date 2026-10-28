@@ -1,0 +1,6 @@
+📺 Android TV-ondersteuning met schermcursor voor afstandsbedieningen en gamepads
+⏱️ Nieuwe timeout-instelling "Werkbalk verbergen na"
+🔍 Verbeteringen aan het zoekveld: ESC annuleert als terug
+📝 Android-versie toegevoegd aan het Over-scherm
+🌐 Vertalingen bijgewerkt
+🐛 Diverse bugfixes en verbeteringen

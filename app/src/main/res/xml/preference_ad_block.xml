@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <x.SwitchPreference
+        android:defaultValue="true"
+        android:key="@string/pref_key_content_control"
+        android:title="@string/settings_adblock"
+        android:summaryOn="@string/pref_summary_on_enable_ad_blocker"
+        android:summaryOff="@string/pref_summary_off_enable_ad_blocker"
+        app:icon="@drawable/ic_block"
+        app:singleLineTitle="false" />
+
+    <Preference
+        android:key="@string/pref_key_blocklist_auto_update"
+        android:title="@string/blocklist_update_mode"
+        android:dependency="@string/pref_key_content_control"
+        app:icon="@drawable/ic_action_refresh"
+        app:singleLineTitle="false" />
+
+    <Preference
+        android:key="@string/pref_key_blocklist_auto_update_frequency"
+        android:title="@string/blocklist_update_frequency"
+        android:dependency="@string/pref_key_content_control"
+        app:icon="@drawable/ic_update"
+        app:singleLineTitle="false" />
+
+    <Preference
+        android:key="@string/pref_key_modify_filters"
+        android:title="@string/use_modify_filters"
+        android:dependency="@string/pref_key_content_control"
+        app:singleLineTitle="false" />
+
+
+        <x.PreferenceCategory
+            android:key="@string/pref_key_content_control_filters"
+            android:title="@string/pref_category_filters"
+            android:summary="@string/pref_category_summary_filters"
+            android:dependency="@string/pref_key_content_control"
+            app:singleLineTitle="false">
+        </x.PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>
