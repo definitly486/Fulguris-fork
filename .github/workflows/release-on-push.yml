@@ -47,7 +47,7 @@ jobs:
     - name: Compute names
       id: names
       run: |
-        SAFE_BRANCH=$(echo "${GITHUB_REF_NAME}" | tr -c 'A-Za-z0-9._-' '-')
+        SAFE_BRANCH=$(printf '%s' "${GITHUB_REF_NAME}" | tr -c 'A-Za-z0-9._-' '-')
         echo "branch=${SAFE_BRANCH}" >> "$GITHUB_OUTPUT"
         echo "tag=${SAFE_BRANCH}-${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
 
