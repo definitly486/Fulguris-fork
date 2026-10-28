@@ -125,6 +125,37 @@
     </x.PreferenceCategory>
 
     <x.PreferenceCategory
+        x:title="@string/title_text_size">
+
+        <x.SwitchPreference
+            x:defaultValue="false"
+            x:key="@string/pref_key_domain_text_size_override"
+            x:title="@string/pref_title_override"
+            x:summaryOn="@string/pref_summary_on_override"
+            x:summaryOff="@string/pref_summary_off_override"
+            x:iconSpaceReserved="true"
+            x:singleLineTitle="false" />
+
+        <x.SliderPreference
+            a:key="@string/pref_key_domain_text_size"
+            a:title="@string/title_text_size"
+            a:dependency="@string/pref_key_domain_text_size_override"
+            a:icon="@drawable/ic_desktop"
+            a:seekBarIncrement="5"
+            a:showSeekBarValue="true"
+            a:iconSpaceReserved="false"
+            a:updatesContinuously="true"
+            a:valueFrom="50"
+            a:valueTo="200"
+            a:stepSize="5"
+            a:value="100"
+            a:labelBehavior="gone"
+            a:format="%.0f%%"
+            a:singleLineTitle="false" />
+
+    </x.PreferenceCategory>
+
+    <x.PreferenceCategory
         x:title="@string/pref_title_desktop_mode_default">
 
         <x.SwitchPreference

@@ -35,6 +35,7 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import fulguris.settings.preferences.delegates.booleanPreference
 import fulguris.settings.preferences.delegates.enumPreference
+import fulguris.settings.preferences.delegates.safeFloatPreference
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import timber.log.Timber
 import java.io.File
@@ -155,6 +156,18 @@ class DomainPreferences constructor(
     }
 
     /**
+     * Text size in percent for this domain.
+     * Null means no domain overrides it and the global browser text size should be used.
+     */
+    var textSizeOverride by preferences.booleanPreference(R.string.pref_key_domain_text_size_override, false)
+    var textSizeLocal by preferences.safeFloatPreference(R.string.pref_key_domain_text_size, 100f)
+    val textSize: Int? get() {
+        // Default domain settings have no text size, the global browser text size applies there
+        if (isDefault) return null
+        return if (textSizeOverride) textSizeLocal.toInt() else parent?.textSize
+    }
+
+    /**
      * Define what to do when a third-party app is available:
      * - Yes: Launch the app
      * - No: Do not launch the app
@@ -228,6 +241,7 @@ class DomainPreferences constructor(
                thirdPartyCookiesOverride ||
                desktopModeOverride ||
                darkModeOverride ||
+               textSizeOverride ||
                launchAppOverride ||
                sslErrorOverride ||
                incomingUrlActionOverride
@@ -264,6 +278,9 @@ class DomainPreferences constructor(
             }
             if (desktopModeOverride) {
                 overrides.add(context.getString(R.string.pref_title_desktop_mode_default))
+            }
+            if (textSizeOverride) {
+                overrides.add(context.getString(R.string.title_text_size))
             }
             if (javaScriptEnabledOverride) {
                 overrides.add(context.getString(R.string.pref_title_javascript))

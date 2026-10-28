@@ -533,6 +533,10 @@ class WebPageClient(
                 desktopMode = domainPreferences.desktopMode
             }
 
+            // Text size: per-site value if one is set, otherwise the global browser text size
+            view.settings.textZoom = domainPreferences.textSize
+                ?: (userPreferences.browserTextSize + fulguris.settings.fragment.DisplaySettingsFragment.MIN_BROWSER_TEXT_SIZE)
+
             // JavaScript
             if (domainPreferences.javaScriptEnabled) {
                 view.settings.javaScriptEnabled = true

@@ -101,6 +101,8 @@
     <string name="pref_key_desktop_mode_override">pref_key_desktop_mode_override</string>
     <string name="pref_key_dark_mode">pref_key_dark_mode</string>
     <string name="pref_key_dark_mode_override">pref_key_dark_mode_override</string>
+    <string name="pref_key_domain_text_size">pref_key_domain_text_size</string>
+    <string name="pref_key_domain_text_size_override">pref_key_domain_text_size_override</string>
     <string name="pref_key_webrtc">pref_key_webrtc</string>
     <string name="pref_key_cursor_hotkey">pref_key_cursor_hotkey</string>
     <string name="pref_key_cursor_speed">pref_key_cursor_speed</string>
