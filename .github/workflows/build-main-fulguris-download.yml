@@ -23,5 +23,12 @@ jobs:
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
+    # gradle.properties and local.properties contain developer paths that do not exist on the runner
+    - name: Remove local SDK paths
+      run: |
+        rm -f local.properties
+        sed -i '/^[[:space:]]*android\.aapt2FromMavenOverride[[:space:]]*=/d' gradle.properties
+        grep -n "aapt2" gradle.properties || echo "aapt2 override removed"
     - name: Build Slions download variants
       run: ./gradlew assembleSlionsFullDownload
