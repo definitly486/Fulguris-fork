@@ -164,7 +164,10 @@ class DomainPreferences constructor(
     val textSize: Int? get() {
         // Default domain settings have no text size, the global browser text size applies there
         if (isDefault) return null
-        return if (textSizeOverride) textSizeLocal.toInt() else parent?.textSize
+        return if (textSizeOverride) {
+            // Ignore out of range values, an earlier build could leave 0 behind
+            textSizeLocal.toInt().takeIf { it in 50..200 } ?: 100
+        } else parent?.textSize
     }
 
     /**

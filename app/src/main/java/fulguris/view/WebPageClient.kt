@@ -830,6 +830,13 @@ class WebPageClient(
     // Should never be set to domain settings from resources
     var domainPreferences = DomainPreferences(app)
 
+    // Kept as a field since SharedPreferences only holds listeners weakly
+    private val textSizeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == app.getString(R.string.pref_key_domain_text_size) || key == app.getString(R.string.pref_key_domain_text_size_override)) {
+            webPageTab.webView?.settings?.textZoom = webPageTab.effectiveTextZoom()
+        }
+    }
+
     /**
      * Load domain preferences
      */
@@ -846,7 +853,10 @@ class WebPageClient(
 
         // Load domain preferences
         // SharedPreferences cache is cleared when files are deleted, so we can safely load
+        domainPreferences.preferences.unregisterOnSharedPreferenceChangeListener(textSizeListener)
         domainPreferences = DomainPreferences(app, aHost)
+        // Apply text size changes made in domain settings without waiting for a reload
+        domainPreferences.preferences.registerOnSharedPreferenceChangeListener(textSizeListener)
     }
 
     // Used to debounce app launch

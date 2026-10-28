@@ -686,6 +686,19 @@ class WebPageTab(
      * Apparently called whenever the app is sent to the foreground.
      */
     @SuppressLint("NewApi", "SetJavaScriptEnabled")
+    /**
+     * Text size in percent for the page currently loaded: per-site value if set, global browser text size otherwise.
+     */
+    fun effectiveTextZoom(): Int {
+        val global = userPreferences.browserTextSize + MIN_BROWSER_TEXT_SIZE
+        return try {
+            val host = webView?.url?.let { android.net.Uri.parse(it).host }
+            if (host.isNullOrEmpty()) global else (DomainPreferences(activity, host).textSize ?: global)
+        } catch (ex: Exception) {
+            global
+        }
+    }
+
     fun initializePreferences() {
         val settings = webView?.settings ?: return
 
@@ -761,7 +774,7 @@ class WebPageTab(
 
         settings.loadWithOverviewMode = userPreferences.overviewModeEnabled
 
-        settings.textZoom = userPreferences.browserTextSize +  MIN_BROWSER_TEXT_SIZE
+        settings.textZoom = effectiveTextZoom()
 
         // Apply default settings for third-party cookies
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, defaultDomainSettings.thirdPartyCookies)

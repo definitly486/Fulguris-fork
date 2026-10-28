@@ -144,6 +144,7 @@
             a:valueTo="200"
             a:stepSize="5"
             a:value="100"
+            a:defaultValue="100"
             x:icon="@drawable/ic_desktop"
             x:seekBarIncrement="5"
             x:showSeekBarValue="true"
