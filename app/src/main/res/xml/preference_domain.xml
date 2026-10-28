@@ -140,18 +140,18 @@
             a:key="@string/pref_key_domain_text_size"
             a:title="@string/title_text_size"
             a:dependency="@string/pref_key_domain_text_size_override"
-            a:icon="@drawable/ic_desktop"
-            a:seekBarIncrement="5"
-            a:showSeekBarValue="true"
-            a:iconSpaceReserved="false"
-            a:updatesContinuously="true"
             a:valueFrom="50"
             a:valueTo="200"
             a:stepSize="5"
             a:value="100"
-            a:labelBehavior="gone"
-            a:format="%.0f%%"
-            a:singleLineTitle="false" />
+            x:icon="@drawable/ic_desktop"
+            x:seekBarIncrement="5"
+            x:showSeekBarValue="true"
+            x:iconSpaceReserved="false"
+            x:updatesContinuously="true"
+            x:labelBehavior="gone"
+            x:format="%.0f%%"
+            x:singleLineTitle="false" />
 
     </x.PreferenceCategory>
 
