@@ -832,6 +832,45 @@ class WebPageClient(
     // Should never be set to domain settings from resources
     var domainPreferences = DomainPreferences(app)
 
+    // Observe the current domain and all parent domains so text zoom changes made
+    // in the settings screen are applied to the already loaded page immediately.
+    private var observedTextZoomPreferences: List<SharedPreferences> = emptyList()
+
+    private val domainTextZoomPreferenceListener =
+        SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == app.getString(R.string.pref_key_text_zoom)
+                || key == app.getString(R.string.pref_key_text_zoom_override)
+            ) {
+                applyDomainTextZoom()
+            }
+        }
+
+    private fun observeDomainTextZoomPreferences() {
+        observedTextZoomPreferences.forEach {
+            it.unregisterOnSharedPreferenceChangeListener(domainTextZoomPreferenceListener)
+        }
+
+        observedTextZoomPreferences = generateSequence(domainPreferences) { it.parent }
+            .map { it.preferences }
+            .toList()
+            .distinct()
+
+        observedTextZoomPreferences.forEach {
+            it.registerOnSharedPreferenceChangeListener(domainTextZoomPreferenceListener)
+        }
+    }
+
+    private fun applyDomainTextZoom() {
+        val view = webPageTab.webView ?: return
+        view.post {
+            if (webPageTab.webView === view) {
+                view.settings.textZoom = domainPreferences.textZoom
+                    ?: (webPageTab.userPreferences.browserTextSize
+                        + fulguris.settings.fragment.DisplaySettingsFragment.MIN_BROWSER_TEXT_SIZE)
+            }
+        }
+    }
+
     /**
      * Load domain preferences
      */
@@ -849,6 +888,7 @@ class WebPageClient(
         // Load domain preferences
         // SharedPreferences cache is cleared when files are deleted, so we can safely load
         domainPreferences = DomainPreferences(app, aHost)
+        observeDomainTextZoomPreferences()
     }
 
     // Used to debounce app launch
