@@ -35,6 +35,7 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import fulguris.settings.preferences.delegates.booleanPreference
 import fulguris.settings.preferences.delegates.enumPreference
+import fulguris.settings.preferences.delegates.safeFloatPreference
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import timber.log.Timber
 import java.io.File
@@ -155,6 +156,18 @@ class DomainPreferences constructor(
     }
 
     /**
+     * Optional text zoom override for this domain. A null effective value means that
+     * the browser-wide text size should be used.
+     */
+    var textZoomOverride by preferences.booleanPreference(R.string.pref_key_text_zoom_override, false)
+    var textZoomLocal by preferences.safeFloatPreference(R.string.pref_key_text_zoom, 100F)
+    val textZoom: Int? get() = if (isDefault) null else if (textZoomOverride) {
+        textZoomLocal.toInt().coerceIn(50, 200)
+    } else {
+        parent?.textZoom
+    }
+
+    /**
      * Define what to do when a third-party app is available:
      * - Yes: Launch the app
      * - No: Do not launch the app
@@ -228,6 +241,7 @@ class DomainPreferences constructor(
                thirdPartyCookiesOverride ||
                desktopModeOverride ||
                darkModeOverride ||
+               textZoomOverride ||
                launchAppOverride ||
                sslErrorOverride ||
                incomingUrlActionOverride
@@ -261,6 +275,9 @@ class DomainPreferences constructor(
             // Order matches preference_domain_default.xml
             if (darkModeOverride) {
                 overrides.add(context.getString(R.string.pref_title_dark_mode_default))
+            }
+            if (textZoomOverride) {
+                overrides.add(context.getString(R.string.pref_summary_domain_text_zoom, textZoomLocal.toInt()))
             }
             if (desktopModeOverride) {
                 overrides.add(context.getString(R.string.pref_title_desktop_mode_default))
