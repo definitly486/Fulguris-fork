@@ -6157,8 +6157,16 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         val currentTab = tabsManager.currentTab ?: return
         when (v.id) {
             R.id.home_button -> currentTab.apply { requestFocus(); loadHomePage() }
-            // When not using drawer for tabs that button is used to show webpage menu
-            R.id.tabs_button -> if (configPrefs.tabBarInDrawer) openTabs() else {showMenuWebPage()}
+            // On large screens the tab counter reveals the horizontal tab strip
+            // that is hidden by default to save vertical space.
+            R.id.tabs_button -> if (isLargeScreenToolbar() && !configPrefs.verticalTabBar) {
+                iBinding.toolbarInclude.tabBarContainer.isVisible =
+                    !iBinding.toolbarInclude.tabBarContainer.isVisible
+            } else if (configPrefs.tabBarInDrawer) {
+                openTabs()
+            } else {
+                showMenuWebPage()
+            }
             R.id.button_reload -> refreshOrStop()
             R.id.button_next -> currentTab.findNext()
             R.id.button_back -> currentTab.findPrevious()
