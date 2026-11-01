@@ -491,6 +491,9 @@
     <string name="pref_title_desktop_mode_default">Desktop mode</string>
     <string name="pref_summary_desktop_mode_default">Define if new tabs use desktop mode by default</string>
     <string name="pref_title_dark_mode_default">Force dark mode</string>
+    <string name="pref_title_domain_text_zoom">Website text size</string>
+    <string name="pref_summary_domain_text_zoom">%1$d%% text size</string>
+    <string name="pref_summary_domain_text_zoom_help">Change text size for this website only</string>
     <string name="pref_summary_dark_mode_default">Define if new tabs use force dark mode by default</string>
     <string name="pref_title_swap_bookmarks_and_tabs">Swap drawers</string>
     <string name="pref_summary_swap_bookmarks_and_tabs">Tabs and Bookmarks drawers will swap places</string>

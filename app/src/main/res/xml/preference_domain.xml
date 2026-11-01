@@ -125,6 +125,35 @@
     </x.PreferenceCategory>
 
     <x.PreferenceCategory
+        x:title="@string/pref_title_domain_text_zoom"
+        x:summary="@string/pref_summary_domain_text_zoom_help">
+
+        <x.SwitchPreference
+            x:defaultValue="false"
+            x:key="@string/pref_key_text_zoom_override"
+            x:title="@string/pref_title_override"
+            x:summaryOn="@string/pref_summary_on_override"
+            x:summaryOff="@string/pref_summary_off_override"
+            x:iconSpaceReserved="true"
+            x:singleLineTitle="false" />
+
+        <x.SliderPreference
+            x:key="@string/pref_key_text_zoom"
+            x:title="@string/pref_title_domain_text_zoom"
+            x:defaultValue="100"
+            a:valueFrom="50"
+            a:valueTo="200"
+            a:stepSize="10"
+            x:format="%1.0f%%"
+            x:dependency="@string/pref_key_text_zoom_override"
+            x:showSeekBarValue="true"
+            x:icon="@drawable/ic_text_size"
+            x:iconSpaceReserved="false"
+            x:singleLineTitle="false" />
+
+    </x.PreferenceCategory>
+
+    <x.PreferenceCategory
         x:title="@string/pref_title_desktop_mode_default">
 
         <x.SwitchPreference

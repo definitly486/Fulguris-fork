@@ -761,7 +761,8 @@ class WebPageTab(
 
         settings.loadWithOverviewMode = userPreferences.overviewModeEnabled
 
-        settings.textZoom = userPreferences.browserTextSize +  MIN_BROWSER_TEXT_SIZE
+        settings.textZoom = webPageClient.domainPreferences.textZoom
+            ?: (userPreferences.browserTextSize + MIN_BROWSER_TEXT_SIZE)
 
         // Apply default settings for third-party cookies
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, defaultDomainSettings.thirdPartyCookies)

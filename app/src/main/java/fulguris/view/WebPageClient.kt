@@ -543,6 +543,12 @@ class WebPageClient(
             }
         }
 
+        // Apply the site's text zoom override, inheriting from its parent domain.
+        // Fall back to the browser-wide text size when no site override is configured.
+        view.settings.textZoom = domainPreferences.textZoom
+            ?: (webPageTab.userPreferences.browserTextSize
+                + fulguris.settings.fragment.DisplaySettingsFragment.MIN_BROWSER_TEXT_SIZE)
+
         // Third-party cookies
         CookieManager.getInstance().setAcceptThirdPartyCookies(view, domainPreferences.thirdPartyCookies)
 
