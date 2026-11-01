@@ -1919,7 +1919,8 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
             iBindingToolbarContent.tabsButton.isVisible = isLargeScreenToolbar()
             // Home button is not needed on large screens
             iBindingToolbarContent.homeButton.isVisible = !isLargeScreenToolbar()
-            iBinding.toolbarInclude.tabBarContainer.isVisible = true
+            // Large tablets use the tab counter in the toolbar; hide the extra tab strip above it.
+            iBinding.toolbarInclude.tabBarContainer.isVisible = !isLargeScreenToolbar()
             iBinding.layoutTabsLeft.isVisible = false
             iBinding.layoutTabsRight.isVisible = false
             //iBinding.leftDrawer.isVisible = true
