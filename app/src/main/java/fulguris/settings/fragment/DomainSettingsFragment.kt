@@ -100,9 +100,14 @@ class DomainSettingsFragment : AbstractSettingsFragment() {
                 activity?.runOnUiThread {
                     if (isAdded) {
                         progress.dismiss()
+                        val message = if (result.success) {
+                            getString(R.string.pref_summary_socks5_proxy_test_success, result.httpCode ?: 0)
+                        } else {
+                            getString(R.string.pref_summary_socks5_proxy_test_failed, result.error ?: "")
+                        }
                         MaterialAlertDialogBuilder(requireContext())
                             .setTitle(R.string.pref_title_socks5_proxy_test)
-                            .setMessage(result)
+                            .setMessage(message)
                             .setPositiveButton(android.R.string.ok, null)
                             .show()
                     }
