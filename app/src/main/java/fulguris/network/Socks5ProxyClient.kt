@@ -108,7 +108,7 @@ object Socks5ProxyClient {
         val rawMessage = cause.message?.trim()?.takeIf { it.isNotEmpty() }
             ?: error.message?.trim()?.takeIf { it.isNotEmpty() }
         val message = rawMessage
-            ?.replace(Regex("(?i)(password|username)=([^\\s&]+)"), "$1=[hidden]")
+            ?.replace(Regex("(?i)(password|username)=([^\\s&]+)")) { match -> "${match.groupValues[1]}=[hidden]" }
             ?.take(180)
         return when (cause) {
             is SocketTimeoutException -> "Timeout while connecting to the proxy"
