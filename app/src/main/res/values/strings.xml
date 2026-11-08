@@ -919,4 +919,14 @@
     <string name="update_password_update">Update</string>
     <string name="save_password_not_now">Not now</string>
     <string name="save_password_saved">Password saved</string>
+    <string name="saved_passwords_title">Saved passwords</string>
+    <string name="saved_passwords_summary">View and manage logins saved in Fulguris</string>
+    <string name="saved_passwords_empty">No passwords have been saved in Fulguris yet.</string>
+    <string name="saved_password_show">Show password</string>
+    <string name="saved_password_copy_login">Copy login</string>
+    <string name="saved_password_copy_password">Copy password</string>
+    <string name="saved_password_details">Login: %1$s\nPassword: %2$s</string>
+    <string name="saved_password_delete_title">Delete saved login?</string>
+    <string name="saved_password_delete_message">Delete the saved login for %1$s (%2$s)?</string>
+    <string name="saved_password_copied">Copied to clipboard</string>
 </resources>
