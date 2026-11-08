@@ -684,6 +684,12 @@ class WebPageClient(
      * Called for any resource error (main frame, subframes, images, etc.)
      */
     override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+        Log.e(
+            "Socks5ProxyRoute",
+            "NETWORK_ERROR host=${request?.url?.host.orEmpty()} method=${request?.method} " +
+                "mainFrame=${request?.isForMainFrame} code=${error?.errorCode} " +
+                "description=${error?.description}"
+        )
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             Timber.w("$ihs : onReceivedError (modern): ${request?.url} - Code: ${error?.errorCode} - ${error?.description}")
         } else {
@@ -1309,24 +1315,6 @@ class WebPageClient(
         //onPageFinishedDone = false
 
         updateUrlIfNeeded(url)
-    }
-
-    /**
-     * Record network-level failures for resources, including media requests that fail
-     * before an HTTP response is available.
-     */
-    override fun onReceivedError(
-        view: WebView?,
-        request: WebResourceRequest?,
-        error: WebResourceError?
-    ) {
-        Log.e(
-            "Socks5ProxyRoute",
-            "NETWORK_ERROR host=${request?.url?.host.orEmpty()} method=${request?.method} " +
-                "mainFrame=${request?.isForMainFrame} code=${error?.errorCode} " +
-                "description=${error?.description}"
-        )
-        super.onReceivedError(view, request, error)
     }
 
     /**
