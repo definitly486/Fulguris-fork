@@ -314,6 +314,7 @@
         <EditTextPreference x:key="@string/pref_key_socks5_proxy_port" x:title="@string/pref_title_socks5_proxy_port" x:dialogTitle="@string/pref_title_socks5_proxy_port" x:defaultValue="1080" a:inputType="number" x:dependency="@string/pref_key_socks5_proxy_override" x:singleLineTitle="false" />
         <EditTextPreference x:key="@string/pref_key_socks5_proxy_username" x:title="@string/pref_title_socks5_proxy_username" x:dialogTitle="@string/pref_title_socks5_proxy_username" x:defaultValue="" x:dependency="@string/pref_key_socks5_proxy_override" x:singleLineTitle="false" />
         <EditTextPreference x:key="@string/pref_key_socks5_proxy_password" x:title="@string/pref_title_socks5_proxy_password" x:dialogTitle="@string/pref_title_socks5_proxy_password" x:defaultValue="" a:inputType="textPassword" x:dependency="@string/pref_key_socks5_proxy_override" x:singleLineTitle="false" />
+        <x.Preference x:key="@string/pref_key_socks5_proxy_test" x:title="@string/pref_title_socks5_proxy_test" x:summary="@string/pref_summary_socks5_proxy_test" x:iconSpaceReserved="false" x:singleLineTitle="false" />
     </x.PreferenceCategory>
 
     <x.Preference
