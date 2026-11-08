@@ -69,10 +69,7 @@ object ProxySettings {
                         when (ch) {
                             '*' -> append(".*")
                             '?' -> append('.')
-                            else -> {
-                                if (ch in ".\\\\+()^\${}[]|") append('\\\\')
-                                append(ch)
-                            }
+                            else -> append(Regex.escape(ch.toString()))
                         }
                     }
                     append('$')
