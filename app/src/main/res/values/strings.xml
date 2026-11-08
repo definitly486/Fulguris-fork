@@ -942,4 +942,6 @@
     <string name="pref_title_socks5_proxy_test">Test SOCKS5 connection</string>
     <string name="pref_summary_socks5_proxy_test">Check the proxy server and HTTPS connection</string>
     <string name="pref_summary_socks5_proxy_test_running">Connecting to the proxy...</string>
+    <string name="pref_summary_socks5_proxy_test_success">Connection successful. HTTPS response: HTTP %1$d</string>
+    <string name="pref_summary_socks5_proxy_test_failed">Connection failed: %1$s</string>
 </resources>
