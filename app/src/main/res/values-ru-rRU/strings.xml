@@ -844,4 +844,7 @@
     <string name="pref_summary_socks5_proxy_test_running">Подключение к прокси...</string>
     <string name="pref_summary_socks5_proxy_test_success">Подключение успешно. Ответ HTTPS: HTTP %1$d</string>
     <string name="pref_summary_socks5_proxy_test_failed">Ошибка подключения: %1$s</string>
+    <string name="pref_summary_global_socks5_proxy">Один глобальный SOCKS5-сервер с правилами URL по образцу FoxyProxy</string>
+    <string name="pref_title_socks5_proxy_patterns">Шаблоны URL</string>
+    <string name="pref_summary_socks5_proxy_patterns">Одно правило на строку. * и ? — подстановочные символы; ! в начале — обход прокси; re: в начале — регулярное выражение.</string>
 </resources>
