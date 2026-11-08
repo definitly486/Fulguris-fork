@@ -939,4 +939,7 @@
     <string name="pref_title_socks5_proxy_username">Username</string>
     <string name="pref_title_socks5_proxy_password">Password</string>
     <string name="pref_summary_socks5_proxy">Only intercepted HTTP and HTTPS requests are routed through the proxy. Requests with bodies and WebSockets are not supported.</string>
+    <string name="pref_title_socks5_proxy_test">Test SOCKS5 connection</string>
+    <string name="pref_summary_socks5_proxy_test">Check the proxy server and HTTPS connection</string>
+    <string name="pref_summary_socks5_proxy_test_running">Connecting to the proxy...</string>
 </resources>
