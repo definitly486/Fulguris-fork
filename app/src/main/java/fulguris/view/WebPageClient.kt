@@ -255,16 +255,14 @@ class WebPageClient(
             return response
         }
 
-        // Per-domain SOCKS5 runs independently of the selected global network engine.
-        // Fail closed on proxy errors so requests cannot silently bypass the proxy.
-        request.url.host?.let { requestHost ->
-            val proxyPreferences = DomainPreferences(activity, requestHost)
-            if (proxyPreferences.socks5ProxyEnabled) {
-                return fulguris.network.Socks5ProxyClient.intercept(
-                    request, proxyPreferences.socks5ProxyHost, proxyPreferences.socks5ProxyPort,
-                    proxyPreferences.socks5ProxyUsername, proxyPreferences.socks5ProxyPassword
-                )
-            }
+        // Global SOCKS5 proxy: URL patterns decide whether this request is proxied.
+        // Requests that match an exclusion or no inclusion pattern continue through the
+        // normal network engine; matching requests fail closed on proxy errors.
+        val proxyConfig = fulguris.network.ProxySettings.read(activity)
+        if (proxyConfig.enabled && fulguris.network.ProxySettings.shouldUseProxy(activity, request.url.toString())) {
+            return fulguris.network.Socks5ProxyClient.intercept(
+                request, proxyConfig.host, proxyConfig.port, proxyConfig.username, proxyConfig.password
+            )
         }
 
         // Ad blocker did not block this request
