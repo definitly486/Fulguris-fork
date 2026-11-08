@@ -39,6 +39,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.*
+import android.util.Log
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.View.OnScrollChangeListener
 import android.view.View.OnTouchListener
@@ -553,6 +554,7 @@ class WebPageTab(
         defaultDomainSettings.preferences.registerOnSharedPreferenceChangeListener(this)
 
         webPageClient = WebPageClient(activity, this)
+        Log.i("Socks5ProxyRoute", "WEBPAGECLIENT_CREATED tab=${hashCode()} client=${webPageClient.javaClass.name}")
         // Inflate our WebView as loading it from XML layout is needed to be able to set scrollbars color
         webView = activity.layoutInflater.inflate(R.layout.webview, null) as WebViewEx
         webView?.apply {
@@ -582,6 +584,7 @@ class WebPageTab(
             setNetworkAvailable(true)
             webChromeClient = WebPageChromeClient(activity, this@WebPageTab)
             webViewClient = webPageClient
+            Log.i("Socks5ProxyRoute", "WEBVIEWCLIENT_ATTACHED tab=${this@WebPageTab.hashCode()} webView=${hashCode()} client=${webViewClient?.javaClass?.name} url=${url.orEmpty()}")
 
             createDownloadListener()
 
