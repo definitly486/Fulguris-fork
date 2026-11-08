@@ -829,4 +829,5 @@
     <string name="saved_password_delete_title">Удалить сохранённый логин?</string>
     <string name="saved_password_delete_message">Удалить сохранённый логин для %1$s (%2$s)?</string>
     <string name="saved_password_copied">Скопировано в буфер обмена</string>
+    <string name="saved_password_reveal_confirm">Показать сохранённый пароль для %1$s?</string>
 </resources>
