@@ -63,7 +63,7 @@ object ProxySettings {
                             '*' -> append(".*")
                             '?' -> append('.')
                             else -> {
-                                if (ch in ".\\\\+()^\\${}[]|") append('\\')
+                                if (ch in ".\\+()^\${}[]|") append('\\')
                                 append(ch)
                             }
                         }
