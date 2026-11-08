@@ -15,11 +15,16 @@ import fulguris.settings.preferences.UserPreferences
 import fulguris.utils.WebUtils
 import fulguris.view.WebPageTab
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.webkit.WebView
 import androidx.preference.Preference
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import fulguris.autofill.SiteCredentials
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Completable
 import io.reactivex.Scheduler
@@ -67,6 +72,7 @@ class PrivacySettingsFragment : AbstractSettingsFragment() {
         clickablePreference(preference = SETTINGS_CLEARHISTORY, onClick = this::clearHistoryDialog)
         clickablePreference(preference = SETTINGS_CLEARCOOKIES, onClick = this::clearCookiesDialog)
         clickablePreference(preference = SETTINGS_CLEARWEBSTORAGE, onClick = this::clearWebStorage)
+        clickablePreference(preference = SETTINGS_SAVEDPASSWORDS, onClick = this::showSavedPasswords)
 
         // Location/geolocation is now a domain-specific preference
         // See Settings > Domain settings for per-domain geolocation control
@@ -121,6 +127,66 @@ class PrivacySettingsFragment : AbstractSettingsFragment() {
             summary = "${WebPageTab.HEADER_REQUESTED_WITH}, ${WebPageTab.HEADER_WAP_PROFILE}",
             onCheckChange = { userPreferences.removeIdentifyingHeadersEnabled = it }
         )
+    }
+
+    private fun showSavedPasswords(): Boolean {
+        val entries = SiteCredentials.savedEntries(requireContext())
+        if (entries.isEmpty()) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.saved_passwords_title)
+                .setMessage(R.string.saved_passwords_empty)
+                .setPositiveButton(R.string.action_ok, null)
+                .show()
+            return true
+        }
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.saved_passwords_title)
+            .setItems(entries.map { "${it.host}\n    ${it.username}" }.toTypedArray()) { _, index ->
+                showSavedPasswordActions(entries[index])
+            }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
+        return true
+    }
+
+    private fun showSavedPasswordActions(entry: SiteCredentials.SavedCredential) {
+        val actions = arrayOf(
+            getString(R.string.saved_password_show),
+            getString(R.string.saved_password_copy_login),
+            getString(R.string.saved_password_copy_password),
+            getString(R.string.action_delete)
+        )
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(entry.host)
+            .setItems(actions) { _, which ->
+                when (which) {
+                    0 -> MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(entry.host)
+                        .setMessage(getString(R.string.saved_password_details, entry.username, entry.password))
+                        .setPositiveButton(R.string.saved_password_copy_password) { _, _ -> copyCredential(entry.password) }
+                        .setNegativeButton(R.string.action_ok, null)
+                        .show()
+                    1 -> copyCredential(entry.username)
+                    2 -> copyCredential(entry.password)
+                    3 -> MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.saved_password_delete_title)
+                        .setMessage(getString(R.string.saved_password_delete_message, entry.host, entry.username))
+                        .setPositiveButton(R.string.action_delete) { _, _ ->
+                            SiteCredentials.deleteSaved(requireContext(), entry.host, entry.username)
+                            showSavedPasswords()
+                        }
+                        .setNegativeButton(R.string.action_cancel, null)
+                        .show()
+                }
+            }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
+    }
+
+    private fun copyCredential(value: String) {
+        val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboard.setPrimaryClip(ClipData.newPlainText("Fulguris", value))
+        (activity as? Activity)?.snackbar(R.string.saved_password_copied)
     }
 
     private fun clearHistoryDialog() : Boolean {
@@ -189,6 +255,7 @@ class PrivacySettingsFragment : AbstractSettingsFragment() {
     }
 
     companion object {
+        private const val SETTINGS_SAVEDPASSWORDS = "saved_passwords"
         private const val SETTINGS_SAVEPASSWORD = "password"
         private const val SETTINGS_CACHEEXIT = "clear_cache_exit"
         private const val SETTINGS_HISTORYEXIT = "clear_history_exit"
