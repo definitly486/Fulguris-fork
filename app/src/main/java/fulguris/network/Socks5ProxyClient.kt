@@ -12,7 +12,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import timber.log.Timber
 import java.io.ByteArrayInputStream
-import java.io.IOException
 import java.net.Authenticator
 import java.net.ConnectException
 import java.net.InetSocketAddress
@@ -33,23 +32,44 @@ object Socks5ProxyClient {
     private val clients = ConcurrentHashMap<ClientKey, OkHttpClient>()
 
     private object ProxyCredentials {
-        private val current = ThreadLocal<PasswordAuthentication?>()
+        private data class Context(
+            val host: String,
+            val port: Int,
+            val authentication: PasswordAuthentication
+        )
+
+        private val current = ThreadLocal<Context?>()
         @Volatile private var installed = false
 
         @Synchronized
         private fun install() {
             if (installed) return
             Authenticator.setDefault(object : Authenticator() {
-                override fun getPasswordAuthentication(): PasswordAuthentication? =
-                    if (requestorType == RequestorType.PROXY) current.get() else null
+                override fun getPasswordAuthentication(): PasswordAuthentication? {
+                    val context = current.get() ?: return null
+                    val sameEndpoint = requestingPort == context.port &&
+                        (requestingHost.isNullOrBlank() || requestingHost.equals(context.host, ignoreCase = true))
+                    val socks5Authentication = requestorType == RequestorType.SERVER &&
+                        requestingProtocol.equals("SOCKS5", ignoreCase = true) && sameEndpoint
+                    val proxyAuthentication = requestorType == RequestorType.PROXY && sameEndpoint
+                    return if (socks5Authentication || proxyAuthentication) context.authentication else null
+                }
             })
             installed = true
         }
 
-        fun <T> withCredentials(username: String, password: String, action: () -> T): T {
+        fun <T> withCredentials(
+            host: String,
+            port: Int,
+            username: String,
+            password: String,
+            action: () -> T
+        ): T {
             if (username.isEmpty() && password.isEmpty()) return action()
             install()
-            current.set(PasswordAuthentication(username, password.toCharArray()))
+            current.set(
+                Context(host, port, PasswordAuthentication(username, password.toCharArray()))
+            )
             return try {
                 action()
             } finally {
@@ -89,7 +109,7 @@ object Socks5ProxyClient {
                 .header("Cache-Control", "no-cache")
                 .get()
                 .build()
-            val response = ProxyCredentials.withCredentials(username, password) {
+            val response = ProxyCredentials.withCredentials(host.trim(), port, username, password) {
                 client(host.trim(), port, username, password).newCall(request).execute()
             }
             response.use {
@@ -151,7 +171,7 @@ object Socks5ProxyClient {
             }
 
             val outgoing = builder.method(method, null).build()
-            val response = ProxyCredentials.withCredentials(username, password) {
+            val response = ProxyCredentials.withCredentials(host, port, username, password) {
                 client(host, port, username, password).newCall(outgoing).execute()
             }
             val contentType = response.header("Content-Type")
