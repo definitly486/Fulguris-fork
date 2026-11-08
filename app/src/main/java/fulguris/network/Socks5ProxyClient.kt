@@ -28,6 +28,8 @@ import java.util.concurrent.TimeUnit
 object Socks5ProxyClient {
     private const val TAG = "Socks5ProxyClient"
 
+    data class TestResult(val success: Boolean, val httpCode: Int? = null, val error: String? = null)
+
     private data class ClientKey(val host: String, val port: Int, val username: String, val password: String)
     private val clients = ConcurrentHashMap<ClientKey, OkHttpClient>()
 
@@ -98,10 +100,10 @@ object Socks5ProxyClient {
      * Any HTTP response means the SOCKS tunnel and TLS connection were established.
      * Returns a user-readable result and never includes proxy credentials.
      */
-    fun testConnection(host: String, portValue: String, username: String, password: String): String {
+    fun testConnection(host: String, portValue: String, username: String, password: String): TestResult {
         val port = portValue.toIntOrNull()
-        if (host.isBlank()) return "Proxy server address is empty"
-        if (port == null || port !in 1..65535) return "Invalid proxy port: $portValue"
+        if (host.isBlank()) return TestResult(false, error = "Proxy server address is empty")
+        if (port == null || port !in 1..65535) return TestResult(false, error = "Invalid proxy port: $portValue")
 
         return try {
             val request = Request.Builder()
@@ -113,12 +115,12 @@ object Socks5ProxyClient {
                 client(host.trim(), port, username, password).newCall(request).execute()
             }
             response.use {
-                "Connection successful. HTTPS response: HTTP ${it.code}"
+                TestResult(true, httpCode = it.code)
             }
         } catch (error: Exception) {
             val detail = describeError(error)
             Log.e(TAG, "SOCKS5 connection test failed for ${host.trim()}:$port - $detail", error)
-            "Connection failed: $detail"
+            TestResult(false, error = detail)
         }
     }
 
