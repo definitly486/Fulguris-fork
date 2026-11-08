@@ -830,6 +830,9 @@
     <string name="saved_password_delete_message">Удалить сохранённый логин для %1$s (%2$s)?</string>
     <string name="saved_password_copied">Скопировано в буфер обмена</string>
     <string name="saved_password_reveal_confirm">Показать сохранённый пароль для %1$s?</string>
+    <string name="pref_title_socks5_proxy_export_confirm">Экспортировать учётные данные прокси?</string>
+    <string name="pref_message_socks5_proxy_export_confirm">Резервная копия содержит имя пользователя и пароль SOCKS5. JSON-файл не зашифрован. Сохраняйте его только в надёжном месте.</string>
+    <string name="pref_action_socks5_proxy_export">Экспортировать</string>
     <string name="pref_title_socks5_proxy_export">Экспорт настроек прокси</string>
     <string name="pref_summary_socks5_proxy_export">Сохранить адрес сервера, порт, имя пользователя, пароль и доменные правила в JSON-файл. Учётные данные сохраняются без шифрования.</string>
     <string name="pref_title_socks5_proxy_import_settings">Импорт настроек прокси</string>
