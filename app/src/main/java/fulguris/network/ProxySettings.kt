@@ -1,6 +1,7 @@
 package fulguris.network
 
 import android.content.Context
+import android.net.Uri
 import androidx.preference.PreferenceManager
 import fulguris.R
 
@@ -34,6 +35,12 @@ object ProxySettings {
     }
 
     fun shouldUseProxy(context: Context, url: String): Boolean {
+        // Only route web traffic. Fulguris internal pages (bookmarks, history,
+        // settings, homepage files, about:, data:, file: and custom schemes)
+        // must remain handled locally by WebView/the app.
+        val scheme = Uri.parse(url).scheme?.lowercase()
+        if (scheme != "http" && scheme != "https") return false
+
         val config = read(context)
         if (!config.enabled || config.host.isBlank()) return false
 
@@ -63,7 +70,7 @@ object ProxySettings {
                             '*' -> append(".*")
                             '?' -> append('.')
                             else -> {
-                                if (ch in ".\\+()^\${}[]|") append('\\')
+                                if (ch in ".\\\\+()^\${}[]|") append('\\\\')
                                 append(ch)
                             }
                         }
