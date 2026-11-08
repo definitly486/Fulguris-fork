@@ -10,7 +10,7 @@ import fulguris.R
  *
  * One rule per line. Prefix with ! to bypass the proxy. A rule may be a plain
  * domain (example.com), wildcard domain (*.example.com), or an imported
- * FoxyProxy URL pattern (https://*.example.com/*). Scheme, port and path are
+ * FoxyProxy URL pattern with any path on the example.com domain. Scheme, port and path are
  * deliberately discarded: routing decisions are made only from the hostname.
  * Prefix with re: to match the hostname with a regular expression.
  */
