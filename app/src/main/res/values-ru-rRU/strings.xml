@@ -831,7 +831,6 @@
     <string name="saved_password_copied">Скопировано в буфер обмена</string>
     <string name="saved_password_reveal_confirm">Показать сохранённый пароль для %1$s?</string>
     <string name="pref_title_socks5_proxy">Прокси SOCKS5</string>
-    <string name="pref_summary_socks5_proxy">Направлять перехватываемые HTTP-запросы этого домена через SOCKS5-сервер</string>
     <string name="pref_title_socks5_proxy_override">Переопределить унаследованные настройки прокси</string>
     <string name="pref_title_socks5_proxy_enabled">Включить SOCKS5-прокси</string>
     <string name="pref_summary_socks5_proxy_enabled">Использовать настроенный SOCKS5-сервер для этого домена</string>
