@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <x.PreferenceCategory
+        android:title="@string/pref_title_socks5_proxy"
+        app:singleLineTitle="false">
+
+        <x.SwitchPreference
+            app:key="@string/pref_key_socks5_proxy_enabled"
+            app:title="@string/pref_title_socks5_proxy_enabled"
+            app:summary="@string/pref_summary_socks5_proxy_enabled"
+            app:defaultValue="false"
+            app:iconSpaceReserved="false"
+            app:singleLineTitle="false" />
+
+        <EditTextPreference
+            app:key="@string/pref_key_socks5_proxy_host"
+            app:title="@string/pref_title_socks5_proxy_host"
+            app:dialogTitle="@string/pref_title_socks5_proxy_host"
+            app:defaultValue=""
+            app:singleLineTitle="false" />
+
+        <EditTextPreference
+            app:key="@string/pref_key_socks5_proxy_port"
+            app:title="@string/pref_title_socks5_proxy_port"
+            app:dialogTitle="@string/pref_title_socks5_proxy_port"
+            app:defaultValue="1080"
+            android:inputType="number"
+            app:singleLineTitle="false" />
+
+        <EditTextPreference
+            app:key="@string/pref_key_socks5_proxy_username"
+            app:title="@string/pref_title_socks5_proxy_username"
+            app:dialogTitle="@string/pref_title_socks5_proxy_username"
+            app:defaultValue=""
+            app:singleLineTitle="false" />
+
+        <EditTextPreference
+            app:key="@string/pref_key_socks5_proxy_password"
+            app:title="@string/pref_title_socks5_proxy_password"
+            app:dialogTitle="@string/pref_title_socks5_proxy_password"
+            app:defaultValue=""
+            android:inputType="textPassword"
+            app:singleLineTitle="false" />
+
+        <EditTextPreference
+            app:key="@string/pref_key_socks5_proxy_patterns"
+            app:title="@string/pref_title_socks5_proxy_patterns"
+            app:dialogTitle="@string/pref_title_socks5_proxy_patterns"
+            app:defaultValue=""
+            android:inputType="textMultiLine|textNoSuggestions"
+            app:singleLineTitle="false" />
+
+        <x.Preference
+            app:key="@string/pref_key_socks5_proxy_test"
+            app:title="@string/pref_title_socks5_proxy_test"
+            app:summary="@string/pref_summary_socks5_proxy_test"
+            app:iconSpaceReserved="false"
+            app:singleLineTitle="false" />
+    </x.PreferenceCategory>
+</PreferenceScreen>
