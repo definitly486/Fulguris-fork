@@ -1312,6 +1312,24 @@ class WebPageClient(
     }
 
     /**
+     * Record network-level failures for resources, including media requests that fail
+     * before an HTTP response is available.
+     */
+    override fun onReceivedError(
+        view: WebView?,
+        request: WebResourceRequest?,
+        error: WebResourceError?
+    ) {
+        Log.e(
+            "Socks5ProxyRoute",
+            "NETWORK_ERROR host=${request?.url?.host.orEmpty()} method=${request?.method} " +
+                "mainFrame=${request?.isForMainFrame} code=${error?.errorCode} " +
+                "description=${error?.description}"
+        )
+        super.onReceivedError(view, request, error)
+    }
+
+    /**
      * Called when an HTTP error is received from the server.
      * HTTP errors have status codes >= 400.
      * This callback will be called for any resource (main page, image, subframe, etc.)
