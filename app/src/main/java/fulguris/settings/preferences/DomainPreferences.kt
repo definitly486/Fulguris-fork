@@ -215,6 +215,27 @@ class DomainPreferences constructor(
         return if (isDefault || !override) { parentValue } else { local }
     }
 
+    var socks5ProxyOverride by preferences.booleanPreference(R.string.pref_key_socks5_proxy_override, false)
+    var socks5ProxyEnabledLocal by preferences.booleanPreference(R.string.pref_key_socks5_proxy_enabled, false)
+    private val useLocalSocks5ProxySettings: Boolean get() = isDefault || socks5ProxyOverride
+    val socks5ProxyEnabled: Boolean get() = if (useLocalSocks5ProxySettings) socks5ProxyEnabledLocal else parent?.socks5ProxyEnabled ?: socks5ProxyEnabledLocal
+    var socks5ProxyHostLocal: String
+        get() = preferences.getString(context.getString(R.string.pref_key_socks5_proxy_host), "") ?: ""
+        set(value) { preferences.edit { putString(context.getString(R.string.pref_key_socks5_proxy_host), value.trim()) } }
+    val socks5ProxyHost: String get() = if (useLocalSocks5ProxySettings) socks5ProxyHostLocal else parent?.socks5ProxyHost ?: socks5ProxyHostLocal
+    var socks5ProxyPortLocal: String
+        get() = preferences.getString(context.getString(R.string.pref_key_socks5_proxy_port), "1080") ?: "1080"
+        set(value) { preferences.edit { putString(context.getString(R.string.pref_key_socks5_proxy_port), value.trim()) } }
+    val socks5ProxyPort: String get() = if (useLocalSocks5ProxySettings) socks5ProxyPortLocal else parent?.socks5ProxyPort ?: socks5ProxyPortLocal
+    var socks5ProxyUsernameLocal: String
+        get() = preferences.getString(context.getString(R.string.pref_key_socks5_proxy_username), "") ?: ""
+        set(value) { preferences.edit { putString(context.getString(R.string.pref_key_socks5_proxy_username), value) } }
+    val socks5ProxyUsername: String get() = if (useLocalSocks5ProxySettings) socks5ProxyUsernameLocal else parent?.socks5ProxyUsername ?: socks5ProxyUsernameLocal
+    var socks5ProxyPasswordLocal: String
+        get() = preferences.getString(context.getString(R.string.pref_key_socks5_proxy_password), "") ?: ""
+        set(value) { preferences.edit { putString(context.getString(R.string.pref_key_socks5_proxy_password), value) } }
+    val socks5ProxyPassword: String get() = if (useLocalSocks5ProxySettings) socks5ProxyPasswordLocal else parent?.socks5ProxyPassword ?: socks5ProxyPasswordLocal
+
 
     /**
      * Is this the default domain settings?
@@ -244,7 +265,8 @@ class DomainPreferences constructor(
                textZoomOverride ||
                launchAppOverride ||
                sslErrorOverride ||
-               incomingUrlActionOverride
+               incomingUrlActionOverride ||
+               socks5ProxyOverride
     }
 
     /**
@@ -296,6 +318,9 @@ class DomainPreferences constructor(
             }
             if (incomingUrlActionOverride) {
                 overrides.add(context.getString(R.string.pref_title_incoming_url_action))
+            }
+            if (socks5ProxyOverride) {
+                overrides.add(context.getString(R.string.pref_title_socks5_proxy))
             }
         }
 
