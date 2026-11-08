@@ -223,17 +223,18 @@ object LocalSocks5Proxy {
     }
 
     private fun bridge(client: Socket, upstream: Socket) {
-        val closed = AtomicBoolean(false)
-        val a = workers.submit { copy(client.getInputStream(), upstream.getOutputStream(), closed, upstream) }
-        val b = workers.submit { copy(upstream.getInputStream(), client.getOutputStream(), closed, client) }
-        try { a.get() } catch (_: Exception) {}
-        try { b.get() } catch (_: Exception) {}
+        // Preserve TCP half-close: after the browser finishes uploading a POST body,
+        // the upstream server may still need to send its response.
+        val upload = workers.submit { copy(client.getInputStream(), upstream.getOutputStream(), upstream) }
+        val download = workers.submit { copy(upstream.getInputStream(), client.getOutputStream(), client) }
+        try { upload.get() } catch (_: Exception) {}
+        try { download.get() } catch (_: Exception) {}
     }
 
-    private fun copy(input: InputStream, output: OutputStream, closed: AtomicBoolean, peer: Socket) {
+    private fun copy(input: InputStream, output: OutputStream, peer: Socket) {
         try {
             val buffer = ByteArray(32768)
-            while (!closed.get()) {
+            while (true) {
                 val count = input.read(buffer)
                 if (count < 0) break
                 output.write(buffer, 0, count)
@@ -241,7 +242,7 @@ object LocalSocks5Proxy {
             }
         } catch (_: Exception) {
         } finally {
-            if (closed.compareAndSet(false, true)) try { peer.close() } catch (_: Exception) {}
+            try { peer.shutdownOutput() } catch (_: Exception) {}
         }
     }
 
