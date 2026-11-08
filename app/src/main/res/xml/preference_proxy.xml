@@ -45,12 +45,11 @@
             android:inputType="textPassword"
             app:singleLineTitle="false" />
 
-        <EditTextPreference
+        <x.Preference
             app:key="@string/pref_key_socks5_proxy_patterns"
             app:title="@string/pref_title_socks5_proxy_patterns"
-            app:dialogTitle="@string/pref_title_socks5_proxy_patterns"
-            app:defaultValue=""
-            android:inputType="textMultiLine|textNoSuggestions"
+            app:summary="@string/pref_summary_socks5_proxy_patterns"
+            app:iconSpaceReserved="false"
             app:singleLineTitle="false" />
 
         <x.Preference
