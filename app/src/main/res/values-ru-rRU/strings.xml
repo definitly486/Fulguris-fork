@@ -819,4 +819,14 @@
     <string name="update_password_update">Обновить</string>
     <string name="save_password_not_now">Не сейчас</string>
     <string name="save_password_saved">Пароль сохранён</string>
+    <string name="saved_passwords_title">Сохранённые пароли</string>
+    <string name="saved_passwords_summary">Просмотр и управление сохранёнными в Fulguris логинами</string>
+    <string name="saved_passwords_empty">В Fulguris пока нет сохранённых паролей.</string>
+    <string name="saved_password_show">Показать пароль</string>
+    <string name="saved_password_copy_login">Копировать логин</string>
+    <string name="saved_password_copy_password">Копировать пароль</string>
+    <string name="saved_password_details">Логин: %1$s\nПароль: %2$s</string>
+    <string name="saved_password_delete_title">Удалить сохранённый логин?</string>
+    <string name="saved_password_delete_message">Удалить сохранённый логин для %1$s (%2$s)?</string>
+    <string name="saved_password_copied">Скопировано в буфер обмена</string>
 </resources>
