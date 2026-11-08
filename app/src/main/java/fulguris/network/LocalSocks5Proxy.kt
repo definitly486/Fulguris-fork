@@ -35,7 +35,7 @@ object LocalSocks5Proxy {
     fun refresh(context: android.content.Context) {
         val value = ProxySettings.read(context.applicationContext)
         config = value
-        if (!value.enabled || value.host.isBlank() || value.port.toIntOrNull() !in 1..65535) {
+        if (!value.enabled || value.host.isBlank() || value.port.toIntOrNull()?.let { it in 1..65535 } != true) {
             stop()
             clearOverride()
             return
@@ -185,7 +185,7 @@ object LocalSocks5Proxy {
             output.write(if (auth) byteArrayOf(5, 1, 2) else byteArrayOf(5, 1, 0))
             output.flush()
             val greeting = readExact(input, 2)
-            if (greeting[0].toInt() != 5 || greeting[1].toInt() == 255) error("SOCKS5 auth method rejected")
+            if (greeting[0].toInt() != 5 || (greeting[1].toInt() and 255) == 255) error("SOCKS5 auth method rejected")
             if (greeting[1].toInt() == 2) {
                 val user = cfg.username.toByteArray(Charsets.UTF_8)
                 val pass = cfg.password.toByteArray(Charsets.UTF_8)
