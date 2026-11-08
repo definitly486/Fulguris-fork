@@ -4,6 +4,7 @@
  */
 package fulguris.network
 
+import android.util.Log
 import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
@@ -11,23 +12,32 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import timber.log.Timber
 import java.io.ByteArrayInputStream
+import java.io.IOException
 import java.net.Authenticator
+import java.net.ConnectException
 import java.net.InetSocketAddress
 import java.net.PasswordAuthentication
 import java.net.Proxy
+import java.net.SocketException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 /** Handles WebView-intercepted requests through SOCKS5. Request bodies are unavailable
  * in shouldInterceptRequest, so body-bearing methods fail closed instead of bypassing proxy. */
 object Socks5ProxyClient {
+    private const val TAG = "Socks5ProxyClient"
+
     private data class ClientKey(val host: String, val port: Int, val username: String, val password: String)
     private val clients = ConcurrentHashMap<ClientKey, OkHttpClient>()
 
     private object ProxyCredentials {
         private val current = ThreadLocal<PasswordAuthentication?>()
         @Volatile private var installed = false
-        @Synchronized private fun install() {
+
+        @Synchronized
+        private fun install() {
             if (installed) return
             Authenticator.setDefault(object : Authenticator() {
                 override fun getPasswordAuthentication(): PasswordAuthentication? =
@@ -35,11 +45,16 @@ object Socks5ProxyClient {
             })
             installed = true
         }
+
         fun <T> withCredentials(username: String, password: String, action: () -> T): T {
             if (username.isEmpty() && password.isEmpty()) return action()
             install()
             current.set(PasswordAuthentication(username, password.toCharArray()))
-            return try { action() } finally { current.remove() }
+            return try {
+                action()
+            } finally {
+                current.remove()
+            }
         }
     }
 
@@ -58,41 +73,124 @@ object Socks5ProxyClient {
         }
     }
 
-    fun intercept(request: WebResourceRequest, host: String, portValue: String, username: String, password: String): WebResourceResponse {
+    /**
+     * Performs a real HTTPS request through the configured proxy.
+     * Any HTTP response means the SOCKS tunnel and TLS connection were established.
+     * Returns a user-readable result and never includes proxy credentials.
+     */
+    fun testConnection(host: String, portValue: String, username: String, password: String): String {
         val port = portValue.toIntOrNull()
-        if (host.isBlank() || port == null || port !in 1..65535) return errorResponse(502, "Invalid SOCKS5 proxy address or port")
+        if (host.isBlank()) return "Proxy server address is empty"
+        if (port == null || port !in 1..65535) return "Invalid proxy port: $portValue"
+
+        return try {
+            val request = Request.Builder()
+                .url("https://example.com/")
+                .header("Cache-Control", "no-cache")
+                .get()
+                .build()
+            val response = ProxyCredentials.withCredentials(username, password) {
+                client(host.trim(), port, username, password).newCall(request).execute()
+            }
+            response.use {
+                "Connection successful. HTTPS response: HTTP ${it.code}"
+            }
+        } catch (error: Exception) {
+            val detail = describeError(error)
+            Log.e(TAG, "SOCKS5 connection test failed for ${host.trim()}:$port - $detail", error)
+            "Connection failed: $detail"
+        }
+    }
+
+    private fun describeError(error: Throwable): String {
+        val cause = generateSequence(error) { it.cause }.last()
+        val type = cause.javaClass.simpleName.ifBlank { error.javaClass.simpleName }
+        val rawMessage = cause.message?.trim()?.takeIf { it.isNotEmpty() }
+            ?: error.message?.trim()?.takeIf { it.isNotEmpty() }
+        val message = rawMessage
+            ?.replace(Regex("(?i)(password|username)=([^\\s&]+)"), "$1=[hidden]")
+            ?.take(180)
+        return when (cause) {
+            is SocketTimeoutException -> "Timeout while connecting to the proxy"
+            is UnknownHostException -> "Cannot resolve proxy host: ${message ?: "unknown host"}"
+            is ConnectException -> "Proxy refused the connection: ${message ?: type}"
+            is SocketException -> message ?: "Socket error: $type"
+            else -> if (message == null) type else "$type: $message"
+        }
+    }
+
+    fun intercept(
+        request: WebResourceRequest,
+        host: String,
+        portValue: String,
+        username: String,
+        password: String
+    ): WebResourceResponse {
+        val port = portValue.toIntOrNull()
+        if (host.isBlank() || port == null || port !in 1..65535) {
+            return errorResponse(502, "Invalid SOCKS5 proxy address or port")
+        }
+
         val method = request.method.uppercase()
         if (method !in setOf("GET", "HEAD", "DELETE", "OPTIONS")) {
-            Timber.w("SOCKS5 cannot forward request body for $method ${request.url}")
-            return errorResponse(501, "SOCKS5 proxy cannot forward this request method")
+            val message = "SOCKS5 cannot forward request body for $method"
+            Log.w(TAG, "$message ${request.url}")
+            Timber.w("$message ${request.url}")
+            return errorResponse(501, "$message. This WebView request method is not supported.")
         }
+
         return try {
             val builder = Request.Builder().url(request.url.toString())
             request.requestHeaders.forEach { (name, value) ->
-                if (!name.equals("host", true) && !name.equals("content-length", true) && !name.equals("connection", true)) builder.header(name, value)
+                if (!name.equals("host", true) &&
+                    !name.equals("content-length", true) &&
+                    !name.equals("connection", true)
+                ) {
+                    builder.header(name, value)
+                }
             }
+
             val outgoing = builder.method(method, null).build()
             val response = ProxyCredentials.withCredentials(username, password) {
                 client(host, port, username, password).newCall(outgoing).execute()
             }
             val contentType = response.header("Content-Type")
             val mime = contentType?.substringBefore(';')?.trim()?.takeIf { it.isNotEmpty() } ?: "text/plain"
-            val charset = contentType?.split(';')?.map { it.trim() }?.firstOrNull { it.startsWith("charset=", true) }?.substringAfter('=')?.trim() ?: "UTF-8"
+            val charset = contentType?.split(';')
+                ?.map { it.trim() }
+                ?.firstOrNull { it.startsWith("charset=", true) }
+                ?.substringAfter('=')
+                ?.trim() ?: "UTF-8"
             val headers = linkedMapOf<String, String>()
             response.headers.forEach { (name, value) -> headers[name] = value }
-            response.headers("Set-Cookie").forEach { CookieManager.getInstance().setCookie(request.url.toString(), it) }
-            WebResourceResponse(mime, charset, response.code, response.message.ifBlank { reasonPhrase(response.code) }, headers,
-                response.body?.byteStream() ?: ByteArrayInputStream(ByteArray(0)))
+            response.headers("Set-Cookie").forEach {
+                CookieManager.getInstance().setCookie(request.url.toString(), it)
+            }
+            WebResourceResponse(
+                mime,
+                charset,
+                response.code,
+                response.message.ifBlank { reasonPhrase(response.code) },
+                headers,
+                response.body?.byteStream() ?: ByteArrayInputStream(ByteArray(0))
+            )
         } catch (error: Exception) {
-            Timber.e(error, "SOCKS5 request failed for ${request.url}")
-            errorResponse(502, "SOCKS5 proxy connection failed")
+            val detail = describeError(error)
+            Log.e(TAG, "SOCKS5 request failed for ${request.url}: $detail", error)
+            Timber.e(error, "SOCKS5 request failed for ${request.url}: $detail")
+            errorResponse(502, "SOCKS5 proxy connection failed: $detail")
         }
     }
 
     private fun errorResponse(code: Int, message: String) = WebResourceResponse(
-        "text/plain", "UTF-8", code, reasonPhrase(code), mapOf("Cache-Control" to "no-store"),
+        "text/plain",
+        "UTF-8",
+        code,
+        reasonPhrase(code),
+        mapOf("Cache-Control" to "no-store"),
         ByteArrayInputStream(message.toByteArray(Charsets.UTF_8))
     )
+
     private fun reasonPhrase(code: Int) = when (code) {
         501 -> "Not Implemented"
         502 -> "Bad Gateway"
