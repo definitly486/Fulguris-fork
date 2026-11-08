@@ -100,6 +100,22 @@ object SiteCredentials {
         return toJson(load(context).filter { seen.add(key(it)) })
     }
 
+    /** A login explicitly saved by the user in this browser. */
+    data class SavedCredential(val host: String, val username: String, val password: String)
+
+    /** Returns only user-saved entries; bundled credentials from assets are never exposed here. */
+    fun savedEntries(context: Context): List<SavedCredential> = readStored(context).map {
+        SavedCredential(it.host, it.username, it.password)
+    }
+
+    /** Delete one saved login without affecting other logins for the same site. */
+    fun deleteSaved(context: Context, host: String, username: String): Boolean = synchronized(lock) {
+        val list = readStored(context)
+        val removed = list.removeAll { it.host == host && it.username == username }
+        if (removed) writeStored(context, list)
+        removed
+    }
+
     /**
      * Merge [imported] entries into the saved ones. An entry with the same host and user
      * replaces the existing one. @return the number of entries read from [imported].
