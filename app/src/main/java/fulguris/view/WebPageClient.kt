@@ -269,33 +269,9 @@ class WebPageClient(
             return response
         }
 
-        // Global SOCKS5 proxy: URL patterns decide which requests are proxied.
-        // WebView does not expose request bodies in shouldInterceptRequest. Media
-        // sites use POST for player/API metadata; synthesizing a 501 breaks playback.
-        // Let WebView handle body-bearing methods natively, while proxying GET/HEAD
-        // media and resource requests (for example, googlevideo stream segments).
-        val proxyConfig = fulguris.network.ProxySettings.read(activity)
-        val proxyMatched = proxyConfig.enabled &&
-            fulguris.network.ProxySettings.shouldUseProxy(activity, request.url.toString())
-        if (isHttpRequest) {
-            Log.i(
-                "Socks5ProxyRoute",
-                "DECISION host=$requestHost method=${request.method} enabled=${proxyConfig.enabled} " +
-                    "matched=$proxyMatched blocked=$wasBlocked mainFrame=${request.isForMainFrame}"
-            )
-        }
-        if (proxyMatched) {
-            val method = request.method.uppercase()
-            if (method !in setOf("GET", "HEAD", "DELETE", "OPTIONS")) {
-                Log.i("Socks5ProxyRoute", "BYPASS body-bearing method=$method host=$requestHost")
-                Timber.w("$ihs : SOCKS5 bypass for $method ${request.url}: WebView request body is unavailable")
-            } else {
-                Log.i("Socks5ProxyRoute", "PROXY method=$method host=$requestHost")
-                return fulguris.network.Socks5ProxyClient.intercept(
-                    request, proxyConfig.host, proxyConfig.port, proxyConfig.username, proxyConfig.password
-                )
-            }
-        }
+        // All HTTP(S) traffic is routed by the process-wide WebView proxy.
+        // The local bridge applies the configured domain rules and handles POST,
+        // CONNECT and media requests without requiring request-body interception.
 
         // Ad blocker did not block this request
         // Now try the network engine if one is selected
