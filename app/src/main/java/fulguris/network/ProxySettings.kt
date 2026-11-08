@@ -6,11 +6,13 @@ import androidx.preference.PreferenceManager
 import fulguris.R
 
 /**
- * Global SOCKS5 settings and FoxyProxy-style URL pattern matching.
+ * SOCKS5 settings and domain-only FoxyProxy-style rules.
  *
- * Pattern syntax: one wildcard pattern per line; prefix with ! to bypass the proxy.
- * Prefix with re: to use a regular expression. If there are positive patterns,
- * only matching URLs use the proxy. Exclusions always take precedence.
+ * One rule per line. Prefix with ! to bypass the proxy. A rule may be a plain
+ * domain (example.com), wildcard domain (*.example.com), or an imported
+ * FoxyProxy URL pattern (https://*.example.com/*). Scheme, port and path are
+ * deliberately discarded: routing decisions are made only from the hostname.
+ * Prefix with re: to match the hostname with a regular expression.
  */
 object ProxySettings {
     data class Config(
@@ -35,14 +37,16 @@ object ProxySettings {
     }
 
     fun shouldUseProxy(context: Context, url: String): Boolean {
-        // Only route web traffic. Fulguris internal pages (bookmarks, history,
-        // settings, homepage files, about:, data:, file: and custom schemes)
-        // must remain handled locally by WebView/the app.
         val scheme = Uri.parse(url).scheme?.lowercase()
         if (scheme != "http" && scheme != "https") return false
-
         val config = read(context)
+        return config.enabled && config.host.isNotBlank() && shouldUseProxyHost(config, Uri.parse(url).host.orEmpty())
+    }
+
+    fun shouldUseProxyHost(config: Config, hostValue: String): Boolean {
         if (!config.enabled || config.host.isBlank()) return false
+        val host = hostValue.trim().trimEnd('.').lowercase()
+        if (host.isEmpty()) return false
 
         val rules = config.patterns.lineSequence()
             .map { it.trim() }
@@ -51,21 +55,22 @@ object ProxySettings {
         if (rules.isEmpty()) return true
 
         val exclusions = rules.filter { it.startsWith("!") }.map { it.drop(1) }
-        if (exclusions.any { matches(url, it) }) return false
+        if (exclusions.any { matchesHost(host, it) }) return false
 
         val inclusions = rules.filterNot { it.startsWith("!") }
-        return inclusions.isEmpty() || inclusions.any { matches(url, it) }
+        return inclusions.isEmpty() || inclusions.any { matchesHost(host, it) }
     }
 
-    private fun matches(url: String, rawPattern: String): Boolean {
-        if (rawPattern.isBlank()) return false
+    private fun matchesHost(host: String, rawPattern: String): Boolean {
+        val pattern = normalizeDomainPattern(rawPattern)
+        if (pattern.isBlank()) return false
         return try {
-            if (rawPattern.startsWith("re:", ignoreCase = true)) {
-                Regex(rawPattern.substring(3), RegexOption.IGNORE_CASE).containsMatchIn(url)
+            if (pattern.startsWith("re:", ignoreCase = true)) {
+                Regex(pattern.substring(3), RegexOption.IGNORE_CASE).containsMatchIn(host)
             } else {
                 val regex = buildString {
                     append('^')
-                    rawPattern.forEach { ch ->
+                    pattern.forEach { ch ->
                         when (ch) {
                             '*' -> append(".*")
                             '?' -> append('.')
@@ -74,10 +79,35 @@ object ProxySettings {
                     }
                     append('$')
                 }
-                Regex(regex, RegexOption.IGNORE_CASE).matches(url)
+                Regex(regex, RegexOption.IGNORE_CASE).matches(host)
             }
         } catch (_: Exception) {
             false
         }
+    }
+
+    private fun normalizeDomainPattern(raw: String): String {
+        var value = raw.trim()
+        if (value.isEmpty()) return ""
+        if (value.startsWith("re:", ignoreCase = true)) return value
+
+        // Accept FoxyProxy-style URL patterns but intentionally retain only host.
+        value = value.substringAfter("://", value)
+        value = value.substringBefore('/')
+        value = value.substringBefore('?')
+        value = value.substringBefore('#')
+        value = value.substringAfterLast('@')
+        if (value.startsWith("*.")) value = "*." + value.removePrefix("*.")
+        // A port is not part of a domain rule. IPv6 literals are not pattern-matched
+        // with this wildcard syntax; ordinary domain names are the intended input.
+        if (!value.startsWith("[") && value.count { it == ':' } == 1) {
+            value = value.substringBefore(':')
+        }
+        if (value.startsWith("*.")) {
+            val suffix = value.removePrefix("*.")
+            // *.example.com includes the apex and all subdomains.
+            return "*.$suffix"
+        }
+        return value.trimEnd('.').lowercase()
     }
 }
