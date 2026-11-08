@@ -929,4 +929,5 @@
     <string name="saved_password_delete_title">Delete saved login?</string>
     <string name="saved_password_delete_message">Delete the saved login for %1$s (%2$s)?</string>
     <string name="saved_password_copied">Copied to clipboard</string>
+    <string name="saved_password_reveal_confirm">Show the saved password for %1$s?</string>
 </resources>
