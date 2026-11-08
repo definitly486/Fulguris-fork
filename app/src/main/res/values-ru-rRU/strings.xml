@@ -830,6 +830,14 @@
     <string name="saved_password_delete_message">Удалить сохранённый логин для %1$s (%2$s)?</string>
     <string name="saved_password_copied">Скопировано в буфер обмена</string>
     <string name="saved_password_reveal_confirm">Показать сохранённый пароль для %1$s?</string>
+    <string name="pref_title_socks5_proxy_export">Экспорт настроек прокси</string>
+    <string name="pref_summary_socks5_proxy_export">Сохранить адрес сервера, порт, имя пользователя, пароль и доменные правила в JSON-файл. Учётные данные сохраняются без шифрования.</string>
+    <string name="pref_title_socks5_proxy_import_settings">Импорт настроек прокси</string>
+    <string name="pref_summary_socks5_proxy_import_settings">Восстановить ранее экспортированную конфигурацию SOCKS5</string>
+    <string name="pref_message_socks5_proxy_export_success">Настройки SOCKS5 экспортированы</string>
+    <string name="pref_message_socks5_proxy_export_failed">Ошибка экспорта: %1$s</string>
+    <string name="pref_message_socks5_proxy_import_settings_success">Настройки SOCKS5 импортированы</string>
+    <string name="pref_message_socks5_proxy_import_settings_failed">Ошибка импорта: %1$s</string>
     <string name="pref_title_socks5_proxy">Прокси SOCKS5</string>
     <string name="pref_title_socks5_proxy_enabled">Включить SOCKS5-прокси</string>
     <string name="pref_summary_socks5_proxy_enabled">Направлять запросы к подходящим доменам через глобальный SOCKS5-сервер</string>
