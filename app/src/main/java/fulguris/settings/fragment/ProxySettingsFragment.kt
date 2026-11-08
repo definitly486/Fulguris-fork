@@ -1,18 +1,22 @@
 package fulguris.settings.fragment
 
 import android.os.Bundle
+import android.net.Uri
 import android.text.InputType
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import androidx.preference.Preference
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import fulguris.R
 import fulguris.extensions.find
 import fulguris.network.ProxySettings
+import fulguris.extensions.snackbar
+import org.json.JSONObject
 
 @AndroidEntryPoint
 class ProxySettingsFragment : AbstractSettingsFragment() {
@@ -20,6 +24,84 @@ class ProxySettingsFragment : AbstractSettingsFragment() {
     override fun titleResourceId(): Int = R.string.pref_title_socks5_proxy
 
     override fun providePreferencesXmlResource(): Int = R.xml.preference_proxy
+
+    private val foxyProxyImportPicker =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
+            uri?.let { importFoxyProxy(it) }
+        }
+
+    private fun importFoxyProxy(uri: Uri) {
+        try {
+            val json = requireContext().contentResolver.openInputStream(uri)
+                ?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }
+                ?: throw IllegalArgumentException("Cannot read selected file")
+            val root = JSONObject(json)
+            val profiles = root.optJSONArray("data")
+                ?: throw IllegalArgumentException("FoxyProxy data array is missing")
+
+            var selected: JSONObject? = null
+            for (index in 0 until profiles.length()) {
+                val candidate = profiles.optJSONObject(index) ?: continue
+                if (candidate.optBoolean("active", true) &&
+                    candidate.optString("type").equals("socks5", ignoreCase = true)
+                ) {
+                    selected = candidate
+                    break
+                }
+            }
+            val profile = selected ?: throw IllegalArgumentException("No active SOCKS5 profile found")
+            val host = profile.optString("hostname").trim()
+            val port = profile.optString("port").trim()
+            val portNumber = port.toIntOrNull()
+            if (host.isEmpty() || portNumber == null || portNumber !in 1..65535) {
+                throw IllegalArgumentException("Invalid SOCKS5 host or port")
+            }
+
+            val rules = mutableListOf<String>()
+            fun appendRules(arrayName: String, excluded: Boolean) {
+                val array = profile.optJSONArray(arrayName) ?: return
+                for (index in 0 until array.length()) {
+                    val rule = array.optJSONObject(index) ?: continue
+                    if (!rule.optBoolean("active", true)) continue
+                    val pattern = rule.optString("pattern").trim()
+                    if (pattern.isEmpty()) continue
+                    val type = rule.optString("type", "wildcard").lowercase()
+                    val normalized = when (type) {
+                        "regex", "regexp", "regular expression" ->
+                            if (pattern.startsWith("re:", true)) pattern else "re:$pattern"
+                        else -> pattern
+                    }
+                    rules += if (excluded) "!$normalized" else normalized
+                }
+            }
+            appendRules("include", false)
+            appendRules("exclude", true)
+
+            val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            val patternsKey = getString(R.string.pref_key_socks5_proxy_patterns)
+            prefs.edit()
+                .putString(getString(R.string.pref_key_socks5_proxy_host), host)
+                .putString(getString(R.string.pref_key_socks5_proxy_port), port)
+                .putString(getString(R.string.pref_key_socks5_proxy_username), profile.optString("username"))
+                .putString(getString(R.string.pref_key_socks5_proxy_password), profile.optString("password"))
+                .putString(patternsKey, rules.joinToString("\n"))
+                .putBoolean(getString(R.string.pref_key_socks5_proxy_enabled), true)
+                .apply()
+
+            find<Preference>(R.string.pref_key_socks5_proxy_patterns)?.summary =
+                if (rules.isEmpty()) getString(R.string.pref_summary_socks5_proxy_patterns_empty)
+                else resources.getQuantityString(R.plurals.pref_summary_socks5_proxy_patterns_count, rules.size, rules.size)
+            activity?.snackbar(getString(R.string.pref_message_socks5_proxy_import_success, rules.size))
+        } catch (error: Exception) {
+            if (isAdded) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.pref_title_socks5_proxy_import_foxyproxy)
+                    .setMessage(getString(R.string.pref_message_socks5_proxy_import_failed, error.message ?: "Invalid file"))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+            }
+        }
+    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
@@ -40,6 +122,18 @@ class ProxySettingsFragment : AbstractSettingsFragment() {
         }
 
         updatePatternsSummary()
+
+        preferenceScreen.addPreference(Preference(requireContext()).apply {
+            title = getString(R.string.pref_title_socks5_proxy_import_foxyproxy)
+            summary = getString(R.string.pref_summary_socks5_proxy_import_foxyproxy)
+            setIcon(R.drawable.ic_file_import)
+            isSingleLineTitle = false
+            setOnPreferenceClickListener {
+                foxyProxyImportPicker.launch(arrayOf("application/json", "text/plain", "application/octet-stream"))
+                true
+            }
+        })
+
         patternsPreference?.setOnPreferenceClickListener {
             val editor = EditText(requireContext()).apply {
                 setText(preferences.getString(patternsKey, "").orEmpty())
