@@ -46,6 +46,7 @@ import android.net.Uri
 import android.net.http.SslError
 import android.os.Message
 import android.util.Base64
+import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -261,11 +262,27 @@ class WebPageClient(
         // Let WebView handle body-bearing methods natively, while proxying GET/HEAD
         // media and resource requests (for example, googlevideo stream segments).
         val proxyConfig = fulguris.network.ProxySettings.read(activity)
-        if (proxyConfig.enabled && fulguris.network.ProxySettings.shouldUseProxy(activity, request.url.toString())) {
+        val proxyMatched = proxyConfig.enabled &&
+            fulguris.network.ProxySettings.shouldUseProxy(activity, request.url.toString())
+        val requestHost = request.url.host.orEmpty()
+        val isVideoDiagnosticHost = requestHost.contains("youtube", true) ||
+            requestHost.contains("googlevideo", true) ||
+            requestHost.contains("ytimg", true) ||
+            requestHost.contains("ggpht", true)
+        if (isVideoDiagnosticHost) {
+            Log.i(
+                "Socks5ProxyRoute",
+                "host=$requestHost method=${request.method} enabled=${proxyConfig.enabled} " +
+                    "matched=$proxyMatched mainFrame=${request.isForMainFrame}"
+            )
+        }
+        if (proxyMatched) {
             val method = request.method.uppercase()
             if (method !in setOf("GET", "HEAD", "DELETE", "OPTIONS")) {
+                Log.i("Socks5ProxyRoute", "BYPASS body-bearing method=$method host=$requestHost")
                 Timber.w("$ihs : SOCKS5 bypass for $method ${request.url}: WebView request body is unavailable")
             } else {
+                Log.i("Socks5ProxyRoute", "PROXY method=$method host=$requestHost")
                 return fulguris.network.Socks5ProxyClient.intercept(
                     request, proxyConfig.host, proxyConfig.port, proxyConfig.username, proxyConfig.password
                 )
@@ -1296,6 +1313,11 @@ class WebPageClient(
         request: WebResourceRequest?,
         errorResponse: WebResourceResponse?
     ) {
+        val errorHost = request?.url?.host.orEmpty()
+        if (errorHost.contains("youtube", true) || errorHost.contains("googlevideo", true) ||
+            errorHost.contains("ytimg", true) || errorHost.contains("ggpht", true)) {
+            Log.w("Socks5ProxyRoute", "HTTP_ERROR host=$errorHost method=${request?.method} status=${errorResponse?.statusCode}")
+        }
         Timber.w("$ihs : onReceivedHttpError: ${request?.url} - Status: ${errorResponse?.statusCode}")
         super.onReceivedHttpError(view, request, errorResponse)
     }
