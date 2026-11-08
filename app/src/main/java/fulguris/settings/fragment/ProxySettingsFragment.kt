@@ -2,6 +2,8 @@ package fulguris.settings.fragment
 
 import android.os.Bundle
 import android.content.Context
+import android.util.Base64
+import android.os.Build
 import android.net.Uri
 import android.text.InputType
 import android.view.ViewGroup
@@ -19,6 +21,12 @@ import fulguris.network.ProxySettings
 import fulguris.extensions.snackbar
 import org.json.JSONObject
 import java.io.IOException
+import java.security.SecureRandom
+import javax.crypto.Cipher
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.PBEKeySpec
+import javax.crypto.spec.SecretKeySpec
 
 @AndroidEntryPoint
 class ProxySettingsFragment : AbstractSettingsFragment() {
@@ -56,66 +64,153 @@ class ProxySettingsFragment : AbstractSettingsFragment() {
     }
 
     private fun exportProxySettings(uri: Uri) {
-        try {
-            val json = proxySettingsJson(requireContext()).toString(2)
-            requireContext().contentResolver.openOutputStream(uri)?.bufferedWriter(Charsets.UTF_8)?.use {
-                it.write(json)
-            } ?: throw IOException("Cannot open destination")
-            activity?.snackbar(R.string.pref_message_socks5_proxy_export_success)
-        } catch (error: Exception) {
-            if (isAdded) {
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(R.string.pref_title_socks5_proxy_export)
-                    .setMessage(getString(R.string.pref_message_socks5_proxy_export_failed, error.message ?: ""))
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show()
+        val password = EditText(requireContext()).apply {
+            hint = getString(R.string.pref_hint_proxy_backup_password)
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        }
+        val confirmation = EditText(requireContext()).apply {
+            hint = getString(R.string.pref_hint_proxy_backup_password_confirm)
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        }
+        val fields = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            val pad = (20 * resources.displayMetrics.density).toInt()
+            setPadding(pad, 0, pad, 0)
+            addView(password)
+            addView(confirmation)
+        }
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.pref_title_proxy_backup_password)
+            .setMessage(R.string.pref_message_proxy_backup_password)
+            .setView(fields)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.pref_action_socks5_proxy_export, null)
+            .create()
+        dialog.setOnShowListener {
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val pass = password.text.toString()
+                if (pass.length < 8) {
+                    password.error = getString(R.string.pref_error_proxy_backup_password_short)
+                    return@setOnClickListener
+                }
+                if (pass != confirmation.text.toString()) {
+                    confirmation.error = getString(R.string.pref_error_proxy_backup_password_mismatch)
+                    return@setOnClickListener
+                }
+                try {
+                    val plain = proxySettingsJson(requireContext()).toString().toByteArray(Charsets.UTF_8)
+                    val encrypted = encryptProxyBackup(plain, pass)
+                    requireContext().contentResolver.openOutputStream(uri)?.use { it.write(encrypted) }
+                        ?: throw IOException("Cannot open destination")
+                    dialog.dismiss()
+                    activity?.snackbar(R.string.pref_message_socks5_proxy_export_success)
+                } catch (error: Exception) {
+                    password.error = error.message ?: getString(R.string.pref_message_socks5_proxy_export_failed_generic)
+                }
             }
         }
+        dialog.show()
     }
 
     private fun importProxySettings(uri: Uri) {
         try {
-            val json = requireContext().contentResolver.openInputStream(uri)
-                ?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }
+            val data = requireContext().contentResolver.openInputStream(uri)?.use { it.readBytes() }
                 ?: throw IOException("Cannot read selected file")
-            val root = JSONObject(json)
-            if (root.optString("format") != "fulguris-socks5-proxy" || root.optInt("version") != 1) {
-                throw IllegalArgumentException("Unsupported proxy settings file")
+            val password = EditText(requireContext()).apply {
+                hint = getString(R.string.pref_hint_proxy_backup_password)
+                inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             }
-
-            val host = root.optString("host").trim()
-            val port = root.optString("port", "1080").trim()
-            val enabled = root.optBoolean("enabled", false)
-            val portNumber = port.toIntOrNull()
-            if (enabled && (host.isEmpty() || portNumber == null || portNumber !in 1..65535)) {
-                throw IllegalArgumentException("Invalid SOCKS5 server address or port")
-            }
-
-            val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-            prefs.edit()
-                .putBoolean(getString(R.string.pref_key_socks5_proxy_enabled), enabled)
-                .putString(getString(R.string.pref_key_socks5_proxy_host), host)
-                .putString(getString(R.string.pref_key_socks5_proxy_port), port)
-                .putString(getString(R.string.pref_key_socks5_proxy_username), root.optString("username"))
-                .putString(getString(R.string.pref_key_socks5_proxy_password), root.optString("password"))
-                .putString(getString(R.string.pref_key_socks5_proxy_patterns), root.optString("patterns"))
-                .apply()
-
-            val rules = root.optString("patterns").lineSequence()
-                .map { it.trim() }.filter { it.isNotEmpty() && !it.startsWith("#") }.count()
-            find<Preference>(R.string.pref_key_socks5_proxy_patterns)?.summary =
-                if (rules == 0) getString(R.string.pref_summary_socks5_proxy_patterns_empty)
-                else resources.getQuantityString(R.plurals.pref_summary_socks5_proxy_patterns_count, rules, rules)
-            activity?.snackbar(R.string.pref_message_socks5_proxy_import_settings_success)
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.pref_title_proxy_backup_password)
+                .setMessage(R.string.pref_message_proxy_backup_import_password)
+                .setView(password)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    try {
+                        val plain = decryptProxyBackup(data, password.text.toString())
+                        applyProxySettings(JSONObject(String(plain, Charsets.UTF_8)))
+                    } catch (error: Exception) {
+                        if (isAdded) MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(R.string.pref_title_socks5_proxy_import_settings)
+                            .setMessage(R.string.pref_error_proxy_backup_decrypt)
+                            .setPositiveButton(android.R.string.ok, null).show()
+                    }
+                }.show()
         } catch (error: Exception) {
-            if (isAdded) {
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(R.string.pref_title_socks5_proxy_import_settings)
-                    .setMessage(getString(R.string.pref_message_socks5_proxy_import_settings_failed, error.message ?: ""))
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show()
-            }
+            showProxyImportError(error)
         }
+    }
+
+    private fun applyProxySettings(root: JSONObject) {
+        if (root.optString("format") != "fulguris-socks5-proxy" || root.optInt("version") != 1)
+            throw IllegalArgumentException("Unsupported proxy settings file")
+        val host = root.optString("host").trim()
+        val port = root.optString("port", "1080").trim()
+        val enabled = root.optBoolean("enabled", false)
+        val portNumber = port.toIntOrNull()
+        if (enabled && (host.isEmpty() || portNumber == null || portNumber !in 1..65535))
+            throw IllegalArgumentException("Invalid SOCKS5 server address or port")
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        prefs.edit()
+            .putBoolean(getString(R.string.pref_key_socks5_proxy_enabled), enabled)
+            .putString(getString(R.string.pref_key_socks5_proxy_host), host)
+            .putString(getString(R.string.pref_key_socks5_proxy_port), port)
+            .putString(getString(R.string.pref_key_socks5_proxy_username), root.optString("username"))
+            .putString(getString(R.string.pref_key_socks5_proxy_password), root.optString("password"))
+            .putString(getString(R.string.pref_key_socks5_proxy_patterns), root.optString("patterns"))
+            .apply()
+        val rules = root.optString("patterns").lineSequence().map { it.trim() }
+            .filter { it.isNotEmpty() && !it.startsWith("#") }.count()
+        find<Preference>(R.string.pref_key_socks5_proxy_patterns)?.summary =
+            if (rules == 0) getString(R.string.pref_summary_socks5_proxy_patterns_empty)
+            else resources.getQuantityString(R.plurals.pref_summary_socks5_proxy_patterns_count, rules, rules)
+        activity?.snackbar(R.string.pref_message_socks5_proxy_import_settings_success)
+    }
+
+    private fun showProxyImportError(error: Exception) {
+        if (!isAdded) return
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.pref_title_socks5_proxy_import_settings)
+            .setMessage(getString(R.string.pref_message_socks5_proxy_import_settings_failed, error.message ?: ""))
+            .setPositiveButton(android.R.string.ok, null).show()
+    }
+
+    private fun encryptProxyBackup(plain: ByteArray, password: String): ByteArray {
+        val random = SecureRandom()
+        val salt = ByteArray(16).also { random.nextBytes(it) }
+        val iv = ByteArray(12).also { random.nextBytes(it) }
+        val iterations = 250_000
+        val algorithm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) "PBKDF2WithHmacSHA256" else "PBKDF2WithHmacSHA1"
+        val spec = PBEKeySpec(password.toCharArray(), salt, iterations, 256)
+        val key = SecretKeySpec(SecretKeyFactory.getInstance(algorithm).generateSecret(spec).encoded, "AES")
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, key, GCMParameterSpec(128, iv))
+        return JSONObject().put("format", "fulguris-socks5-proxy-encrypted").put("version", 1)
+            .put("kdf", algorithm).put("iterations", iterations)
+            .put("salt", Base64.encodeToString(salt, Base64.NO_WRAP))
+            .put("iv", Base64.encodeToString(iv, Base64.NO_WRAP))
+            .put("data", Base64.encodeToString(cipher.doFinal(plain), Base64.NO_WRAP))
+            .toString(2).toByteArray(Charsets.UTF_8)
+    }
+
+    private fun decryptProxyBackup(data: ByteArray, password: String): ByteArray {
+        val envelope = JSONObject(String(data, Charsets.UTF_8))
+        if (envelope.optString("format") != "fulguris-socks5-proxy-encrypted" || envelope.optInt("version") != 1)
+            throw IllegalArgumentException("Not an encrypted proxy backup")
+        val iterations = envelope.getInt("iterations")
+        if (iterations !in 100_000..1_000_000) throw IllegalArgumentException("Invalid KDF parameters")
+        val algorithm = envelope.getString("kdf")
+        if (algorithm != "PBKDF2WithHmacSHA256" && algorithm != "PBKDF2WithHmacSHA1")
+            throw IllegalArgumentException("Unsupported key derivation algorithm")
+        val salt = Base64.decode(envelope.getString("salt"), Base64.NO_WRAP)
+        val iv = Base64.decode(envelope.getString("iv"), Base64.NO_WRAP)
+        val encrypted = Base64.decode(envelope.getString("data"), Base64.NO_WRAP)
+        if (salt.size != 16 || iv.size != 12) throw IllegalArgumentException("Invalid encrypted backup")
+        val spec = PBEKeySpec(password.toCharArray(), salt, iterations, 256)
+        val key = SecretKeySpec(SecretKeyFactory.getInstance(algorithm).generateSecret(spec).encoded, "AES")
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, iv))
+        return cipher.doFinal(encrypted)
     }
 
     private fun importFoxyProxy(uri: Uri) {
@@ -222,7 +317,7 @@ class ProxySettingsFragment : AbstractSettingsFragment() {
                     .setMessage(R.string.pref_message_socks5_proxy_export_confirm)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.pref_action_socks5_proxy_export) { _, _ ->
-                        proxyExportPicker.launch("Fulguris-SOCKS5-Settings.json")
+                        proxyExportPicker.launch("Fulguris-SOCKS5-Settings.enc.json")
                     }
                     .show()
                 true
