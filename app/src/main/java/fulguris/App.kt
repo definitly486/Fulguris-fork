@@ -429,6 +429,10 @@ class App : Application(), SharedPreferences.OnSharedPreferenceChangeListener,
      *
      */
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        // Re-read global proxy settings in this process. Incognito has its own App
+        // instance and therefore refreshes its own WebView ProxyController override.
+        fulguris.network.LocalSocks5Proxy.refresh(this)
+
         if (key == getString(R.string.pref_key_log_level) || key == getString(R.string.pref_key_logs)) {
             // Update Timber according to changed preferences
             plantTimberLogs()
