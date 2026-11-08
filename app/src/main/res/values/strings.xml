@@ -944,5 +944,16 @@
     <string name="pref_summary_socks5_proxy_test_failed">Connection failed: %1$s</string>
     <string name="pref_summary_global_socks5_proxy">One global SOCKS5 server with FoxyProxy-style URL rules</string>
     <string name="pref_title_socks5_proxy_patterns">URL patterns</string>
-    <string name="pref_summary_socks5_proxy_patterns">One rule per line. * and ? are wildcards; prefix with ! to bypass the proxy; re: starts a regular expression.</string>
+    <string name="pref_summary_socks5_proxy_patterns">Edit the URL rules used to decide which requests use the proxy</string>
+    <string name="pref_summary_socks5_proxy_patterns_empty">No rules. The proxy is used for all URLs.</string>
+    <string name="pref_message_socks5_proxy_patterns_editor">Enter one pattern per line. Positive patterns use the proxy; prefix a pattern with ! to bypass it. If there are no positive patterns, all URLs use the proxy except exclusions. * and ? are wildcards; re: starts a regular expression. Lines starting with # are comments.</string>
+    <string name="pref_action_patterns_examples">Examples</string>
+    <string name="pref_message_socks5_proxy_patterns_examples">*youtube.com*
+*.rutracker.org*
+!*.google.com*
+re:^https?://([^.]+\\.)?example\\.org/</string>
+    <plurals name="pref_summary_socks5_proxy_patterns_count">
+        <item quantity="one">%1$d rule configured</item>
+        <item quantity="other">%1$d rules configured</item>
+    </plurals>
 </resources>
