@@ -255,14 +255,21 @@ class WebPageClient(
             return response
         }
 
-        // Global SOCKS5 proxy: URL patterns decide whether this request is proxied.
-        // Requests that match an exclusion or no inclusion pattern continue through the
-        // normal network engine; matching requests fail closed on proxy errors.
+        // Global SOCKS5 proxy: URL patterns decide which requests are proxied.
+        // WebView does not expose request bodies in shouldInterceptRequest. Media
+        // sites use POST for player/API metadata; synthesizing a 501 breaks playback.
+        // Let WebView handle body-bearing methods natively, while proxying GET/HEAD
+        // media and resource requests (for example, googlevideo stream segments).
         val proxyConfig = fulguris.network.ProxySettings.read(activity)
         if (proxyConfig.enabled && fulguris.network.ProxySettings.shouldUseProxy(activity, request.url.toString())) {
-            return fulguris.network.Socks5ProxyClient.intercept(
-                request, proxyConfig.host, proxyConfig.port, proxyConfig.username, proxyConfig.password
-            )
+            val method = request.method.uppercase()
+            if (method !in setOf("GET", "HEAD", "DELETE", "OPTIONS")) {
+                Timber.w("$ihs : SOCKS5 bypass for $method ${request.url}: WebView request body is unavailable")
+            } else {
+                return fulguris.network.Socks5ProxyClient.intercept(
+                    request, proxyConfig.host, proxyConfig.port, proxyConfig.username, proxyConfig.password
+                )
+            }
         }
 
         // Ad blocker did not block this request
