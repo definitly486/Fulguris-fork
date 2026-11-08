@@ -209,6 +209,10 @@ class App : Application(), SharedPreferences.OnSharedPreferenceChangeListener,
             }
         }
 
+        // Each process (including the isolated incognito process) owns its own
+        // loopback proxy and WebView ProxyController override.
+        fulguris.network.LocalSocks5Proxy.refresh(this)
+
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
 
         Thread.setDefaultUncaughtExceptionHandler { thread, ex ->
