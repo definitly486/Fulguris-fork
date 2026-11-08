@@ -34,13 +34,13 @@ object Socks5ProxyClient {
     private val clients = ConcurrentHashMap<ClientKey, OkHttpClient>()
 
     private object ProxyCredentials {
-        private data class Context(
-            val host: String,
-            val port: Int,
-            val authentication: PasswordAuthentication
-        )
+        private data class Endpoint(val host: String, val port: Int)
 
-        private val current = ThreadLocal<Context?>()
+        // Android's SOCKS implementation may request credentials from a different
+        // thread than the one executing OkHttp Call.execute(). ThreadLocal therefore
+        // loses the credentials intermittently. Keep the active credentials keyed by
+        // the configured proxy endpoint instead.
+        private val credentials = ConcurrentHashMap<Endpoint, PasswordAuthentication>()
         @Volatile private var installed = false
 
         @Synchronized
@@ -48,13 +48,16 @@ object Socks5ProxyClient {
             if (installed) return
             Authenticator.setDefault(object : Authenticator() {
                 override fun getPasswordAuthentication(): PasswordAuthentication? {
-                    val context = current.get() ?: return null
-                    val sameEndpoint = requestingPort == context.port &&
-                        (requestingHost.isNullOrBlank() || requestingHost.equals(context.host, ignoreCase = true))
-                    val socks5Authentication = requestorType == RequestorType.SERVER &&
-                        requestingProtocol.equals("SOCKS5", ignoreCase = true) && sameEndpoint
-                    val proxyAuthentication = requestorType == RequestorType.PROXY && sameEndpoint
-                    return if (socks5Authentication || proxyAuthentication) context.authentication else null
+                    val isSocks5Authentication = requestorType == RequestorType.SERVER &&
+                        requestingProtocol.equals("SOCKS5", ignoreCase = true)
+                    val isProxyAuthentication = requestorType == RequestorType.PROXY
+                    if (!isSocks5Authentication && !isProxyAuthentication) return null
+
+                    val host = requestingHost
+                    return credentials.entries.firstOrNull { (endpoint, _) ->
+                        endpoint.port == requestingPort &&
+                            (host.isNullOrBlank() || endpoint.host.equals(host, ignoreCase = true))
+                    }?.value
                 }
             })
             installed = true
@@ -69,14 +72,9 @@ object Socks5ProxyClient {
         ): T {
             if (username.isEmpty() && password.isEmpty()) return action()
             install()
-            current.set(
-                Context(host, port, PasswordAuthentication(username, password.toCharArray()))
-            )
-            return try {
-                action()
-            } finally {
-                current.remove()
-            }
+            credentials[Endpoint(host, port)] =
+                PasswordAuthentication(username, password.toCharArray())
+            return action()
         }
     }
 
