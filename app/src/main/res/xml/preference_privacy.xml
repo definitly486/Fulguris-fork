@@ -108,6 +108,13 @@
             />
 
 
+        <Preference
+            android:key="saved_passwords"
+            android:title="@string/saved_passwords_title"
+            android:summary="@string/saved_passwords_summary"
+            app:icon="@drawable/ic_password"
+            app:singleLineTitle="false" />
+
         <x.SwitchPreference
             android:defaultValue="true"
             android:key="password"
