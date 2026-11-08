@@ -932,7 +932,7 @@
     <string name="saved_password_reveal_confirm">Show the saved password for %1$s?</string>
     <string name="pref_title_socks5_proxy">SOCKS5 proxy</string>
     <string name="pref_title_socks5_proxy_enabled">Enable SOCKS5 proxy</string>
-    <string name="pref_summary_socks5_proxy_enabled">Route matching URLs through the global SOCKS5 server</string>
+    <string name="pref_summary_socks5_proxy_enabled">Route matching domains through the global SOCKS5 server</string>
     <string name="pref_title_socks5_proxy_host">Server address</string>
     <string name="pref_title_socks5_proxy_port">Server port</string>
     <string name="pref_title_socks5_proxy_username">Username</string>
