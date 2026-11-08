@@ -6,7 +6,6 @@ import fulguris.network.ProxySettings
 import fulguris.network.Socks5ProxyClient
 import android.os.Bundle
 import androidx.preference.Preference
-import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,7 +19,6 @@ class ProxySettingsFragment : AbstractSettingsFragment() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
 
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val patternsPreference = find<Preference>(R.string.pref_key_socks5_proxy_patterns)
         patternsPreference?.summary = getString(R.string.pref_summary_socks5_proxy_patterns)
 
