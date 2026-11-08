@@ -930,6 +930,9 @@
     <string name="saved_password_delete_message">Delete the saved login for %1$s (%2$s)?</string>
     <string name="saved_password_copied">Copied to clipboard</string>
     <string name="saved_password_reveal_confirm">Show the saved password for %1$s?</string>
+    <string name="pref_title_socks5_proxy_export_confirm">Export proxy credentials?</string>
+    <string name="pref_message_socks5_proxy_export_confirm">The backup contains your SOCKS5 password and username. The JSON file is not encrypted. Save it only in a trusted location.</string>
+    <string name="pref_action_socks5_proxy_export">Export</string>
     <string name="pref_title_socks5_proxy_export">Export proxy settings</string>
     <string name="pref_summary_socks5_proxy_export">Save server address, port, username, password and domain rules to a JSON file. Credentials are stored unencrypted.</string>
     <string name="pref_title_socks5_proxy_import_settings">Import proxy settings</string>
