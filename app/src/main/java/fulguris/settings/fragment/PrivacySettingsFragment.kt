@@ -161,10 +161,17 @@ class PrivacySettingsFragment : AbstractSettingsFragment() {
             .setItems(actions) { _, which ->
                 when (which) {
                     0 -> MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(entry.host)
-                        .setMessage(getString(R.string.saved_password_details, entry.username, entry.password))
-                        .setPositiveButton(R.string.saved_password_copy_password) { _, _ -> copyCredential(entry.password) }
-                        .setNegativeButton(R.string.action_ok, null)
+                        .setTitle(R.string.saved_password_show)
+                        .setMessage(getString(R.string.saved_password_reveal_confirm, entry.host))
+                        .setPositiveButton(R.string.saved_password_show) { _, _ ->
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle(entry.host)
+                                .setMessage(getString(R.string.saved_password_details, entry.username, entry.password))
+                                .setPositiveButton(R.string.saved_password_copy_password) { _, _ -> copyCredential(entry.password) }
+                                .setNegativeButton(R.string.action_ok, null)
+                                .show()
+                        }
+                        .setNegativeButton(R.string.action_cancel, null)
                         .show()
                     1 -> copyCredential(entry.username)
                     2 -> copyCredential(entry.password)
