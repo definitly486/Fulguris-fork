@@ -2,6 +2,7 @@ package fulguris.network
 
 import android.content.Context
 import androidx.preference.PreferenceManager
+import fulguris.R
 
 /**
  * Global SOCKS5 settings and FoxyProxy-style URL pattern matching.
@@ -20,19 +21,15 @@ object ProxySettings {
         val patterns: String
     )
 
-    private fun key(context: Context, name: String) = context.getString(
-        context.resources.getIdentifier(name, "string", context.packageName)
-    )
-
     fun read(context: Context): Config {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         return Config(
-            enabled = prefs.getBoolean(key(context, "pref_key_socks5_proxy_enabled"), false),
-            host = prefs.getString(key(context, "pref_key_socks5_proxy_host"), "") ?: "",
-            port = prefs.getString(key(context, "pref_key_socks5_proxy_port"), "1080") ?: "1080",
-            username = prefs.getString(key(context, "pref_key_socks5_proxy_username"), "") ?: "",
-            password = prefs.getString(key(context, "pref_key_socks5_proxy_password"), "") ?: "",
-            patterns = prefs.getString(key(context, "pref_key_socks5_proxy_patterns"), "") ?: ""
+            enabled = prefs.getBoolean(context.getString(R.string.pref_key_socks5_proxy_enabled), false),
+            host = prefs.getString(context.getString(R.string.pref_key_socks5_proxy_host), "") ?: "",
+            port = prefs.getString(context.getString(R.string.pref_key_socks5_proxy_port), "1080") ?: "1080",
+            username = prefs.getString(context.getString(R.string.pref_key_socks5_proxy_username), "") ?: "",
+            password = prefs.getString(context.getString(R.string.pref_key_socks5_proxy_password), "") ?: "",
+            patterns = prefs.getString(context.getString(R.string.pref_key_socks5_proxy_patterns), "") ?: ""
         )
     }
 
