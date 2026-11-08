@@ -217,7 +217,14 @@ class ProxySettingsFragment : AbstractSettingsFragment() {
             setIcon(R.drawable.ic_cloud_upload_outline)
             isSingleLineTitle = false
             setOnPreferenceClickListener {
-                proxyExportPicker.launch("Fulguris-SOCKS5-Settings.json")
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.pref_title_socks5_proxy_export_confirm)
+                    .setMessage(R.string.pref_message_socks5_proxy_export_confirm)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(R.string.pref_action_socks5_proxy_export) { _, _ ->
+                        proxyExportPicker.launch("Fulguris-SOCKS5-Settings.json")
+                    }
+                    .show()
                 true
             }
         })
