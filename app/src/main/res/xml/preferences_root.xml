@@ -28,6 +28,14 @@
         />
 
     <Preference
+        x:fragment="fulguris.settings.fragment.ProxySettingsFragment"
+        x:title="@string/pref_title_socks5_proxy"
+        x:summary="@string/pref_summary_global_socks5_proxy"
+        x:icon="@drawable/ic_vpn_key"
+        x:singleLineTitle="false"
+        />
+
+    <Preference
         x:fragment="fulguris.settings.fragment.DomainsSettingsFragment"
         x:summary="@string/pref_summary_domains"
         x:title="@string/pref_title_domains"
