@@ -138,9 +138,10 @@ object LocalSocks5Proxy {
 
             val cfg = config
             val viaSocks = cfg != null && ProxySettings.shouldUseProxyHost(cfg, host)
-            upstream = if (viaSocks) openSocks(host, port, cfg!!) else Socket().apply {
+            val upstreamSocket = if (viaSocks) openSocks(host, port, cfg!!) else Socket().apply {
                 connect(InetSocketAddress(host, port), CONNECT_TIMEOUT)
             }
+            upstream = upstreamSocket
 
             if (connect) {
                 output.write("HTTP/1.1 200 Connection Established\r\nProxy-Agent: Fulguris\r\n\r\n".toByteArray(Charsets.ISO_8859_1))
@@ -150,7 +151,7 @@ object LocalSocks5Proxy {
                     append(uri?.encodedPath?.takeIf { it.isNotEmpty() } ?: "/")
                     uri?.encodedQuery?.let { append('?'); append(it) }
                 }
-                upstream.getOutputStream().write("$method $path HTTP/1.1\r\n".toByteArray(Charsets.ISO_8859_1))
+                upstreamSocket.getOutputStream().write("$method $path HTTP/1.1\r\n".toByteArray(Charsets.ISO_8859_1))
                 headers.forEach { header ->
                     if (!header.startsWith("Proxy-Connection:", true) &&
                         !header.startsWith("Proxy-Authorization:", true) &&
@@ -163,7 +164,7 @@ object LocalSocks5Proxy {
                 upstream.getOutputStream().write("Connection: close\r\n\r\n".toByteArray(Charsets.ISO_8859_1))
                 upstream.getOutputStream().flush()
             }
-            bridge(client, upstream)
+            bridge(client, upstreamSocket)
             upstream = null
         } catch (e: Exception) {
             Log.w(TAG, "Request failed: ${e.javaClass.simpleName}: ${e.message}")
