@@ -172,10 +172,48 @@ object Socks5ProxyClient {
                 }
             }
 
+            // WebView may send cache validators, but this interceptor does not share
+            // WebView's HTTP cache. A 304 therefore has no cached body to reuse.
+            builder.removeHeader("If-None-Match")
+                .removeHeader("If-Modified-Since")
+
             val outgoing = builder.method(method, null).build()
-            val response = ProxyCredentials.withCredentials(host, port, username, password) {
+            var response = ProxyCredentials.withCredentials(host, port, username, password) {
                 client(host, port, username, password).newCall(outgoing).execute()
             }
+
+            // Some servers/CDNs can still return 304. Retry once without validators
+            // so WebView receives a complete response body rather than an unusable 304.
+            if (response.code == 304) {
+                response.close()
+                val unconditional = outgoing.newBuilder()
+                    .removeHeader("If-None-Match")
+                    .removeHeader("If-Modified-Since")
+                    .header("Cache-Control", "no-cache")
+                    .header("Pragma", "no-cache")
+                    .build()
+                response = ProxyCredentials.withCredentials(host, port, username, password) {
+                    client(host, port, username, password).newCall(unconditional).execute()
+                }
+            }
+
+            Log.d(
+                TAG,
+                "SOCKS5 ${request.method} ${request.url} -> ${response.code}, " +
+                    "range=${request.requestHeaders["Range"]}, " +
+                    "contentRange=${response.header("Content-Range")}, " +
+                    "contentType=${response.header("Content-Type")}"
+            )
+
+            // OkHttp follows normal redirects itself. Android WebResourceResponse
+            // rejects every 3xx status, so never pass an unexpected one to its constructor.
+            if (response.code in 300..399) {
+                val location = response.header("Location")
+                Log.w(TAG, "Unexpected HTTP ${response.code} for ${request.url}; location=$location")
+                response.close()
+                return errorResponse(502, "Unexpected HTTP ${response.code} from upstream server")
+            }
+
             val contentType = response.header("Content-Type")
             val mime = contentType?.substringBefore(';')?.trim()?.takeIf { it.isNotEmpty() } ?: "text/plain"
             val charset = contentType?.split(';')
