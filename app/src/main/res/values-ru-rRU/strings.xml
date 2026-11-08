@@ -750,7 +750,7 @@
     <string name="pref_title_extension_version">Версия</string>
     <string name="pref_title_extension_author">Автор</string>
     <string name="pref_title_extension_namespace">Пространство имён</string>
-    <string name="pref_title_extension_patterns">Шаблоны URL</string>
+    <string name="pref_title_extension_patterns">Доменные правила</string>
     <string name="pref_title_extension_match_urls">Совпадения</string>
     <string name="pref_title_extension_exclude_urls">Исключения</string>
     <string name="pref_title_extension_actions">Действия</string>
@@ -842,16 +842,16 @@
     <string name="pref_summary_socks5_proxy_test_running">Подключение к прокси...</string>
     <string name="pref_summary_socks5_proxy_test_success">Подключение успешно. Ответ HTTPS: HTTP %1$d</string>
     <string name="pref_summary_socks5_proxy_test_failed">Ошибка подключения: %1$s</string>
-    <string name="pref_summary_global_socks5_proxy">Один глобальный SOCKS5-сервер с правилами URL по образцу FoxyProxy</string>
+    <string name="pref_summary_global_socks5_proxy">Один глобальный SOCKS5-сервер с доменными правилами по образцу FoxyProxy</string>
     <string name="pref_title_socks5_proxy_patterns">Шаблоны URL</string>
-    <string name="pref_summary_socks5_proxy_patterns">Редактирование правил URL, определяющих, какие запросы идут через прокси</string>
-    <string name="pref_summary_socks5_proxy_patterns_empty">Правил нет. Прокси используется для всех URL.</string>
-    <string name="pref_message_socks5_proxy_patterns_editor">Указывай один шаблон на строку. Положительные шаблоны направляют запрос через прокси; ! в начале исключает адрес из прокси. Если положительных шаблонов нет, через прокси идут все URL, кроме исключений. * и ? — подстановочные символы; re: в начале — регулярное выражение. Строки с # в начале считаются комментариями.</string>
+    <string name="pref_summary_socks5_proxy_patterns">Редактирование доменов, запросы к которым идут через прокси</string>
+    <string name="pref_summary_socks5_proxy_patterns_empty">Правил нет. Прокси используется для всех доменов.</string>
+    <string name="pref_message_socks5_proxy_patterns_editor">Указывай один домен на строку (например, *.youtube.com). Положительные домены направляют запрос через прокси; ! в начале исключает домен из прокси. Если положительных доменов нет, через прокси идут все домены, кроме исключений. * и ? — подстановочные символы; re: в начале — регулярное выражение для имени хоста. При импорте FoxyProxy из URL-правил извлекается только домен. Строки с # в начале считаются комментариями.</string>
     <string name="pref_action_patterns_examples">Примеры</string>
-    <string name="pref_message_socks5_proxy_patterns_examples">*youtube.com*
-*.rutracker.org*
-!*.google.com*
-re:^https?://([^.]+\\.)?example\\.org/</string>
+    <string name="pref_message_socks5_proxy_patterns_examples">*.youtube.com
+*.rutracker.org
+!*.google.com
+re:^(.*\\.)?example\\.org$</string>
     <plurals name="pref_summary_socks5_proxy_patterns_count">
         <item quantity="one">%1$d правило</item>
         <item quantity="few">%1$d правила</item>
