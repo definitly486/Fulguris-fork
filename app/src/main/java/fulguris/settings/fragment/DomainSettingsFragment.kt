@@ -28,7 +28,6 @@ import fulguris.extensions.find
 import fulguris.settings.preferences.DomainPreferences
 import android.content.Context
 import android.net.Uri
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.os.Bundle
 import androidx.preference.Preference
 import dagger.hilt.android.AndroidEntryPoint
@@ -80,41 +79,6 @@ class DomainSettingsFragment : AbstractSettingsFragment() {
             intent?.data = Uri.parse(uri)
         }
 
-        // SOCKS5 connectivity test uses the effective settings (local or inherited).
-        find<Preference>(R.string.pref_key_socks5_proxy_test)?.setOnPreferenceClickListener {
-            val progress = MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.pref_title_socks5_proxy_test)
-                .setMessage(R.string.pref_summary_socks5_proxy_test_running)
-                .setCancelable(false)
-                .create()
-            progress.show()
-
-            val proxyHost = prefs.socks5ProxyHost
-            val proxyPort = prefs.socks5ProxyPort
-            val proxyUsername = prefs.socks5ProxyUsername
-            val proxyPassword = prefs.socks5ProxyPassword
-            Thread({
-                val result = fulguris.network.Socks5ProxyClient.testConnection(
-                    proxyHost, proxyPort, proxyUsername, proxyPassword
-                )
-                activity?.runOnUiThread {
-                    if (isAdded) {
-                        progress.dismiss()
-                        val message = if (result.success) {
-                            getString(R.string.pref_summary_socks5_proxy_test_success, result.httpCode ?: 0)
-                        } else {
-                            getString(R.string.pref_summary_socks5_proxy_test_failed, result.error ?: "")
-                        }
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle(R.string.pref_title_socks5_proxy_test)
-                            .setMessage(message)
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show()
-                    }
-                }
-            }, "Socks5ProxyTest").start()
-            true
-        }
 
         // Parent link setup is done in onResume() to ensure it's always up-to-date
 
