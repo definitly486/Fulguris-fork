@@ -203,6 +203,19 @@ class WebPageClient(
      *   comment Helium314: adBLock.shouldBock always never blocks if url.isSpecialUrl() or url.isAppScheme(), could be moved here
      */
     override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
+        val requestScheme = request.url.scheme.orEmpty()
+        val requestHost = request.url.host.orEmpty()
+        val isHttpRequest = requestScheme.equals("http", true) || requestScheme.equals("https", true)
+        if (isHttpRequest) {
+            // Temporary route diagnostics: log every HTTP(S) request before ad blocking
+            // so we can distinguish requests reaching WebViewClient from media traffic
+            // handled internally by Chromium and never exposed to this callback.
+            Log.i(
+                "Socks5ProxyRoute",
+                "INTERCEPT method=${request.method} host=$requestHost " +
+                    "mainFrame=${request.isForMainFrame} hasRange=${request.requestHeaders.keys.any { it.equals("Range", true) }}"
+            )
+        }
         Timber.v("$ihs : shouldInterceptRequest - ${if (request.isForMainFrame) "Main frame" else "Resource"} - ${request.url}")
 
         // First, check if ad blocker blocks this request (returns dummy response if blocked, null if not)
@@ -264,16 +277,11 @@ class WebPageClient(
         val proxyConfig = fulguris.network.ProxySettings.read(activity)
         val proxyMatched = proxyConfig.enabled &&
             fulguris.network.ProxySettings.shouldUseProxy(activity, request.url.toString())
-        val requestHost = request.url.host.orEmpty()
-        val isVideoDiagnosticHost = requestHost.contains("youtube", true) ||
-            requestHost.contains("googlevideo", true) ||
-            requestHost.contains("ytimg", true) ||
-            requestHost.contains("ggpht", true)
-        if (isVideoDiagnosticHost) {
+        if (isHttpRequest) {
             Log.i(
                 "Socks5ProxyRoute",
-                "host=$requestHost method=${request.method} enabled=${proxyConfig.enabled} " +
-                    "matched=$proxyMatched mainFrame=${request.isForMainFrame}"
+                "DECISION host=$requestHost method=${request.method} enabled=${proxyConfig.enabled} " +
+                    "matched=$proxyMatched blocked=$wasBlocked mainFrame=${request.isForMainFrame}"
             )
         }
         if (proxyMatched) {
@@ -1314,10 +1322,7 @@ class WebPageClient(
         errorResponse: WebResourceResponse?
     ) {
         val errorHost = request?.url?.host.orEmpty()
-        if (errorHost.contains("youtube", true) || errorHost.contains("googlevideo", true) ||
-            errorHost.contains("ytimg", true) || errorHost.contains("ggpht", true)) {
-            Log.w("Socks5ProxyRoute", "HTTP_ERROR host=$errorHost method=${request?.method} status=${errorResponse?.statusCode}")
-        }
+        Log.w("Socks5ProxyRoute", "HTTP_ERROR host=$errorHost method=${request?.method} status=${errorResponse?.statusCode}")
         Timber.w("$ihs : onReceivedHttpError: ${request?.url} - Status: ${errorResponse?.statusCode}")
         super.onReceivedHttpError(view, request, errorResponse)
     }
