@@ -67,6 +67,9 @@ object ProxySettings {
         return try {
             if (pattern.startsWith("re:", ignoreCase = true)) {
                 Regex(pattern.substring(3), RegexOption.IGNORE_CASE).containsMatchIn(host)
+            } else if (pattern.startsWith("*.")) {
+                val suffix = pattern.substring(2).lowercase()
+                host == suffix || host.endsWith(".$suffix")
             } else {
                 val regex = buildString {
                     append('^')
