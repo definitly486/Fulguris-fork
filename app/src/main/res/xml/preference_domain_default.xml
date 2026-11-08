@@ -116,14 +116,6 @@
         a:enumClassName="fulguris.enums.IncomingUrlAction"
         />
 
-    <x.PreferenceCategory a:title="@string/pref_title_socks5_proxy" a:summary="@string/pref_summary_socks5_proxy">
-        <x.SwitchPreference a:defaultValue="false" a:key="@string/pref_key_socks5_proxy_enabled" a:title="@string/pref_title_socks5_proxy_enabled" a:summary="@string/pref_summary_socks5_proxy_enabled" a:iconSpaceReserved="false" a:singleLineTitle="false" />
-        <EditTextPreference a:key="@string/pref_key_socks5_proxy_host" a:title="@string/pref_title_socks5_proxy_host" a:dialogTitle="@string/pref_title_socks5_proxy_host" a:defaultValue="" a:singleLineTitle="false" />
-        <EditTextPreference a:key="@string/pref_key_socks5_proxy_port" a:title="@string/pref_title_socks5_proxy_port" a:dialogTitle="@string/pref_title_socks5_proxy_port" a:defaultValue="1080" android:inputType="number" a:singleLineTitle="false" />
-        <EditTextPreference a:key="@string/pref_key_socks5_proxy_username" a:title="@string/pref_title_socks5_proxy_username" a:dialogTitle="@string/pref_title_socks5_proxy_username" a:defaultValue="" a:singleLineTitle="false" />
-        <EditTextPreference a:key="@string/pref_key_socks5_proxy_password" a:title="@string/pref_title_socks5_proxy_password" a:dialogTitle="@string/pref_title_socks5_proxy_password" a:defaultValue="" android:inputType="textPassword" a:singleLineTitle="false" />
-        <x.Preference a:key="@string/pref_key_socks5_proxy_test" a:title="@string/pref_title_socks5_proxy_test" a:summary="@string/pref_summary_socks5_proxy_test" a:iconSpaceReserved="false" a:singleLineTitle="false" />
-    </x.PreferenceCategory>
 
     <x.Preference
         a:key="@string/pref_key_reset_default_domain"
