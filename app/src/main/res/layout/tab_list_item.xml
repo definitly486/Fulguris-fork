@@ -51,7 +51,7 @@ android:focusableInTouchMode="true"
                 tools:text="My web page title is too long to fit in here much too long"/>
             <fulguris.view.ImageView
                 android:id="@+id/deleteAction"
-                android:layout_width="96dp"
+                android:layout_width="106dp"
                 android:layout_height="match_parent"
                 android:layout_marginRight="-28dp"
                 android:paddingLeft="20dp"
