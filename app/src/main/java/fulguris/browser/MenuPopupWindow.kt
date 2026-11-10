@@ -275,6 +275,7 @@ class MenuPopupWindow : PopupWindow {
         iBinding.menuItemPageRequests.isVisible = false
         iBinding.menuItemConsole.isVisible = false
         iBinding.menuItemCookies.isVisible = false
+        iBinding.menuItemExportX5Cookies.isVisible = false
         iBinding.menuItemForceReload.isVisible = false
         iBinding.menuItemLaunchApp.isVisible = false
         iBinding.menuItemPip.isVisible = false
@@ -319,6 +320,7 @@ class MenuPopupWindow : PopupWindow {
             MenuItemId.Requests -> iBinding.menuItemPageRequests.isVisible = true
             MenuItemId.Console -> iBinding.menuItemConsole.isVisible = true
             MenuItemId.Cookies -> iBinding.menuItemCookies.isVisible = true
+            MenuItemId.ExportX5Cookies -> iBinding.menuItemExportX5Cookies.isVisible = true
             MenuItemId.ForceReload -> iBinding.menuItemForceReload.isVisible = true
             MenuItemId.LaunchApp -> iBinding.menuItemLaunchApp.isVisible = true
             MenuItemId.Pip -> iBinding.menuItemPip.isVisible = true
