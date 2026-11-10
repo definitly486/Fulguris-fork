@@ -721,6 +721,10 @@
     <string name="pref_summary_console_empty">Нет сообщений консоли для этой страницы</string>
     <string name="action_console">Консоль</string>
     <string name="action_cookies">Файлы cookie</string>
+    <string name="action_export_x5_cookies">Экспорт cookies X5 Club</string>
+    <string name="x5club_cookies_open_site">Перед экспортом откройте x5club.ru</string>
+    <string name="x5club_cookies_exported">Экспортировано cookies X5 Club: %1$d</string>
+    <string name="x5club_cookies_export_failed">Не удалось экспортировать cookies X5 Club</string>
     <string name="action_full_menu">Полное меню</string>
     <string name="pref_summary_full_menu">Показать полное меню</string>
     <string name="action_launch">Запустить</string>
