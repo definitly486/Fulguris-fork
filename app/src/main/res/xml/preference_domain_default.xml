@@ -22,6 +22,7 @@
 -->
 <androidx.preference.PreferenceScreen
     xmlns:a="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <x.Preference
@@ -114,6 +115,7 @@
         a:singleLineTitle="false"
         a:enumClassName="fulguris.enums.IncomingUrlAction"
         />
+
 
     <x.Preference
         a:key="@string/pref_key_reset_default_domain"

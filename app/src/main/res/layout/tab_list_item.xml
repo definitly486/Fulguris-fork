@@ -7,6 +7,7 @@ android:focusableInTouchMode="true"
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/tab_item_background"
         app:cardBackgroundColor="?attr/colorSurface"
@@ -17,14 +18,18 @@ android:focusableInTouchMode="true"
         android:clickable="true"
         android:focusable="true"
         android:checkable="true"
-        android:focusableInTouchMode="false">
+        android:focusableInTouchMode="false"
+        android:clipChildren="false">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:layout_marginHorizontal="@dimen/material_grid_margin"
-            android:weightSum="1">
+            android:weightSum="1"
+            android:clipChildren="false">
+
             <fulguris.view.ImageView
                 android:id="@+id/faviconTab"
                 android:layout_width="@dimen/material_grid_small_icon"
@@ -34,6 +39,7 @@ android:focusableInTouchMode="true"
                 android:contentDescription="@null"
                 android:gravity="center_vertical"
                 tools:srcCompat="@drawable/ic_web" />
+
             <TextView
                 android:id="@+id/textTab"
                 android:layout_width="0dp"
@@ -49,13 +55,14 @@ android:focusableInTouchMode="true"
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceListItemSmall"
                 tools:text="My web page title is too long to fit in here much too long"/>
+
             <fulguris.view.ImageView
                 android:id="@+id/deleteAction"
                 android:layout_width="106dp"
                 android:layout_height="match_parent"
-                android:layout_marginRight="-28dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
+                android:layout_marginRight="-36dp"
+                android:paddingLeft="24dp"
+                android:paddingRight="28dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/close_tab"
                 android:scaleType="center"
@@ -64,5 +71,3 @@ android:focusableInTouchMode="true"
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>
-</layout>
-

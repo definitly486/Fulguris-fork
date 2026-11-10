@@ -46,6 +46,7 @@ import android.net.Uri
 import android.net.http.SslError
 import android.os.Message
 import android.util.Base64
+import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -202,6 +203,19 @@ class WebPageClient(
      *   comment Helium314: adBLock.shouldBock always never blocks if url.isSpecialUrl() or url.isAppScheme(), could be moved here
      */
     override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
+        val requestScheme = request.url.scheme.orEmpty()
+        val requestHost = request.url.host.orEmpty()
+        val isHttpRequest = requestScheme.equals("http", true) || requestScheme.equals("https", true)
+        if (isHttpRequest) {
+            // Temporary route diagnostics: log every HTTP(S) request before ad blocking
+            // so we can distinguish requests reaching WebViewClient from media traffic
+            // handled internally by Chromium and never exposed to this callback.
+            Log.i(
+                "Socks5ProxyRoute",
+                "INTERCEPT method=${request.method} host=$requestHost " +
+                    "mainFrame=${request.isForMainFrame} hasRange=${request.requestHeaders.keys.any { it.equals("Range", true) }}"
+            )
+        }
         Timber.v("$ihs : shouldInterceptRequest - ${if (request.isForMainFrame) "Main frame" else "Resource"} - ${request.url}")
 
         // First, check if ad blocker blocks this request (returns dummy response if blocked, null if not)
@@ -254,6 +268,10 @@ class WebPageClient(
         if (response != null) {
             return response
         }
+
+        // All HTTP(S) traffic is routed by the process-wide WebView proxy.
+        // The local bridge applies the configured domain rules and handles POST,
+        // CONNECT and media requests without requiring request-body interception.
 
         // Ad blocker did not block this request
         // Now try the network engine if one is selected
@@ -642,6 +660,12 @@ class WebPageClient(
      * Called for any resource error (main frame, subframes, images, etc.)
      */
     override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+        Log.e(
+            "Socks5ProxyRoute",
+            "NETWORK_ERROR host=${request?.url?.host.orEmpty()} method=${request?.method} " +
+                "mainFrame=${request?.isForMainFrame} code=${error?.errorCode} " +
+                "description=${error?.description}"
+        )
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             Timber.w("$ihs : onReceivedError (modern): ${request?.url} - Code: ${error?.errorCode} - ${error?.description}")
         } else {
@@ -1279,6 +1303,8 @@ class WebPageClient(
         request: WebResourceRequest?,
         errorResponse: WebResourceResponse?
     ) {
+        val errorHost = request?.url?.host.orEmpty()
+        Log.w("Socks5ProxyRoute", "HTTP_ERROR host=$errorHost method=${request?.method} status=${errorResponse?.statusCode}")
         Timber.w("$ihs : onReceivedHttpError: ${request?.url} - Status: ${errorResponse?.statusCode}")
         super.onReceivedHttpError(view, request, errorResponse)
     }

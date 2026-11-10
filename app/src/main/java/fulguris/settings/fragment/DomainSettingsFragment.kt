@@ -79,6 +79,7 @@ class DomainSettingsFragment : AbstractSettingsFragment() {
             intent?.data = Uri.parse(uri)
         }
 
+
         // Parent link setup is done in onResume() to ensure it's always up-to-date
 
         // Geolocation permission setup
