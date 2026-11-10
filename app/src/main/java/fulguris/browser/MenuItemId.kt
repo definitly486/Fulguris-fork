@@ -56,6 +56,7 @@ enum class MenuItemId {
     Requests,
     Console,
     Cookies,
+    ExportX5Cookies,
     AddToHome,
     ForceReload,
     Pip,
