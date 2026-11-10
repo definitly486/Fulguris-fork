@@ -376,6 +376,14 @@
                         android:text="@string/action_cookies" />
 
                     <TextView
+                        android:id="@+id/menuItemExportX5Cookies"
+                        style="@style/BrowserTextMenuItem"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        app:drawableStartCompat="@drawable/ic_cookie_outline"
+                        android:text="@string/action_export_x5_cookies" />
+
+                    <TextView
                         android:id="@+id/menuItemPrint"
                         style="@style/BrowserTextMenuItem"
                         android:visibility="gone"
