@@ -36,6 +36,7 @@
     <item name="action_reload" type="id" />
     <item name="action_force_reload" type="id" />
     <item name="action_backup_credentials" type="id" />
+    <item name="action_export_x5_cookies" type="id" />
     <item name="action_launch_app" type="id" />
     <item name="action_pip" type="id" />
     <item name="action_forward" type="id" />
