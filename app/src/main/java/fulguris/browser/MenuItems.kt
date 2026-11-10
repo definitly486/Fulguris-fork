@@ -301,6 +301,15 @@ object MenuItems {
             defaultMenu = MenuType.HiddenMenu,
             preferredMenu = MenuType.TabMenu
         ),
+        MenuItemId.ExportX5Cookies to MenuItem(
+            id = MenuItemId.ExportX5Cookies,
+            labelId = R.string.action_export_x5_cookies,
+            iconId = R.drawable.ic_cookie_outline,
+            viewId = R.id.menuItemExportX5Cookies,
+            canBeInMainMenu = false,
+            canBeInTabMenu = true,
+            defaultMenu = MenuType.TabMenu
+        ),
         MenuItemId.AddToHome to MenuItem(
             id = MenuItemId.AddToHome,
             labelId = R.string.action_add_to_homescreen,
