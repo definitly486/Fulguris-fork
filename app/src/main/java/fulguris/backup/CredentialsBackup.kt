@@ -135,6 +135,31 @@ object CredentialsBackup {
         return result
     }
 
+    /**
+     * Export cookies applicable to the X5 Club root site in the request-cookie JSON format.
+     * Read the WebView cookie database rather than document.cookie so HttpOnly cookies are included.
+     */
+    data class X5ClubCookieExport(val data: ByteArray, val count: Int)
+
+    fun createX5ClubCookies(context: Context): X5ClubCookieExport {
+        val now = System.currentTimeMillis()
+        val values = linkedMapOf<String, String>()
+        readCookies(context)
+            .asSequence()
+            .filter { it.host.trimStart('.').equals("x5club.ru", ignoreCase = true) }
+            .filter { it.path == "/" }
+            .filter { it.expires == 0L || it.expires > now }
+            .forEach { values[it.name] = it.value }
+
+        val requestCookies = JSONObject()
+        values.forEach { (name, value) -> requestCookies.put(name, value) }
+        val json = JSONObject()
+            .put("Request Cookies", requestCookies)
+            .toString(2)
+            .toByteArray(Charsets.UTF_8)
+        return X5ClubCookieExport(json, values.size)
+    }
+
     // ---------------------------------------------------------------- import
 
     fun isEncrypted(data: ByteArray): Boolean = try {
