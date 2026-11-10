@@ -58,7 +58,7 @@ android:focusableInTouchMode="true"
 
             <fulguris.view.ImageView
                 android:id="@+id/deleteAction"
-                android:layout_width="110dp"
+                android:layout_width="106dp"
                 android:layout_height="match_parent"
                 android:layout_marginRight="-36dp"
                 android:paddingLeft="24dp"
