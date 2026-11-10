@@ -787,6 +787,10 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
                 dismiss()
                 showCookies()
             }
+            onMenuItemClicked(iBinding.menuItemExportX5Cookies) {
+                dismiss()
+                executeAction(R.id.action_export_x5_cookies)
+            }
             onMenuItemClicked(iBinding.menuItemShare) { dismiss(); executeAction(R.id.action_share) }
             onMenuItemClicked(iBinding.menuItemAddBookmark) { dismiss(); executeAction(R.id.action_add_bookmark) }
             onMenuItemClicked(iBinding.menuItemFind) { dismiss(); executeAction(R.id.action_find) }
@@ -1030,6 +1034,25 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
         }
     }
 
+    private val x5ClubCookiesExportPicker = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) { result ->
+        val uri = result.data?.data
+        if (result.resultCode != Activity.RESULT_OK || uri == null) return@registerForActivityResult
+        lifecycleScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+            try {
+                val exported = withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    val data = fulguris.backup.CredentialsBackup.createX5ClubCookies(applicationContext)
+                    contentResolver.openOutputStream(uri, "wt")?.use { it.write(data.data) }
+                        ?: throw java.io.IOException("No output stream")
+                    data
+                }
+                snackbar(getString(R.string.x5club_cookies_exported, exported.count))
+            } catch (e: Exception) {
+                Timber.e(e, "X5 Club cookies export failed")
+                snackbar(R.string.x5club_cookies_export_failed)
+            }
+        }
+    }
+
     private val credentialsImportPicker = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) { result ->
         val uri = result.data?.data
         if (result.resultCode != Activity.RESULT_OK || uri == null) return@registerForActivityResult
@@ -1190,6 +1213,27 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
             }
             .setNegativeButton(R.string.action_cancel, null)
             .show()
+    }
+
+    /**
+     * Save X5 Club cookies, including HttpOnly entries, to the request-cookie JSON format.
+     */
+    private fun startX5ClubCookiesExport() {
+        if (isIncognito()) {
+            snackbar(R.string.backup_credentials_not_in_incognito)
+            return
+        }
+        val host = Uri.parse(tabsManager.currentTab?.url.orEmpty()).host?.lowercase(Locale.ROOT)
+        if (host != "x5club.ru" && host?.endsWith(".x5club.ru") != true) {
+            snackbar(R.string.x5club_cookies_open_site)
+            return
+        }
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/json"
+            putExtra(Intent.EXTRA_TITLE, "x5club-cookies.json")
+        }
+        x5ClubCookiesExportPicker.launch(intent)
     }
 
     /**
@@ -3197,6 +3241,10 @@ abstract class WebBrowserActivity : ThemedBrowserActivity(),
             }
             R.id.action_backup_credentials -> {
                 showCredentialsBackupDialog()
+                return true
+            }
+            R.id.action_export_x5_cookies -> {
+                startX5ClubCookiesExport()
                 return true
             }
 
